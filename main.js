@@ -504,112 +504,6 @@ function setupTypingAnimation() {
 }
 
 
-// ───────────────────────────────────────────
-// 10. PARTICLE BACKGROUND
-// ───────────────────────────────────────────
-function setupParticles() {
-  const canvas = document.getElementById('particle-canvas');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  const hero = document.getElementById('hero');
-  let particles = [];
-  let animationId;
-
-  const colors = [
-    'rgba(245, 158, 11, ',  // amber
-    'rgba(236, 72, 153, ',  // pink
-    'rgba(139, 92, 246, '   // purple
-  ];
-
-  function resize() {
-    canvas.width = hero.offsetWidth;
-    canvas.height = hero.offsetHeight;
-  }
-
-  function createParticles() {
-    const count = window.innerWidth < 768 ? 35 : 60;
-    particles = [];
-
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 0.5,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: -Math.random() * 0.4 - 0.1,
-        opacity: Math.random() * 0.4 + 0.15,
-        color: colors[Math.floor(Math.random() * colors.length)]
-      });
-    }
-  }
-
-  function drawParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    particles.forEach((p, i) => {
-      // Draw particle
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = p.color + p.opacity + ')';
-      ctx.fill();
-
-      // Move particle
-      p.x += p.speedX;
-      p.y += p.speedY;
-
-      // Wrap around
-      if (p.y < -10) {
-        p.y = canvas.height + 10;
-        p.x = Math.random() * canvas.width;
-      }
-      if (p.x < -10) p.x = canvas.width + 10;
-      if (p.x > canvas.width + 10) p.x = -10;
-
-      // Connect nearby particles
-      for (let j = i + 1; j < particles.length; j++) {
-        const p2 = particles[j];
-        const dx = p.x - p2.x;
-        const dy = p.y - p2.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(200, 120, 0, ${0.08 * (1 - dist / 120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    });
-
-    animationId = requestAnimationFrame(drawParticles);
-  }
-
-  resize();
-  createParticles();
-  drawParticles();
-
-  window.addEventListener('resize', () => {
-    resize();
-    createParticles();
-  });
-
-  // Pause when not visible for performance
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        if (!animationId) drawParticles();
-      } else {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-      }
-    });
-  });
-
-  observer.observe(hero);
-}
 
 
 // ───────────────────────────────────────────
@@ -801,7 +695,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFAQ();
   setupScrollAnimations();
   setupStatsCounter();
-  setupParticles();
   setupTypingAnimation();
   setupProductModal();
   setupNewsletter();
