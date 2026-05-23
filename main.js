@@ -538,7 +538,7 @@ function setupParticles() {
         radius: Math.random() * 2 + 0.5,
         speedX: (Math.random() - 0.5) * 0.3,
         speedY: -Math.random() * 0.4 - 0.1,
-        opacity: Math.random() * 0.3 + 0.1,
+        opacity: Math.random() * 0.4 + 0.15,
         color: colors[Math.floor(Math.random() * colors.length)]
       });
     }
@@ -577,7 +577,7 @@ function setupParticles() {
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(245, 158, 11, ${0.05 * (1 - dist / 120)})`;
+          ctx.strokeStyle = `rgba(200, 120, 0, ${0.08 * (1 - dist / 120)})`;
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
