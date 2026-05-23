@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dailystoptoshop — Curated Drops for Gen-Z</title>
+  <meta name="description" content="Your daily destination for curated, trending products. Limited edition drops, hand-picked essentials, and everything that hits different. Shop now at dailystoptoshop.">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta property="og:title" content="dailystoptoshop — Curated Drops for Gen-Z">
+  <meta property="og:description" content="Limited edition drops, trending picks, and curated vibes. Your daily stop to shop.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./assets/logo.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Razorpay Checkout -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- NAVIGATION                                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo-link">
+        <div class="nav-logo">
+          <img src="./assets/logo.png" alt="dailystoptoshop logo">
+        </div>
+        <span class="nav-brand">daily<span class="brand-highlight">stop</span>toshop</span>
+      </a>
+
+      <ul id="nav-links">
+        <li><a href="#shop" class="nav-link">Shop</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#faq" class="nav-link">FAQ</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button id="cart-btn" aria-label="Shopping cart">
+          <i data-lucide="shopping-bag"></i>
+          <span id="cart-count">0</span>
+        </button>
+        <button id="hamburger" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- HERO SECTION                                -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="hero">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-text">
+        <p class="hero-subtitle">✦ CURATED DROPS FOR GEN-Z</p>
+        <h1 class="gradient-text">Your Daily<br>Stop To Shop</h1>
+        <p class="hero-tagline">Limited editions. Trending picks. <span class="typing-text" id="typing-text"></span></p>
+        <a href="#shop" class="btn-primary hero-cta">
+          SHOP NOW
+          <i data-lucide="arrow-right"></i>
+        </a>
+      </div>
+      <div class="hero-product">
+        <div class="product-glow"></div>
+        <img src="./products/cup.jpeg" alt="Stanley Quencher Tumbler - Limited Edition Flowttls" id="hero-product-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SHOP / PRODUCTS SECTION                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="shop">
+    <div class="section-header fade-in">
+      <p class="section-subtitle">✦ FRESH DROP</p>
+      <h2 class="section-title">The Collection</h2>
+    </div>
+    <div id="products-grid">
+      <!-- Products rendered dynamically by main.js -->
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ABOUT SECTION                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="about">
+    <div class="section-header fade-in">
+      <p class="section-subtitle">✦ OUR STORY</p>
+      <h2 class="section-title">Why Us?</h2>
+    </div>
+    <div class="about-content">
+      <div class="about-text fade-in-left">
+        <p class="lead">We're not just another online store. We're your personal curator of the internet's most fire products.</p>
+        <p>Every item in our collection is hand-picked, trend-verified, and vibe-checked. No endless scrolling through mid products — just the stuff that actually slaps.</p>
+        <p>From limited edition drops to everyday essentials that hit different, dailystoptoshop is where your wishlist comes to life.</p>
+      </div>
+      <div class="about-visual fade-in-right">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" data-target="100">0</div>
+            <div class="stat-label">Happy Customers</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="100" data-suffix="%">0</div>
+            <div class="stat-label">Quality Score</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="24" data-suffix="/7">0</div>
+            <div class="stat-label">Support</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FAQ SECTION                                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="faq">
+    <div class="section-header fade-in">
+      <p class="section-subtitle">✦ GOT QUESTIONS?</p>
+      <h2 class="section-title">FAQ</h2>
+    </div>
+    <div class="faq-container fade-in">
+      <div class="faq-item">
+        <button class="faq-question">What payment methods do you accept?</button>
+        <div class="faq-answer">
+          <p>We accept all major payment methods through Razorpay — UPI (GPay, PhonePe, Paytm), credit/debit cards (Visa, Mastercard, RuPay), net banking, and popular wallets. Basically, however you pay, we got you.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">How long does shipping take?</button>
+        <div class="faq-answer">
+          <p>We ship across India! Metro cities typically receive orders in 3-5 business days, while other areas may take 5-7 business days. You'll get a tracking link as soon as your order ships.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Are all products authentic?</button>
+        <div class="faq-answer">
+          <p>100%. Every product we sell is genuine and sourced directly from authorized channels. We don't do fakes — that's not our vibe. Each order comes with authenticity guaranteed.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">What's your return policy?</button>
+        <div class="faq-answer">
+          <p>We offer a 7-day easy return policy. If you're not completely satisfied with your purchase, reach out to us and we'll sort it out. No cap, no hassle.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Do you offer free shipping?</button>
+        <div class="faq-answer">
+          <p>Yes! Orders above ₹999 qualify for free shipping across India. For orders below that, a small shipping fee applies at checkout.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FOOTER                                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col footer-brand-col">
+        <div class="footer-logo">
+          <div class="nav-logo">
+            <img src="./assets/logo.png" alt="dailystoptoshop">
+          </div>
+          <span class="nav-brand">daily<span class="brand-highlight">stop</span>toshop</span>
+        </div>
+        <p>Your daily destination for curated, trending products. We bring you the internet's finest, so you don't have to hunt.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+          <a href="#" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="#shop">Shop</a>
+        <a href="#about">About Us</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="mailto:support@dailystoptoshop.com">Contact Us</a>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Return Policy</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+      <div class="footer-col">
+        <h4>Stay in the Loop</h4>
+        <p>Get notified about new drops &amp; exclusive deals.</p>
+        <form class="newsletter-form" id="newsletter-form">
+          <input type="email" placeholder="your@email.com" aria-label="Email for newsletter" required>
+          <button type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 dailystoptoshop. All rights reserved.</p>
+      <div class="payment-icons">
+        <span title="Visa">💳</span>
+        <span title="UPI">📱</span>
+        <span title="Net Banking">🏦</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CART DRAWER (Off-canvas)                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="cart-overlay"></div>
+  <div id="cart-drawer">
+    <div class="cart-header">
+      <h2>Your Bag</h2>
+      <button id="close-cart" aria-label="Close cart"><i data-lucide="x"></i></button>
+    </div>
+    <div id="cart-items">
+      <div class="cart-empty">
+        <p class="cart-empty-icon">🛒</p>
+        <p class="cart-empty-text">Your bag is empty</p>
+        <p class="cart-empty-sub">Add some fire products!</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="subtotal-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">₹0</span>
+      </div>
+      <p class="shipping-note">Free shipping on orders above ₹999 🚀</p>
+      <div class="total-row">
+        <span>Total</span>
+        <span id="cart-total">₹0</span>
+      </div>
+      <button id="checkout-btn" disabled>CHECKOUT</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PRODUCT IMAGE MODAL                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="modal-overlay">
+    <button id="close-modal" aria-label="Close image viewer"><i data-lucide="x"></i></button>
+    <img id="modal-image" src="" alt="Product zoom view">
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TOAST NOTIFICATION                          -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <!-- Main JavaScript -->
+  <script src="./main.js"></script>
+</body>
+</html>
