@@ -425,10 +425,7 @@ input {
   font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 800;
   line-height: 1.05;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #2d1f12;
   margin-bottom: 1.5rem;
 }
 
@@ -791,10 +788,7 @@ section {
   font-family: var(--font-display);
   font-size: 2rem;
   font-weight: 800;
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #2d1f12;
   margin-bottom: 0.25rem;
 }
 
@@ -1673,10 +1667,7 @@ body.cart-open #cart-drawer {
 }
 
 .text-gradient {
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #2d1f12;
 }
 
 .visually-hidden {
