@@ -11,7 +11,7 @@ const products = [
     id: 'stanley-quencher-flowttls',
     name: 'Stanley x Flowttls Quencher ProTour Tumbler',
     shortName: 'Flowttls Quencher',
-    price: 4999,
+    price: 1800,
     originalPrice: 5999,
     currency: 'INR',
     image: './products/cup.jpeg',
