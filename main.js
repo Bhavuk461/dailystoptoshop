@@ -12,7 +12,7 @@ const products = [
     name: 'Stanley x Flowttls Quencher ProTour Tumbler',
     shortName: 'Flowttls Quencher',
     price: 1800,
-    originalPrice: 5999,
+    originalPrice: 2000,
     currency: 'INR',
     image: './products/cup.jpeg',
     badge: '🔥 Limited Edition',
