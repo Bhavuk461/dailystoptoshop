@@ -496,7 +496,6 @@ input {
   position: relative;
   z-index: 1;
   filter: drop-shadow(0 20px 60px rgba(245, 158, 11, 0.2));
-  animation: float 6s ease-in-out infinite;
   border-radius: 16px;
   cursor: pointer;
   transition: transform 0.4s ease;
