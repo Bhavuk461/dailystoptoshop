@@ -499,9 +499,9 @@ function setupProductSliders() {
 
       // Start/stop the video as its slide opens/closes
       if (hasVideo) {
-        if (index === videoIndex && prevIndex !== videoIndex) {
+        if (index === videoIndex) {
           playVideoIn(slider);
-        } else if (index !== videoIndex && prevIndex === videoIndex) {
+        } else if (prevIndex === videoIndex) {
           stopVideoIn(slider);
         }
       }
