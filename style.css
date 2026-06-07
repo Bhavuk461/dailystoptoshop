@@ -119,6 +119,9 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9999;
@@ -1476,6 +1479,8 @@ body.cart-open #cart-drawer {
 #modal-image {
   max-width: 90vw;
   max-height: 85vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: var(--radius-md);
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
@@ -1809,6 +1814,15 @@ body.cart-open #cart-drawer {
 
 /* ── Small phones ── */
 @media (max-width: 480px) {
+  /* Tighter section padding so content never overflows narrow viewports */
+  section {
+    padding: clamp(3rem, 8vh, 5rem) 1rem;
+  }
+
+  .nav-container {
+    padding: 0 1rem;
+  }
+
   .hero-subtitle {
     font-size: 0.7rem;
     letter-spacing: 2px;
