@@ -15,10 +15,10 @@ const products = [
     originalPrice: 2000,
     currency: 'INR',
     images: [
-      './products/stanley/1.png',
-      './products/stanley/2.png',
-      './products/stanley/3.png',
-      './products/cup.jpeg'
+      './products/stanley/1.webp',
+      './products/stanley/2.webp',
+      './products/stanley/3.webp',
+      './products/cup.webp'
     ],
     badge: '🔥 Limited Edition',
     description: '40oz / 1.18L · All Day Hydration · Bow Straw Topper',
@@ -39,11 +39,11 @@ const products = [
     originalPrice: 899,
     currency: 'INR',
     images: [
-      './products/black-cat/1.png',
-      './products/black-cat/2.png',
-      './products/black-cat/3.jpeg',
-      './products/black-cat/4.png',
-      './products/black-cat/5.png'
+      './products/black-cat/1.webp',
+      './products/black-cat/2.webp',
+      './products/black-cat/3.webp',
+      './products/black-cat/4.webp',
+      './products/black-cat/5.webp'
     ],
     badge: '🐱 New Drop',
     description: 'Soft, huggable & irresistibly cute companion.',
@@ -63,11 +63,11 @@ const products = [
     originalPrice: 899,
     currency: 'INR',
     images: [
-      './products/happy-puppy/1.png',
-      './products/happy-puppy/2.png',
-      './products/happy-puppy/3.png',
-      './products/happy-puppy/4.png',
-      './products/happy-puppy/5.jpeg'
+      './products/happy-puppy/1.webp',
+      './products/happy-puppy/2.webp',
+      './products/happy-puppy/3.webp',
+      './products/happy-puppy/4.webp',
+      './products/happy-puppy/5.webp'
     ],
     badge: '🐶 New Drop',
     description: 'A cheerful pup that brings instant smiles.',
@@ -87,11 +87,11 @@ const products = [
     originalPrice: 899,
     currency: 'INR',
     images: [
-      './products/cute-rabbit/1.png',
-      './products/cute-rabbit/2.png',
-      './products/cute-rabbit/3.png',
-      './products/cute-rabbit/4.png',
-      './products/cute-rabbit/5.jpeg'
+      './products/cute-rabbit/1.webp',
+      './products/cute-rabbit/2.webp',
+      './products/cute-rabbit/3.webp',
+      './products/cute-rabbit/4.webp',
+      './products/cute-rabbit/5.webp'
     ],
     badge: '🐰 New Drop',
     description: 'An adorable bunny with floppy charm.',
@@ -111,11 +111,11 @@ const products = [
     originalPrice: 899,
     currency: 'INR',
     images: [
-      './products/sleeping-bear/1.png',
-      './products/sleeping-bear/2.png',
-      './products/sleeping-bear/3.png',
-      './products/sleeping-bear/4.png',
-      './products/sleeping-bear/5.jpeg'
+      './products/sleeping-bear/1.webp',
+      './products/sleeping-bear/2.webp',
+      './products/sleeping-bear/3.webp',
+      './products/sleeping-bear/4.webp',
+      './products/sleeping-bear/5.webp'
     ],
     badge: '🐻 New Drop',
     description: 'A dreamy, sleepy bear ready for snuggles.',
@@ -756,7 +756,7 @@ function initiateCheckout() {
     currency: 'INR',
     name: 'dailystoptoshop',
     description: `Order — ${count} item(s)`,
-    image: './assets/logo.png',
+    image: './assets/logo.webp',
     handler: function (response) {
       // Payment successful
       showToast('Payment successful! 🎉 Order confirmed!');
