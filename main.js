@@ -14,7 +14,12 @@ const products = [
     price: 1800,
     originalPrice: 2000,
     currency: 'INR',
-    image: './products/cup.jpeg',
+    images: [
+      './products/stanley/1.png',
+      './products/stanley/2.png',
+      './products/stanley/3.png',
+      './products/cup.jpeg'
+    ],
     badge: '🔥 Limited Edition',
     description: '40oz / 1.18L · All Day Hydration · Bow Straw Topper',
     features: [
