@@ -531,6 +531,11 @@ function setupProductSliders() {
       timer = setInterval(() => {
         // Pause autoplay while the video slide is open so it can play fully
         if (hasVideo && index === videoIndex) return;
+        // Stop at the final slide instead of looping back to the start.
+        if (index >= count - 1) {
+          stopAutoplay();
+          return;
+        }
         goTo(index + 1);
       }, 1400);
     }
