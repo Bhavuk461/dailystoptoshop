@@ -388,7 +388,9 @@ function renderProducts() {
 // requested before the API has finished loading.
 let ytApiReady = false;
 const ytPlayerQueue = [];
-const ytPlayers = new WeakMap(); // element -> YT.Player instance
+const ytPlayers = new WeakMap();      // element -> YT.Player instance
+const ytPlayerReady = new WeakMap();  // element -> boolean (player fired onReady)
+const ytWantPlay = new WeakMap();     // element -> boolean (slide wants the video playing)
 
 function loadYouTubeApi() {
   if (document.getElementById('youtube-iframe-api')) return;
@@ -417,41 +419,58 @@ function createYouTubePlayer(el) {
   const player = new YT.Player(el, {
     videoId,
     playerVars: {
-      autoplay: 0,
-      controls: 0,          // hide player controls
-      modestbranding: 1,    // minimise YouTube logo
+      autoplay: 1,          // begin loading/playing as soon as possible
+      controls: 0,          // hide player controls (also hides bottom logo bar)
+      modestbranding: 1,    // minimise YouTube branding
       rel: 0,               // no related videos from other channels
       showinfo: 0,
       fs: 0,                // no fullscreen button
       disablekb: 1,         // disable keyboard control
       iv_load_policy: 3,    // hide video annotations
-      playsinline: 1,       // inline playback on mobile
+      playsinline: 1,       // inline playback on mobile (required for autoplay)
       loop: 1,
       playlist: videoId,    // required for loop to work
       mute: 1               // muted so autoplay is allowed by browsers
     },
     events: {
-      onReady: (e) => { e.target.setVolume(100); }
+      onReady: (e) => {
+        ytPlayerReady.set(el, true);
+        try { e.target.mute(); } catch (_) {}
+        // If the slide already asked the video to play, honour it now.
+        if (ytWantPlay.get(el)) {
+          try { e.target.playVideo(); } catch (_) {}
+        }
+      },
+      onStateChange: (e) => {
+        // Keep looping reliably even if the loop param is ignored.
+        if (e.data === YT.PlayerState.ENDED) {
+          try { e.target.seekTo(0); e.target.playVideo(); } catch (_) {}
+        }
+      }
     }
   });
 
   ytPlayers.set(el, player);
+  ytPlayerReady.set(el, false);
 }
 
 function playVideoIn(slider) {
   const el = slider.querySelector('.yt-player');
   if (!el) return;
+  // Record intent so onReady can autoplay even if the player isn't ready yet.
+  ytWantPlay.set(el, true);
   const player = ytPlayers.get(el);
-  if (player && typeof player.playVideo === 'function') {
-    try { player.playVideo(); } catch (_) {}
+  if (player && ytPlayerReady.get(el) && typeof player.playVideo === 'function') {
+    try { player.mute(); player.playVideo(); } catch (_) {}
   }
 }
 
 function stopVideoIn(slider) {
   const el = slider.querySelector('.yt-player');
   if (!el) return;
+  ytWantPlay.set(el, false);
   const player = ytPlayers.get(el);
-  if (player && typeof player.pauseVideo === 'function') {
+  if (player && ytPlayerReady.get(el) && typeof player.pauseVideo === 'function') {
     try {
       player.pauseVideo();
       if (typeof player.seekTo === 'function') player.seekTo(0);
