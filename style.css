@@ -96,12 +96,20 @@ html {
   color: var(--text-primary);
 }
 
+html {
+  /* Prevent any descendant overflow from creating a horizontal scrollbar
+     that pushes top-right controls (e.g. the hamburger) off-screen. */
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
   color: var(--text-secondary);
   line-height: 1.6;
   overflow-x: hidden;
+  max-width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
