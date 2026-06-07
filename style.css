@@ -332,11 +332,19 @@ input {
 #hamburger {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  /* Guaranteed 44x44 tap target and box so the bars always have room */
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1100;
 }
 
 #hamburger span {
@@ -346,6 +354,7 @@ input {
   background: var(--text-primary);
   border-radius: var(--radius-full);
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 #hamburger.active span:nth-child(1) {
