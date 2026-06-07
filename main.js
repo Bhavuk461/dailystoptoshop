@@ -584,6 +584,22 @@ function setupProductSliders() {
       }
     }, { passive: true });
 
+    // Autoplay the video when the card enters the viewport (no hover needed).
+    if (hasVideo && 'IntersectionObserver' in window) {
+      const vis = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            // Jump to the video slide and play it.
+            if (index !== videoIndex) goTo(videoIndex);
+            else playVideoIn(slider);
+          } else {
+            stopVideoIn(slider);
+          }
+        });
+      }, { threshold: [0, 0.5, 1] });
+      vis.observe(slider);
+    }
+
     goTo(0);
   });
 }
