@@ -629,6 +629,45 @@ section {
   transform: none;
 }
 
+/* ── Video Slide (branded YouTube embed) ── */
+.product-slider .slide-video {
+  background: #000;
+}
+
+.product-slider .video-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+/*
+  The clip is a 9:16 vertical Short. We scale the iframe up and center it so it
+  fills the square slide edge-to-edge, pushing the YouTube chrome (title bar,
+  watch-later, share, logo) outside the visible frame so it reads as native.
+*/
+.product-slider .video-frame iframe,
+.product-slider .video-frame .yt-player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 178%;            /* fills the square from a 9:16 source */
+  height: 178%;
+  transform: translate(-50%, -50%) scale(1.35);
+  border: 0;
+  pointer-events: none;   /* never expose native YouTube UI on click */
+}
+
+/* Transparent shield captures clicks so the YouTube logo/links never open */
+.product-slider .video-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+  background: transparent;
+}
+
 .slider-arrow {
   position: absolute;
   top: 50%;
@@ -1673,6 +1712,30 @@ body.cart-open #cart-drawer {
     max-width: 100%;
   }
 
+  /* On touch devices there's no hover, so always show slider arrows */
+  .slider-arrow {
+    opacity: 1;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+
+  /* Larger tap targets for slider dots */
+  .slider-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .slider-dot.active {
+    width: 24px;
+  }
+
+  /* Keep the scaled video filling the square cleanly on mobile */
+  .product-slider .video-frame iframe,
+  .product-slider .video-frame .yt-player {
+    transform: translate(-50%, -50%) scale(1.4);
+  }
+
   /* Stats */
   .stats-grid {
     grid-template-columns: 1fr;
@@ -1724,6 +1787,13 @@ body.cart-open #cart-drawer {
 
   .product-info {
     padding: 1.25rem;
+  }
+
+  /* Always-visible, comfortably tappable slider controls on small phones */
+  .slider-arrow {
+    opacity: 1;
+    width: 38px;
+    height: 38px;
   }
 
   .cart-header {
