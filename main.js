@@ -25,8 +25,116 @@ const products = [
       'Dishwasher safe'
     ],
     inStock: true
+  },
+  {
+    id: 'black-cat',
+    name: 'Black Cat Plushie',
+    shortName: 'Black Cat',
+    price: 725,
+    originalPrice: 899,
+    currency: 'INR',
+    images: [
+      './products/black-cat/1.png',
+      './products/black-cat/2.png',
+      './products/black-cat/3.jpeg',
+      './products/black-cat/4.png',
+      './products/black-cat/5.png'
+    ],
+    badge: '🐱 New Drop',
+    description: 'Soft, huggable & irresistibly cute companion.',
+    features: [
+      'Premium ultra-soft plush',
+      'Perfect cuddle size',
+      'Detailed stitching',
+      'Great gift for any age'
+    ],
+    inStock: true
+  },
+  {
+    id: 'happy-puppy',
+    name: 'Happy Puppy Plushie',
+    shortName: 'Happy Puppy',
+    price: 725,
+    originalPrice: 899,
+    currency: 'INR',
+    images: [
+      './products/happy-puppy/1.png',
+      './products/happy-puppy/2.png',
+      './products/happy-puppy/3.png',
+      './products/happy-puppy/4.png',
+      './products/happy-puppy/5.jpeg'
+    ],
+    badge: '🐶 New Drop',
+    description: 'A cheerful pup that brings instant smiles.',
+    features: [
+      'Premium ultra-soft plush',
+      'Perfect cuddle size',
+      'Detailed stitching',
+      'Great gift for any age'
+    ],
+    inStock: true
+  },
+  {
+    id: 'cute-rabbit',
+    name: 'Cute Rabbit Plushie',
+    shortName: 'Cute Rabbit',
+    price: 725,
+    originalPrice: 899,
+    currency: 'INR',
+    images: [
+      './products/cute-rabbit/1.png',
+      './products/cute-rabbit/2.png',
+      './products/cute-rabbit/3.png',
+      './products/cute-rabbit/4.png',
+      './products/cute-rabbit/5.jpeg'
+    ],
+    badge: '🐰 New Drop',
+    description: 'An adorable bunny with floppy charm.',
+    features: [
+      'Premium ultra-soft plush',
+      'Perfect cuddle size',
+      'Detailed stitching',
+      'Great gift for any age'
+    ],
+    inStock: true
+  },
+  {
+    id: 'sleeping-bear',
+    name: 'Sleeping Bear Plushie',
+    shortName: 'Sleeping Bear',
+    price: 725,
+    originalPrice: 899,
+    currency: 'INR',
+    images: [
+      './products/sleeping-bear/1.png',
+      './products/sleeping-bear/2.png',
+      './products/sleeping-bear/3.png',
+      './products/sleeping-bear/4.png',
+      './products/sleeping-bear/5.jpeg'
+    ],
+    badge: '🐻 New Drop',
+    description: 'A dreamy, sleepy bear ready for snuggles.',
+    features: [
+      'Premium ultra-soft plush',
+      'Perfect cuddle size',
+      'Detailed stitching',
+      'Great gift for any age'
+    ],
+    inStock: true
   }
 ];
+
+// Helper: normalized image list for a product (supports single `image` or `images[]`)
+function getProductImages(product) {
+  if (Array.isArray(product.images) && product.images.length) return product.images;
+  if (product.image) return [product.image];
+  return [];
+}
+
+function getProductCover(product) {
+  const imgs = getProductImages(product);
+  return imgs.length ? imgs[0] : '';
+}
 
 
 // ───────────────────────────────────────────
@@ -162,7 +270,7 @@ function renderCart() {
     if (!product) return '';
     return `
       <div class="cart-item">
-        <img src="${product.image}" alt="${product.name}">
+        <img src="${getProductCover(product)}" alt="${product.name}">
         <div class="cart-item-info">
           <h4>${product.shortName}</h4>
           <p>${formatPrice(product.price)}</p>
@@ -196,10 +304,26 @@ function renderProducts() {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
 
-  grid.innerHTML = products.map(product => `
+  grid.innerHTML = products.map(product => {
+    const imgs = getProductImages(product);
+    const cover = imgs[0] || '';
+    const slidesHtml = imgs.map((src, i) => `
+          <div class="slide">
+            <img src="${src}" alt="${product.name} — image ${i + 1}" loading="lazy" onclick="openProductModal('${src}')">
+          </div>`).join('');
+    const dotsHtml = imgs.length > 1
+      ? `<div class="slider-dots">${imgs.map((_, i) => `<button class="slider-dot${i === 0 ? ' active' : ''}" data-index="${i}" aria-label="Go to image ${i + 1}"></button>`).join('')}</div>`
+      : '';
+    const arrowsHtml = imgs.length > 1
+      ? `<button class="slider-arrow slider-prev" aria-label="Previous image">‹</button>
+         <button class="slider-arrow slider-next" aria-label="Next image">›</button>`
+      : '';
+    return `
     <div class="product-card fade-in">
-      <div class="product-image-wrapper" onclick="openProductModal('${product.image}')">
-        <img src="${product.image}" alt="${product.name}" loading="lazy">
+      <div class="product-image-wrapper product-slider" data-product-id="${product.id}" data-count="${imgs.length}">
+        <div class="slider-track">${slidesHtml}</div>
+        ${arrowsHtml}
+        ${dotsHtml}
         ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
       </div>
       <div class="product-info">
@@ -223,7 +347,65 @@ function renderProducts() {
         ${product.inStock ? '<p class="urgency-text">⚡ Only a few left — don\'t sleep on it</p>' : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
+
+  setupProductSliders();
+}
+
+
+// ───────────────────────────────────────────
+// 3b. PRODUCT IMAGE SLIDER (hover autoplay)
+// ───────────────────────────────────────────
+function setupProductSliders() {
+  const sliders = document.querySelectorAll('.product-slider');
+
+  sliders.forEach(slider => {
+    const count = parseInt(slider.getAttribute('data-count'), 10) || 0;
+    if (count <= 1) return;
+
+    const track = slider.querySelector('.slider-track');
+    const dots = slider.querySelectorAll('.slider-dot');
+    const prev = slider.querySelector('.slider-prev');
+    const next = slider.querySelector('.slider-next');
+    let index = 0;
+    let timer = null;
+
+    function goTo(i) {
+      index = (i + count) % count;
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((d, di) => d.classList.toggle('active', di === index));
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      timer = setInterval(() => goTo(index + 1), 1400);
+    }
+
+    function stopAutoplay() {
+      if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    // Smooth autoplay on hover, reset to first image on leave
+    slider.addEventListener('mouseenter', startAutoplay);
+    slider.addEventListener('mouseleave', () => {
+      stopAutoplay();
+      goTo(0);
+    });
+
+    // Manual controls
+    if (prev) prev.addEventListener('click', (e) => { e.stopPropagation(); stopAutoplay(); goTo(index - 1); });
+    if (next) next.addEventListener('click', (e) => { e.stopPropagation(); stopAutoplay(); goTo(index + 1); });
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        stopAutoplay();
+        goTo(parseInt(dot.getAttribute('data-index'), 10));
+      });
+    });
+
+    goTo(0);
+  });
 }
 
 
