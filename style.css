@@ -668,6 +668,19 @@ section {
   background: transparent;
 }
 
+/* Mask the YouTube logo watermark in the bottom-right corner */
+.product-slider .video-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 90px;
+  height: 36px;
+  background: #000;
+  z-index: 3;
+  pointer-events: none;
+}
+
 .slider-arrow {
   position: absolute;
   top: 50%;
