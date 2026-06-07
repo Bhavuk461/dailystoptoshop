@@ -20,6 +20,7 @@ const products = [
       './products/stanley/3.webp',
       './products/cup.webp'
     ],
+    video: '5KdNI6QArig',
     badge: '🔥 Limited Edition',
     description: '40oz / 1.18L · All Day Hydration · Bow Straw Topper',
     features: [
@@ -312,20 +313,41 @@ function renderProducts() {
   grid.innerHTML = products.map(product => {
     const imgs = getProductImages(product);
     const cover = imgs[0] || '';
-    const slidesHtml = imgs.map((src, i) => `
+    const hasVideo = !!product.video;
+
+    // Image slides
+    const imageSlidesHtml = imgs.map((src, i) => `
           <div class="slide">
             <img src="${src}" alt="${product.name} — image ${i + 1}" loading="lazy" onclick="openProductModal('${src}')">
           </div>`).join('');
-    const dotsHtml = imgs.length > 1
-      ? `<div class="slider-dots">${imgs.map((_, i) => `<button class="slider-dot${i === 0 ? ' active' : ''}" data-index="${i}" aria-label="Go to image ${i + 1}"></button>`).join('')}</div>`
+
+    // Optional video slide (rendered as the final slide)
+    const videoSlideHtml = hasVideo
+      ? `
+          <div class="slide slide-video">
+            <div class="video-frame">
+              <div class="yt-player" data-video-id="${product.video}"></div>
+              <div class="video-shield" aria-hidden="true"></div>
+            </div>
+          </div>`
       : '';
-    const arrowsHtml = imgs.length > 1
-      ? `<button class="slider-arrow slider-prev" aria-label="Previous image">‹</button>
-         <button class="slider-arrow slider-next" aria-label="Next image">›</button>`
+
+    const slidesHtml = imageSlidesHtml + videoSlideHtml;
+
+    // Total slide count (images + optional video)
+    const slideCount = imgs.length + (hasVideo ? 1 : 0);
+    const videoIndex = hasVideo ? imgs.length : -1;
+
+    const dotsHtml = slideCount > 1
+      ? `<div class="slider-dots">${Array.from({ length: slideCount }).map((_, i) => `<button class="slider-dot${i === 0 ? ' active' : ''}" data-index="${i}" aria-label="${i === videoIndex ? 'Go to product video' : 'Go to image ' + (i + 1)}"></button>`).join('')}</div>`
+      : '';
+    const arrowsHtml = slideCount > 1
+      ? `<button class="slider-arrow slider-prev" aria-label="Previous slide">‹</button>
+         <button class="slider-arrow slider-next" aria-label="Next slide">›</button>`
       : '';
     return `
     <div class="product-card fade-in">
-      <div class="product-image-wrapper product-slider" data-product-id="${product.id}" data-count="${imgs.length}">
+      <div class="product-image-wrapper product-slider" data-product-id="${product.id}" data-count="${slideCount}" data-video-index="${videoIndex}">
         <div class="slider-track">${slidesHtml}</div>
         ${arrowsHtml}
         ${dotsHtml}
@@ -360,13 +382,106 @@ function renderProducts() {
 
 
 // ───────────────────────────────────────────
-// 3b. PRODUCT IMAGE SLIDER (hover autoplay)
+// 3b. YOUTUBE IFRAME API LOADER
+// ───────────────────────────────────────────
+// Players are created once the API is ready. We queue any players that are
+// requested before the API has finished loading.
+let ytApiReady = false;
+const ytPlayerQueue = [];
+const ytPlayers = new WeakMap(); // element -> YT.Player instance
+
+function loadYouTubeApi() {
+  if (document.getElementById('youtube-iframe-api')) return;
+  const tag = document.createElement('script');
+  tag.id = 'youtube-iframe-api';
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+
+// Called automatically by the YouTube IFrame API once it has loaded.
+window.onYouTubeIframeAPIReady = function () {
+  ytApiReady = true;
+  ytPlayerQueue.splice(0).forEach(createYouTubePlayer);
+};
+
+function createYouTubePlayer(el) {
+  if (!el || ytPlayers.has(el)) return;
+  if (!ytApiReady || typeof YT === 'undefined' || !YT.Player) {
+    if (!ytPlayerQueue.includes(el)) ytPlayerQueue.push(el);
+    return;
+  }
+
+  const videoId = el.getAttribute('data-video-id');
+  if (!videoId) return;
+
+  const player = new YT.Player(el, {
+    videoId,
+    playerVars: {
+      autoplay: 0,
+      controls: 0,          // hide player controls
+      modestbranding: 1,    // minimise YouTube logo
+      rel: 0,               // no related videos from other channels
+      showinfo: 0,
+      fs: 0,                // no fullscreen button
+      disablekb: 1,         // disable keyboard control
+      iv_load_policy: 3,    // hide video annotations
+      playsinline: 1,       // inline playback on mobile
+      loop: 1,
+      playlist: videoId,    // required for loop to work
+      mute: 1               // muted so autoplay is allowed by browsers
+    },
+    events: {
+      onReady: (e) => { e.target.setVolume(100); }
+    }
+  });
+
+  ytPlayers.set(el, player);
+}
+
+function playVideoIn(slider) {
+  const el = slider.querySelector('.yt-player');
+  if (!el) return;
+  const player = ytPlayers.get(el);
+  if (player && typeof player.playVideo === 'function') {
+    try { player.playVideo(); } catch (_) {}
+  }
+}
+
+function stopVideoIn(slider) {
+  const el = slider.querySelector('.yt-player');
+  if (!el) return;
+  const player = ytPlayers.get(el);
+  if (player && typeof player.pauseVideo === 'function') {
+    try {
+      player.pauseVideo();
+      if (typeof player.seekTo === 'function') player.seekTo(0);
+    } catch (_) {}
+  }
+}
+
+
+// ───────────────────────────────────────────
+// 3c. PRODUCT IMAGE SLIDER (hover autoplay)
 // ───────────────────────────────────────────
 function setupProductSliders() {
   const sliders = document.querySelectorAll('.product-slider');
 
+  // Ensure the YouTube API is loaded if any slider has a video slide
+  if (document.querySelector('.product-slider .yt-player')) {
+    loadYouTubeApi();
+  }
+
   sliders.forEach(slider => {
     const count = parseInt(slider.getAttribute('data-count'), 10) || 0;
+    const videoIndex = parseInt(slider.getAttribute('data-video-index'), 10);
+    const hasVideo = !Number.isNaN(videoIndex) && videoIndex >= 0;
+
+    // Build the YouTube player for this slider's video slide (if any)
+    if (hasVideo) {
+      const playerEl = slider.querySelector('.yt-player');
+      if (playerEl) createYouTubePlayer(playerEl);
+    }
+
     if (count <= 1) return;
 
     const track = slider.querySelector('.slider-track');
@@ -377,14 +492,28 @@ function setupProductSliders() {
     let timer = null;
 
     function goTo(i) {
+      const prevIndex = index;
       index = (i + count) % count;
       track.style.transform = `translateX(-${index * 100}%)`;
       dots.forEach((d, di) => d.classList.toggle('active', di === index));
+
+      // Start/stop the video as its slide opens/closes
+      if (hasVideo) {
+        if (index === videoIndex && prevIndex !== videoIndex) {
+          playVideoIn(slider);
+        } else if (index !== videoIndex && prevIndex === videoIndex) {
+          stopVideoIn(slider);
+        }
+      }
     }
 
     function startAutoplay() {
       stopAutoplay();
-      timer = setInterval(() => goTo(index + 1), 1400);
+      timer = setInterval(() => {
+        // Pause autoplay while the video slide is open so it can play fully
+        if (hasVideo && index === videoIndex) return;
+        goTo(index + 1);
+      }, 1400);
     }
 
     function stopAutoplay() {
@@ -395,7 +524,7 @@ function setupProductSliders() {
     slider.addEventListener('mouseenter', startAutoplay);
     slider.addEventListener('mouseleave', () => {
       stopAutoplay();
-      goTo(0);
+      goTo(0); // returning to image 0 also stops the video
     });
 
     // Manual controls
