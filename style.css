@@ -96,12 +96,20 @@ html {
   color: var(--text-primary);
 }
 
+html {
+  /* Prevent any descendant overflow from creating a horizontal scrollbar
+     that pushes top-right controls (e.g. the hamburger) off-screen. */
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
   color: var(--text-secondary);
   line-height: 1.6;
   overflow-x: hidden;
+  max-width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -111,6 +119,9 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9999;
@@ -186,6 +197,8 @@ input {
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  min-width: 0; /* allow the brand text to shrink/ellipsize instead of overflowing */
+  overflow: hidden;
 }
 
 .nav-logo {
@@ -216,6 +229,9 @@ input {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-highlight {
@@ -267,6 +283,7 @@ input {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0; /* never let actions (cart + hamburger) be squeezed off-screen */
 }
 
 #cart-btn {
@@ -318,11 +335,19 @@ input {
 #hamburger {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.5rem;
+  /* Guaranteed 44x44 tap target and box so the bars always have room */
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1100;
 }
 
 #hamburger span {
@@ -332,6 +357,7 @@ input {
   background: var(--text-primary);
   border-radius: var(--radius-full);
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 #hamburger.active span:nth-child(1) {
@@ -640,6 +666,8 @@ section {
   height: 100%;
   overflow: hidden;
   background: #000;
+  /* Hard clip so the scaled-up iframe can never bleed past the slide edges */
+  contain: paint;
 }
 
 /*
@@ -1451,6 +1479,8 @@ body.cart-open #cart-drawer {
 #modal-image {
   max-width: 90vw;
   max-height: 85vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: var(--radius-md);
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
@@ -1507,7 +1537,9 @@ body.cart-open #cart-drawer {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
+  max-width: calc(100vw - 2rem);
+  text-align: center;
+  white-space: normal;
 }
 
 .toast.visible {
@@ -1651,17 +1683,20 @@ body.cart-open #cart-drawer {
     top: var(--nav-height);
     left: 0;
     right: 0;
+    width: 100%;
     flex-direction: column;
     background: rgba(245, 239, 230, 0.98);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
-    padding: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem 1.5rem 1rem;
     gap: 0;
     transform: translateY(-10px);
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease;
+    z-index: 1050;
   }
 
   #nav-links li {
@@ -1676,6 +1711,7 @@ body.cart-open #cart-drawer {
     display: block;
     padding: 1rem 0;
     font-size: 1rem;
+    min-height: 48px; /* comfortable tap target */
   }
 
   .nav-link::after {
@@ -1718,11 +1754,13 @@ body.cart-open #cart-drawer {
   /* Products */
   #products-grid {
     grid-template-columns: 1fr;
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
+    gap: 1.5rem;
   }
 
   .product-card {
     max-width: 100%;
+    width: 100%;
   }
 
   /* On touch devices there's no hover, so always show slider arrows */
@@ -1776,6 +1814,15 @@ body.cart-open #cart-drawer {
 
 /* ── Small phones ── */
 @media (max-width: 480px) {
+  /* Tighter section padding so content never overflows narrow viewports */
+  section {
+    padding: clamp(3rem, 8vh, 5rem) 1rem;
+  }
+
+  .nav-container {
+    padding: 0 1rem;
+  }
+
   .hero-subtitle {
     font-size: 0.7rem;
     letter-spacing: 2px;
