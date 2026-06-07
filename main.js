@@ -538,6 +538,33 @@ function setupProductSliders() {
       });
     });
 
+    // Touch swipe support (mobile) — lets users reach every slide,
+    // including the video, without relying on hover.
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touching = false;
+
+    slider.addEventListener('touchstart', (e) => {
+      if (!e.touches || !e.touches.length) return;
+      touching = true;
+      stopAutoplay();
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', (e) => {
+      if (!touching) return;
+      touching = false;
+      const touch = (e.changedTouches && e.changedTouches[0]) || null;
+      if (!touch) return;
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      // Treat as a horizontal swipe only when it's clearly horizontal
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        goTo(dx < 0 ? index + 1 : index - 1);
+      }
+    }, { passive: true });
+
     goTo(0);
   });
 }
