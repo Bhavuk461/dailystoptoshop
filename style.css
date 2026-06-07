@@ -663,6 +663,8 @@ section {
   height: 100%;
   overflow: hidden;
   background: #000;
+  /* Hard clip so the scaled-up iframe can never bleed past the slide edges */
+  contain: paint;
 }
 
 /*
@@ -1530,7 +1532,9 @@ body.cart-open #cart-drawer {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;
+  max-width: calc(100vw - 2rem);
+  text-align: center;
+  white-space: normal;
 }
 
 .toast.visible {
