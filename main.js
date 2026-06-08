@@ -589,15 +589,13 @@ function setupProductSliders() {
       }
     }, { passive: true });
 
-    // Autoplay the video when the card enters the viewport (no hover needed).
+    // Stop the video if the card scrolls out of view, but never auto-jump
+    // to the video slide on scroll. Reaching the video stays driven by
+    // hover autoplay, manual controls, and touch swipe.
     if (hasVideo && 'IntersectionObserver' in window) {
       const vis = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            // Jump to the video slide and play it.
-            if (index !== videoIndex) goTo(videoIndex);
-            else playVideoIn(slider);
-          } else {
+          if (!entry.isIntersecting) {
             stopVideoIn(slider);
           }
         });
