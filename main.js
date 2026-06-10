@@ -217,11 +217,26 @@ function updateQuantity(productId, delta) {
   renderCart();
 }
 
-function getCartTotal() {
+function getCartSubtotal() {
   return cart.reduce((total, item) => {
     const product = products.find(p => p.id === item.productId);
     return total + (product ? product.price * item.quantity : 0);
   }, 0);
+}
+
+// Shipping policy mirrors the Cloudflare Worker (worker/src/index.js).
+// Keep FREE_SHIPPING_THRESHOLD and SHIPPING_FEE in sync with the Worker.
+const FREE_SHIPPING_THRESHOLD = 999;
+const SHIPPING_FEE = 49;
+
+function getCartShipping() {
+  const subtotal = getCartSubtotal();
+  if (subtotal === 0) return 0;
+  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+}
+
+function getCartTotal() {
+  return getCartSubtotal() + getCartShipping();
 }
 
 function getCartCount() {
@@ -242,7 +257,9 @@ function renderCart() {
   if (!cartItemsEl) return;
 
   const count = getCartCount();
-  const total = getCartTotal();
+  const subtotal = getCartSubtotal();
+  const shipping = getCartShipping();
+  const total = subtotal + shipping;
 
   // Update badge
   cartCountEl.textContent = count;
@@ -253,7 +270,9 @@ function renderCart() {
   }
 
   // Update totals
-  cartSubtotal.textContent = formatPrice(total);
+  cartSubtotal.textContent = formatPrice(subtotal);
+  const cartShipping = document.getElementById('cart-shipping');
+  if (cartShipping) cartShipping.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
   cartTotal.textContent = formatPrice(total);
 
   // Enable/disable checkout
@@ -943,8 +962,14 @@ function initiateCheckout() {
 }
 
 function openCheckoutModal() {
-  const total = getCartTotal();
+  const subtotal = getCartSubtotal();
+  const shipping = getCartShipping();
+  const total = subtotal + shipping;
+  const subtotalEl = document.getElementById('checkout-subtotal');
+  const shippingEl = document.getElementById('checkout-shipping');
   const totalEl = document.getElementById('checkout-total');
+  if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+  if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
   if (totalEl) totalEl.textContent = formatPrice(total);
   document.body.classList.add('checkout-open');
 }
