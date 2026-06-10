@@ -1,0 +1,20 @@
+name = "dailystoptoshop-api"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+[[routes]]
+pattern = "dailystoptoshop.com/api/*"
+zone_name = "dailystoptoshop.com"
+
+[vars]
+ALLOWED_ORIGIN = "https://dailystoptoshop.com"
+ORDER_EMAIL_TO = "Connect@dailystoptoshop.com"
+ORDER_EMAIL_FROM = "orders@dailystoptoshop.com"
+
+# SECRETS - DO NOT put values here. Set with:
+#   wrangler secret put RAZORPAY_KEY_ID
+#   wrangler secret put RAZORPAY_KEY_SECRET
+#   wrangler secret put RAZORPAY_WEBHOOK_SECRET
+#   wrangler secret put RESEND_API_KEY
+#   wrangler secret put SHEETS_WEBAPP_URL
+#   wrangler secret put SHEETS_TOKEN

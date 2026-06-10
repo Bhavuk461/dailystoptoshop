@@ -11,25 +11,17 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="./assets/logo.webp">
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Razorpay Checkout -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  <!-- Stylesheet -->
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- NAVIGATION                                  -->
-  <!-- ═══════════════════════════════════════════ -->
   <nav id="navbar">
     <div class="nav-container">
       <a href="#" class="nav-logo-link">
@@ -38,16 +30,14 @@
         </div>
         <span class="nav-brand">daily<span class="brand-highlight">stop</span>toshop</span>
       </a>
-
       <ul id="nav-links">
         <li><a href="#shop" class="nav-link">Shop</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#faq" class="nav-link">FAQ</a></li>
       </ul>
-
       <div class="nav-actions">
         <button id="cart-btn" aria-label="Shopping cart">
-          <i data-lucide="shopping-bag"></i>
+          <i></i>
           <span id="cart-count">0</span>
         </button>
         <button id="hamburger" aria-label="Toggle menu">
@@ -59,9 +49,6 @@
     </div>
   </nav>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- HERO SECTION                                -->
-  <!-- ═══════════════════════════════════════════ -->
   <section id="hero">
     <div class="hero-content">
       <div class="hero-text">
@@ -70,7 +57,7 @@
         <p class="hero-tagline">Limited editions. Trending picks. <span class="typing-text" id="typing-text"></span></p>
         <a href="#shop" class="btn-primary hero-cta">
           SHOP NOW
-          <i data-lucide="arrow-right"></i>
+          <i></i>
         </a>
       </div>
       <div class="hero-product">
@@ -80,22 +67,14 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- SHOP / PRODUCTS SECTION                     -->
-  <!-- ═══════════════════════════════════════════ -->
   <section id="shop">
     <div class="section-header fade-in">
       <p class="section-subtitle">✦ FRESH DROP</p>
       <h2 class="section-title">The Collection</h2>
     </div>
-    <div id="products-grid">
-      <!-- Products rendered dynamically by main.js -->
-    </div>
+    <div id="products-grid"></div>
   </section>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- ABOUT SECTION                               -->
-  <!-- ═══════════════════════════════════════════ -->
   <section id="about">
     <div class="section-header fade-in">
       <p class="section-subtitle">✦ OUR STORY</p>
@@ -109,26 +88,14 @@
       </div>
       <div class="about-visual fade-in-right">
         <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-number" data-target="100">0</div>
-            <div class="stat-label">Happy Customers</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="100" data-suffix="%">0</div>
-            <div class="stat-label">Quality Score</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="24" data-suffix="/7">0</div>
-            <div class="stat-label">Support</div>
-          </div>
+          <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Happy Customers</div></div>
+          <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Quality Score</div></div>
+          <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Support</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- FAQ SECTION                                 -->
-  <!-- ═══════════════════════════════════════════ -->
   <section id="faq">
     <div class="section-header fade-in">
       <p class="section-subtitle">✦ GOT QUESTIONS?</p>
@@ -137,68 +104,44 @@
     <div class="faq-container fade-in">
       <div class="faq-item">
         <button class="faq-question">What payment methods do you accept?</button>
-        <div class="faq-answer">
-          <p>We accept all major payment methods through Razorpay — UPI (GPay, PhonePe, Paytm), credit/debit cards (Visa, Mastercard, RuPay), net banking, and popular wallets. Basically, however you pay, we got you.</p>
-        </div>
+        <div class="faq-answer"><p>We accept all major payment methods through Razorpay — UPI (GPay, PhonePe, Paytm), credit/debit cards (Visa, Mastercard, RuPay), net banking, and popular wallets. Basically, however you pay, we got you.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-question">How long does shipping take?</button>
-        <div class="faq-answer">
-          <p>We ship across India! Metro cities typically receive orders in 3-5 business days, while other areas may take 5-7 business days. You'll get a tracking link as soon as your order ships.</p>
-        </div>
+        <div class="faq-answer"><p>We ship across India! Metro cities typically receive orders in 3-5 business days, while other areas may take 5-7 business days. You'll get a tracking link as soon as your order ships.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-question">Are all products authentic?</button>
-        <div class="faq-answer">
-          <p>100%. Every product we sell is genuine and sourced directly from authorized channels. We don't do fakes — that's not our vibe. Each order comes with authenticity guaranteed.</p>
-        </div>
+        <div class="faq-answer"><p>100%. Every product we sell is genuine and sourced directly from authorized channels. We don't do fakes — that's not our vibe. Each order comes with authenticity guaranteed.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-question">What's your return policy?</button>
-        <div class="faq-answer">
-          <p>We offer a 7-day easy return policy. If you're not completely satisfied with your purchase, reach out to us and we'll sort it out. No cap, no hassle.</p>
-        </div>
+        <div class="faq-answer"><p>We offer a 7-day easy return policy. If you're not completely satisfied with your purchase, reach out to us and we'll sort it out. No cap, no hassle.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-question">Do you offer free shipping?</button>
-        <div class="faq-answer">
-          <p>Yes! Orders above ₹999 qualify for free shipping across India. For orders below that, a small shipping fee applies at checkout.</p>
-        </div>
+        <div class="faq-answer"><p>Yes! Orders above ₹999 qualify for free shipping across India. For orders below that, a small shipping fee applies at checkout.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- FOOTER                                      -->
-  <!-- ═══════════════════════════════════════════ -->
   <footer>
     <div class="footer-grid">
       <div class="footer-col footer-brand-col">
         <div class="footer-logo">
-          <div class="nav-logo">
-            <img src="./assets/logo.webp" alt="dailystoptoshop">
-          </div>
+          <div class="nav-logo"><img src="./assets/logo.webp" alt="dailystoptoshop"></div>
           <span class="nav-brand">daily<span class="brand-highlight">stop</span>toshop</span>
         </div>
         <p>Your daily destination for curated, trending products. We bring you the internet's finest, so you don't have to hunt.</p>
-        <div class="social-links">
-          <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
-          <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
-          <a href="#" aria-label="YouTube"><i data-lucide="youtube"></i></a>
-        </div>
+        <div class="social-links"><a href="#"><i></i></a><a href="#"><i></i></a><a href="#"><i></i></a></div>
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <a href="#shop">Shop</a>
-        <a href="#about">About Us</a>
-        <a href="#faq">FAQ</a>
+        <a href="#shop">Shop</a><a href="#about">About Us</a><a href="#faq">FAQ</a>
       </div>
       <div class="footer-col">
         <h4>Support</h4>
-        <a href="mailto:support@dailystoptoshop.com">Contact Us</a>
-        <a href="#">Shipping Policy</a>
-        <a href="#">Return Policy</a>
-        <a href="#">Privacy Policy</a>
+        <a href="mailto:support@dailystoptoshop.com">Contact Us</a><a href="#">Shipping Policy</a><a href="#">Return Policy</a><a href="#">Privacy Policy</a>
       </div>
       <div class="footer-col">
         <h4>Stay in the Loop</h4>
@@ -211,22 +154,15 @@
     </div>
     <div class="footer-bottom">
       <p>© 2026 dailystoptoshop. All rights reserved.</p>
-      <div class="payment-icons">
-        <span title="Visa">💳</span>
-        <span title="UPI">📱</span>
-        <span title="Net Banking">🏦</span>
-      </div>
+      <div class="payment-icons"><span>💳</span><span>📱</span><span>🏦</span></div>
     </div>
   </footer>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- CART DRAWER (Off-canvas)                    -->
-  <!-- ═══════════════════════════════════════════ -->
   <div id="cart-overlay"></div>
   <div id="cart-drawer">
     <div class="cart-header">
       <h2>Your Bag</h2>
-      <button id="close-cart" aria-label="Close cart"><i data-lucide="x"></i></button>
+      <button id="close-cart" aria-label="Close cart"><i></i></button>
     </div>
     <div id="cart-items">
       <div class="cart-empty">
@@ -236,33 +172,40 @@
       </div>
     </div>
     <div class="cart-footer">
-      <div class="subtotal-row">
-        <span>Subtotal</span>
-        <span id="cart-subtotal">₹0</span>
-      </div>
+      <div class="subtotal-row"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
       <p class="shipping-note">Free shipping on orders above ₹999 🚀</p>
-      <div class="total-row">
-        <span>Total</span>
-        <span id="cart-total">₹0</span>
-      </div>
+      <div class="total-row"><span>Total</span><span id="cart-total">₹0</span></div>
       <button id="checkout-btn" disabled>CHECKOUT</button>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- PRODUCT IMAGE MODAL                         -->
-  <!-- ═══════════════════════════════════════════ -->
+  <!-- Checkout / delivery details modal -->
+  <div id="checkout-overlay"></div>
+  <div id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <div class="checkout-modal-inner">
+      <div class="checkout-modal-header">
+        <h2 id="checkout-title">Delivery details</h2>
+        <button id="close-checkout" aria-label="Close checkout">&times;</button>
+      </div>
+      <form id="checkout-form">
+        <label>Full name<input type="text" name="name" autocomplete="name" required></label>
+        <label>Phone number<input type="tel" name="phone" autocomplete="tel" pattern="[0-9+ ]{7,15}" required></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required></label>
+        <label>Delivery address<textarea name="address" rows="3" autocomplete="street-address" required></textarea></label>
+        <label>Pincode<input type="text" name="pincode" inputmode="numeric" pattern="[0-9]{4,10}" autocomplete="postal-code" required></label>
+        <div class="checkout-summary"><span>Total to pay</span><span id="checkout-total">₹0</span></div>
+        <button type="submit" id="pay-now-btn">PAY NOW</button>
+      </form>
+    </div>
+  </div>
+
   <div id="modal-overlay">
-    <button id="close-modal" aria-label="Close image viewer"><i data-lucide="x"></i></button>
+    <button id="close-modal" aria-label="Close image viewer"><i></i></button>
     <img id="modal-image" src="" alt="Product zoom view">
   </div>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- TOAST NOTIFICATION                          -->
-  <!-- ═══════════════════════════════════════════ -->
-  <div id="toast" class="toast" aria-live="polite"></div>
+  <div id="toast" class="toast"></div>
 
-  <!-- Main JavaScript -->
   <script src="./main.js"></script>
 </body>
 </html>
