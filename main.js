@@ -930,42 +930,123 @@ function setupProductModal() {
 
 
 // ───────────────────────────────────────────
-// 12. RAZORPAY CHECKOUT
+// 12. RAZORPAY CHECKOUT (server-driven)
 // ───────────────────────────────────────────
+// Base URL for the Cloudflare Worker API. Same-origin by default
+// (https://dailystoptoshop.com/api/*).
+const API_BASE = '/api';
+
+// Step 1: CHECKOUT button opens the delivery-details modal.
 function initiateCheckout() {
+  if (getCartCount() === 0) return;
+  openCheckoutModal();
+}
+
+function openCheckoutModal() {
   const total = getCartTotal();
-  const count = getCartCount();
+  const totalEl = document.getElementById('checkout-total');
+  if (totalEl) totalEl.textContent = formatPrice(total);
+  document.body.classList.add('checkout-open');
+}
 
-  if (count === 0) return;
+function closeCheckoutModal() {
+  document.body.classList.remove('checkout-open');
+}
 
-  // Check if Razorpay is loaded
+function setupCheckoutForm() {
+  const form = document.getElementById('checkout-form');
+  const closeBtn = document.getElementById('close-checkout');
+  const overlay = document.getElementById('checkout-overlay');
+
+  if (closeBtn) closeBtn.addEventListener('click', closeCheckoutModal);
+  if (overlay) overlay.addEventListener('click', closeCheckoutModal);
+  if (form) form.addEventListener('submit', handleCheckoutSubmit);
+}
+
+// Step 2: collect delivery details, create order server-side, pay, verify.
+async function handleCheckoutSubmit(e) {
+  e.preventDefault();
+  if (getCartCount() === 0) return;
+
   if (typeof Razorpay === 'undefined') {
     showToast('Payment gateway loading... Please try again.');
     return;
   }
 
+  const form = e.target;
+  const fd = new FormData(form);
+  const delivery = {
+    name: (fd.get('name') || '').trim(),
+    phone: (fd.get('phone') || '').trim(),
+    email: (fd.get('email') || '').trim(),
+    address: (fd.get('address') || '').trim(),
+    pincode: (fd.get('pincode') || '').trim()
+  };
+
+  const items = cart.map(item => ({ productId: item.productId, quantity: item.quantity }));
+  const payBtn = document.getElementById('pay-now-btn');
+  if (payBtn) { payBtn.disabled = true; payBtn.textContent = 'PROCESSING...'; }
+
+  let order;
+  try {
+    const res = await fetch(`${API_BASE}/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, delivery })
+    });
+    order = await res.json();
+    if (!res.ok) throw new Error(order && order.error ? order.error : 'Order failed');
+  } catch (err) {
+    console.error('Create order failed:', err);
+    showToast('Could not start payment. Please try again.');
+    if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'PAY NOW'; }
+    return;
+  }
+
   const options = {
-    key: 'RAZORPAY_KEY_PLACEHOLDER', // Replace with your Razorpay Key ID
-    amount: total * 100, // Amount in paise
-    currency: 'INR',
+    key: order.keyId,
+    order_id: order.orderId,
+    amount: order.amount,
+    currency: order.currency,
     name: 'dailystoptoshop',
-    description: `Order — ${count} item(s)`,
+    description: `Order — ${getCartCount()} item(s)`,
     image: './assets/logo.webp',
-    handler: function (response) {
-      // Payment successful
-      showToast('Payment successful! 🎉 Order confirmed!');
-      cart = [];
-      saveCart();
-      renderCart();
-      closeCart();
-    },
-    prefill: {},
-    theme: {
-      color: '#f59e0b'
+    prefill: { name: delivery.name, email: delivery.email, contact: delivery.phone },
+    theme: { color: '#f59e0b' },
+    handler: async function (response) {
+      // Step 3: verify the signature server-side before confirming.
+      try {
+        const vres = await fetch(`${API_BASE}/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature
+          })
+        });
+        const vdata = await vres.json();
+        if (vres.ok && vdata.verified) {
+          showToast('Payment successful! 🎉 Order confirmed!');
+          cart = [];
+          saveCart();
+          renderCart();
+          closeCheckoutModal();
+          closeCart();
+        } else {
+          showToast('Payment could not be verified. Contact support.');
+        }
+      } catch (err) {
+        console.error('Verify failed:', err);
+        showToast('Payment verification error. Contact support.');
+      } finally {
+        if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'PAY NOW'; }
+      }
     },
     modal: {
       ondismiss: function () {
         showToast('Payment cancelled. Your bag is still waiting! 🛒');
+        if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'PAY NOW'; }
       }
     }
   };
@@ -975,11 +1056,13 @@ function initiateCheckout() {
     rzp.on('payment.failed', function (response) {
       showToast('Payment failed. Please try again.');
       console.error('Payment failed:', response.error);
+      if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'PAY NOW'; }
     });
     rzp.open();
-  } catch (e) {
-    console.error('Razorpay error:', e);
-    showToast('Payment gateway not configured yet. Contact us!');
+  } catch (err) {
+    console.error('Razorpay error:', err);
+    showToast('Payment gateway error. Please try again.');
+    if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'PAY NOW'; }
   }
 }
 
@@ -1043,6 +1126,7 @@ function setupKeyboard() {
     if (e.key === 'Escape') {
       closeCart();
       closeProductModal();
+      closeCheckoutModal();
 
       // Close mobile menu
       const hamburger = document.getElementById('hamburger');
@@ -1080,6 +1164,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupProductModal();
   setupNewsletter();
   setupKeyboard();
+  setupCheckoutForm();
 
   // Checkout button
   const checkoutBtn = document.getElementById('checkout-btn');
