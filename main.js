@@ -185,8 +185,10 @@ function addToCart(productId) {
   showToast(`${product.shortName} added to bag! ✦`);
   animateCartBadge();
 
-  // Briefly change button text
-  const btn = document.querySelector(`[data-product-id="${productId}"]`);
+  // Briefly change button text. Scope to the button: the .product-slider
+  // wrapper also carries data-product-id, and an unscoped selector would
+  // match it first and overwrite the product images.
+  const btn = document.querySelector(`.add-to-cart-btn[data-product-id="${productId}"]`);
   if (btn) {
     btn.textContent = '✓ ADDED!';
     btn.classList.add('added');
