@@ -18,7 +18,7 @@ const products = [
       './products/stanley/1.webp',
       './products/stanley/2.webp',
       './products/stanley/3.webp',
-      './products/cup.webp'
+      './products/stanley/4.webp'
     ],
     video: '5KdNI6QArig',
     badge: '🔥 Limited Edition',
