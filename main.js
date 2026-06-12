@@ -1243,7 +1243,190 @@ function setupKeyboard() {
 
 
 // ───────────────────────────────────────────
-// 16. INITIALIZATION
+// 16. ANIMATED REVIEWS MARQUEE
+// ───────────────────────────────────────────
+const reviews = [
+  { name: 'Aanya S.', avatar: '🌸', stars: 5, product: 'Cute Rabbit Bottle', text: 'The rabbit bottle is literally the cutest thing in my bag! Chai still piping hot after classes 🥹' },
+  { name: 'Mehak R.', avatar: '🖤', stars: 5, product: 'Black Cat Bottle', text: 'Black cat bottle >>> everything. Zero leaks in my backpack and ice stays icy ALL day.' },
+  { name: 'Ishaan V.', avatar: '⚡', stars: 4, product: 'Happy Puppy Bottle', text: 'Got the puppy one for my sister, now I want one too. Build quality is genuinely solid.' },
+  { name: 'Tanvi K.', avatar: '🍰', stars: 5, product: 'Sleeping Bear Bottle', text: 'The sleeping bear is my desk buddy now. Coffee hot from 9 to 9, no cap ☕' },
+  { name: 'Riya P.', avatar: '✨', stars: 5, product: 'Flowttls Quencher', text: 'Quencher came packed SO well. The bow straw topper? Iconic. Instant fave.' },
+  { name: 'Arjun M.', avatar: '🏀', stars: 5, product: 'Black Cat Bottle', text: 'Take it to practice daily — survives my gym bag and the water is still freezing. W purchase.' },
+  { name: 'Sara D.', avatar: '🎀', stars: 5, product: 'Cute Rabbit Bottle', text: 'Shipping was quick and the handle strap is so handy. Bought two more as gifts 🎁' },
+  { name: 'Nikita J.', avatar: '🌙', stars: 4, product: 'Sleeping Bear Bottle', text: 'Adorable AND practical. Wish I ordered sooner — my old bottle could never.' }
+];
+
+function reviewCardHtml(r) {
+  const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+  return `
+    <div class="review-card">
+      <div class="review-stars" aria-label="${r.stars} out of 5 stars">${stars}</div>
+      <p class="review-text">${r.text}</p>
+      <div class="review-author">
+        <span class="review-avatar">${r.avatar}</span>
+        <div class="review-meta"><strong>${r.name}</strong><span>${r.product} · Verified buyer ✓</span></div>
+      </div>
+    </div>`;
+}
+
+function renderReviews() {
+  const m1 = document.getElementById('reviews-marquee-1');
+  const m2 = document.getElementById('reviews-marquee-2');
+  if (!m1 || !m2) return;
+  const rowA = reviews.slice(0, 4).map(reviewCardHtml).join('');
+  const rowB = reviews.slice(4).map(reviewCardHtml).join('');
+  // Each row's content is duplicated so the -50% translate loops seamlessly.
+  m1.innerHTML = `<div class="marquee-track">${rowA}${rowA}</div>`;
+  m2.innerHTML = `<div class="marquee-track reverse">${rowB}${rowB}</div>`;
+}
+
+
+// ───────────────────────────────────────────
+// 17. PARALLAX + SCROLL PROGRESS (transform-only, rAF-throttled)
+// ───────────────────────────────────────────
+function setupParallax() {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const layers = prefersReduced ? [] : Array.from(document.querySelectorAll('[data-parallax]'));
+  const progressBar = document.getElementById('scroll-progress');
+  if (!layers.length && !progressBar) return;
+
+  let ticking = false;
+  function update() {
+    const y = window.scrollY;
+    layers.forEach(el => {
+      const speed = parseFloat(el.getAttribute('data-parallax')) || 0;
+      el.style.transform = `translate3d(0, ${(y * speed).toFixed(1)}px, 0)`;
+    });
+    if (progressBar) {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
+    }
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  }, { passive: true });
+  update();
+}
+
+
+// ───────────────────────────────────────────
+// 18. KINETIC / VARIABLE TYPOGRAPHY
+// ───────────────────────────────────────────
+function setupKineticText() {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-kinetic]').forEach(el => {
+    const text = el.textContent;
+    el.textContent = '';
+    el.setAttribute('aria-label', text);
+    Array.from(text).forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'k-char';
+      span.style.setProperty('--i', i);
+      span.setAttribute('aria-hidden', 'true');
+      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      el.appendChild(span);
+    });
+    if (!prefersReduced) el.classList.add('k-animate');
+  });
+}
+
+
+// ───────────────────────────────────────────
+// 19. PRODUCT DETAIL PAGE (product.html?id=...)
+// ───────────────────────────────────────────
+function renderProductPage() {
+  const root = document.getElementById('product-page');
+  if (!root) return;
+
+  const id = new URLSearchParams(window.location.search).get('id');
+  const product = products.find(p => p.id === id);
+
+  if (!product) {
+    root.innerHTML = `
+      <div class="pp-loading">
+        <p>Oops, we couldn't find that product 🥺</p>
+        <p style="margin-top:16px;"><a class="details-link" href="./index.html#shop">Back to the collection <span aria-hidden="true">→</span></a></p>
+      </div>`;
+    return;
+  }
+
+  document.title = `${product.name} — dailystoptoshop`;
+
+  const imgs = getProductImages(product);
+  const discount = product.originalPrice
+    ? Math.round((1 - product.price / product.originalPrice) * 100)
+    : 0;
+
+  const specsHtml = product.specs ? `
+    <div class="pp-specs fade-in">
+      <h2>Specifications 📋</h2>
+      <table>${Object.entries(product.specs).map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</table>
+    </div>` : '';
+
+  const aboutHtml = product.about ? `
+    <div class="pp-about fade-in">
+      <h2>About this item 💕</h2>
+      <ul>${product.about.map(a => `<li>${a}</li>`).join('')}</ul>
+    </div>` : '';
+
+  const related = products.filter(p => p.id !== product.id).slice(0, 4);
+
+  root.innerHTML = `
+    <nav class="pp-breadcrumb" aria-label="Breadcrumb">
+      <a href="./index.html">Home</a><span>›</span><a href="./index.html#shop">Shop</a><span>›</span><span>${product.shortName}</span>
+    </nav>
+    <div class="pp-layout">
+      <div class="pp-gallery">
+        <div class="pp-main">
+          ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+          <img id="pp-main-img" src="${imgs[0] || ''}" alt="${product.name}">
+        </div>
+        <div class="pp-thumbs">
+          ${imgs.map((src, i) => `<button class="pp-thumb${i === 0 ? ' active' : ''}" data-src="${src}" aria-label="View image ${i + 1}"><img src="${src}" alt="" loading="lazy"></button>`).join('')}
+        </div>
+      </div>
+      <div class="pp-info">
+        <h1 class="pp-title">${product.name}</h1>
+        <p class="pp-desc">${product.description}</p>
+        <div class="pp-pricing">
+          <span class="price">${formatPrice(product.price)}</span>
+          ${product.originalPrice ? `<span class="original-price">${formatPrice(product.originalPrice)}</span>` : ''}
+          ${discount > 0 ? `<span class="save-chip">SAVE ${discount}% 🎉</span>` : ''}
+        </div>
+        <button class="add-to-cart-btn pp-add" data-product-id="${product.id}" onclick="addToCart('${product.id}')" ${!product.inStock ? 'disabled' : ''}>${product.inStock ? 'ADD TO BAG' : 'SOLD OUT'}</button>
+        ${product.inStock ? '<p class="urgency-text">⚡ Only a few left — don\'t sleep on it</p>' : ''}
+        ${specsHtml}
+        ${aboutHtml}
+      </div>
+    </div>
+    <div class="pp-related">
+      <h2>You may also like ✨</h2>
+      <div class="pp-related-grid">
+        ${related.map(p => `<a class="pp-rel-card" href="./product.html?id=${p.id}"><img src="${getProductCover(p)}" alt="${p.name}" loading="lazy"><span>${p.shortName}</span><strong>${formatPrice(p.price)}</strong></a>`).join('')}
+      </div>
+    </div>`;
+
+  // Image zoom + thumbnail switching with a soft pop transition
+  const mainImg = document.getElementById('pp-main-img');
+  if (mainImg) mainImg.addEventListener('click', () => openProductModal(mainImg.src));
+  root.querySelectorAll('.pp-thumb').forEach(btn => {
+    btn.addEventListener('click', () => {
+      root.querySelectorAll('.pp-thumb').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (mainImg) {
+        mainImg.classList.remove('pp-img-pop');
+        void mainImg.offsetWidth;
+        mainImg.src = btn.getAttribute('data-src');
+        mainImg.classList.add('pp-img-pop');
+      }
+    });
+  });
+}
+
+
+// ───────────────────────────────────────────
+// 20. INITIALIZATION
 // ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize Lucide icons
@@ -1251,8 +1434,10 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
-  // Render products
+  // Render dynamic content
   renderProducts();
+  renderProductPage();
+  renderReviews();
 
   // Load and render cart
   loadCart();
@@ -1269,6 +1454,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupNewsletter();
   setupKeyboard();
   setupCheckoutForm();
+  setupParallax();
+  setupKineticText();
 
   // Checkout button
   const checkoutBtn = document.getElementById('checkout-btn');
@@ -1281,5 +1468,5 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
-  console.log('%c✦ dailystoptoshop loaded ✦', 'color: #f59e0b; font-size: 16px; font-weight: bold;');
+  console.log('%c✦ dailystoptoshop loaded ✦', 'color: #FF5D8F; font-size: 16px; font-weight: bold;');
 });
