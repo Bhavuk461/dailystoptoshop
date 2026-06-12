@@ -30,6 +30,19 @@ const products = [
       'Pink bow straw topper included',
       'Dishwasher safe'
     ],
+    specs: {
+      'Brand': 'Stanley x Flowttls',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'Quencher Tumbler',
+      'Colour': 'Flowttls Limited Edition',
+      'Capacity': '40oz / 1.18L'
+    },
+    about: [
+      '🔥❄️ DOUBLE-WALL VACUUM INSULATION — keeps drinks cold for 11 hours and iced for 2 whole days 🧊',
+      '💧 BIG 40oz / 1.18L CAPACITY — all-day hydration without constant refills 🚰',
+      '🎀 EXCLUSIVE FLOWTTLS DESIGN — limited-edition character art with an adorable pink bow straw topper 💖',
+      '🧼 DISHWASHER SAFE — easy cleanup so it\'s ready for tomorrow\'s adventure 🌟'
+    ],
     inStock: true
   },
   {
