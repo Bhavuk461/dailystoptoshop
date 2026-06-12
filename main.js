@@ -770,11 +770,18 @@ function setupNavigation() {
     });
   }
 
-  // Smooth scroll + close mobile menu on link click
+  // Smooth scroll + close mobile menu on link click.
+  // Links that point to another page (e.g. ./index.html#shop on the
+  // product detail page) are allowed to navigate normally.
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
       const targetId = link.getAttribute('href');
+      if (!targetId || !targetId.startsWith('#')) {
+        if (hamburger) hamburger.classList.remove('active');
+        navbar.classList.remove('nav-open');
+        return;
+      }
+      e.preventDefault();
       const targetEl = document.querySelector(targetId);
 
       if (targetEl) {
