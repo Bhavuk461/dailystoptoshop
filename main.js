@@ -444,7 +444,7 @@ function renderProducts() {
         ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
       </div>
       <div class="product-info">
-        <h3>${product.name}</h3>
+        <h3><a class="product-title-link" href="./product.html?id=${product.id}">${product.name}</a></h3>
         <p>${product.description}</p>
         <ul class="product-features">
           ${product.features.map(f => `<li class="feature-item">${f}</li>`).join('')}
