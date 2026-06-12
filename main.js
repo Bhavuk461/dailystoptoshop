@@ -47,7 +47,7 @@ const products = [
   },
   {
     id: 'black-cat',
-    name: 'Black Cat Plushie',
+    name: 'Black Cat Water Bottle',
     shortName: 'Black Cat',
     price: 725,
     originalPrice: 899,
@@ -60,18 +60,32 @@ const products = [
       './products/black-cat/5.webp'
     ],
     badge: '🐱 New Drop',
-    description: 'Soft, huggable & irresistibly cute companion.',
+    description: 'Sleek black-cat 750ml insulated steel bottle 🖤',
     features: [
-      'Premium ultra-soft plush',
-      'Perfect cuddle size',
-      'Detailed stitching',
-      'Great gift for any age'
+      '🔥 Hot 12 hrs · ❄️ Cold 24 hrs',
+      '✨ Food-grade 304 stainless steel',
+      '🔒 100% leakproof screw cap',
+      '🎀 Handy carry handle strap'
+    ],
+    specs: {
+      'Brand': 'dailystoptoshop',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'Water Bottle',
+      'Colour': 'Black Cat',
+      'Capacity': '750 Millilitres'
+    },
+    about: [
+      '🔥❄️ SUPERIOR INSULATION — Keeps beverages hot for 12 hours and cold for 24 hours, perfect for coffee, tea, or icy drinks throughout the day ☕🧊',
+      '💧 LARGE 750ml CAPACITY — Holds approximately 750ml of your favourite beverage, so you stay hydrated all day at the gym, office, school, or while travelling 🎒',
+      '✨ FOOD GRADE 304 STAINLESS STEEL — Constructed with BPA-free, non-toxic stainless steel that is safe for daily use and built to last 💪',
+      '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
+      '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
     inStock: true
   },
   {
     id: 'happy-puppy',
-    name: 'Happy Puppy Plushie',
+    name: 'Happy Puppy (Cake Dog) Water Bottle',
     shortName: 'Happy Puppy',
     price: 725,
     originalPrice: 899,
@@ -84,18 +98,32 @@ const products = [
       './products/happy-puppy/5.webp'
     ],
     badge: '🐶 New Drop',
-    description: 'A cheerful pup that brings instant smiles.',
+    description: 'Cheerful cake-pup 750ml insulated steel bottle 🍰',
     features: [
-      'Premium ultra-soft plush',
-      'Perfect cuddle size',
-      'Detailed stitching',
-      'Great gift for any age'
+      '🔥 Hot 12 hrs · ❄️ Cold 24 hrs',
+      '✨ Food-grade 304 stainless steel',
+      '🔒 100% leakproof screw cap',
+      '🎀 Handy carry handle strap'
+    ],
+    specs: {
+      'Brand': 'dailystoptoshop',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'Water Bottle',
+      'Colour': 'Happy Puppy (Cake Dog)',
+      'Capacity': '750 Millilitres'
+    },
+    about: [
+      '🔥❄️ SUPERIOR INSULATION — Keeps beverages hot for 12 hours and cold for 24 hours, perfect for coffee, tea, or icy drinks throughout the day ☕🧊',
+      '💧 LARGE 750ml CAPACITY — Holds approximately 750ml of your favourite beverage, so you stay hydrated all day at the gym, office, school, or while travelling 🎒',
+      '✨ FOOD GRADE 304 STAINLESS STEEL — Constructed with BPA-free, non-toxic stainless steel that is safe for daily use and built to last 💪',
+      '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
+      '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
     inStock: true
   },
   {
     id: 'cute-rabbit',
-    name: 'Cute Rabbit Plushie',
+    name: 'Cute Rabbit Water Bottle',
     shortName: 'Cute Rabbit',
     price: 725,
     originalPrice: 899,
@@ -108,18 +136,32 @@ const products = [
       './products/cute-rabbit/5.webp'
     ],
     badge: '🐰 New Drop',
-    description: 'An adorable bunny with floppy charm.',
+    description: 'Adorable red rabbit 750ml insulated steel bottle ❤️',
     features: [
-      'Premium ultra-soft plush',
-      'Perfect cuddle size',
-      'Detailed stitching',
-      'Great gift for any age'
+      '🔥 Hot 12 hrs · ❄️ Cold 24 hrs',
+      '✨ Food-grade 304 stainless steel',
+      '🔒 100% leakproof screw cap',
+      '🎀 Handy carry handle strap'
+    ],
+    specs: {
+      'Brand': 'dailystoptoshop',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'Water Bottle',
+      'Colour': 'Cute Rabbit (Red)',
+      'Capacity': '750 Millilitres'
+    },
+    about: [
+      '🔥❄️ SUPERIOR INSULATION — Keeps beverages hot for 12 hours and cold for 24 hours, perfect for coffee, tea, or icy drinks throughout the day ☕🧊',
+      '💧 LARGE 750ml CAPACITY — Holds approximately 750ml of your favourite beverage, so you stay hydrated all day at the gym, office, school, or while travelling 🎒',
+      '✨ FOOD GRADE 304 STAINLESS STEEL — Constructed with BPA-free, non-toxic stainless steel that is safe for daily use and built to last 💪',
+      '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
+      '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
     inStock: true
   },
   {
     id: 'sleeping-bear',
-    name: 'Sleeping Bear Plushie',
+    name: 'Sleeping Bear (Cake Bear) Water Bottle',
     shortName: 'Sleeping Bear',
     price: 725,
     originalPrice: 899,
@@ -132,12 +174,26 @@ const products = [
       './products/sleeping-bear/5.webp'
     ],
     badge: '🐻 New Drop',
-    description: 'A dreamy, sleepy bear ready for snuggles.',
+    description: 'Dreamy cake-bear 750ml insulated steel bottle 🍰',
     features: [
-      'Premium ultra-soft plush',
-      'Perfect cuddle size',
-      'Detailed stitching',
-      'Great gift for any age'
+      '🔥 Hot 12 hrs · ❄️ Cold 24 hrs',
+      '✨ Food-grade 304 stainless steel',
+      '🔒 100% leakproof screw cap',
+      '🎀 Handy carry handle strap'
+    ],
+    specs: {
+      'Brand': 'dailystoptoshop',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'Water Bottle',
+      'Colour': 'Sleeping Bear (Cake Bear)',
+      'Capacity': '750 Millilitres'
+    },
+    about: [
+      '🔥❄️ SUPERIOR INSULATION — Keeps beverages hot for 12 hours and cold for 24 hours, perfect for coffee, tea, or icy drinks throughout the day ☕🧊',
+      '💧 LARGE 750ml CAPACITY — Holds approximately 750ml of your favourite beverage, so you stay hydrated all day at the gym, office, school, or while travelling 🎒',
+      '✨ FOOD GRADE 304 STAINLESS STEEL — Constructed with BPA-free, non-toxic stainless steel that is safe for daily use and built to last 💪',
+      '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
+      '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
     inStock: true
   }
