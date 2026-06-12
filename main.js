@@ -1460,7 +1460,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupKeyboard();
   setupCheckoutForm();
   setupParallax();
-  setupKineticText();
 
   // Checkout button
   const checkoutBtn = document.getElementById('checkout-btn');
