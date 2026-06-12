@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dailystoptoshop — Curated Drops for Gen-Z</title>
-  <meta name="description" content="Your daily destination for curated, trending products. Limited edition drops, hand-picked essentials, and everything that hits different. Shop now at dailystoptoshop.">
-  <meta name="theme-color" content="#f5efe6">
-  <meta property="og:title" content="dailystoptoshop — Curated Drops for Gen-Z">
+  <title>dailystoptoshop — Cute Bottles & Curated Drops</title>
+  <meta name="description" content="Your daily destination for curated, trending products. Adorable insulated bottles, limited edition drops, and everything that hits different. Shop now at dailystoptoshop.">
+  <meta name="theme-color" content="#FFF6EE">
+  <meta property="og:title" content="dailystoptoshop — Cute Bottles & Curated Drops">
   <meta property="og:description" content="Limited edition drops, trending picks, and curated vibes. Your daily stop to shop.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="./assets/logo.webp">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -21,6 +21,8 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+
+  <div id="scroll-progress" aria-hidden="true"></div>
 
   <nav id="navbar">
     <div class="nav-container">
@@ -32,6 +34,7 @@
       </a>
       <ul id="nav-links">
         <li><a href="#shop" class="nav-link">Shop</a></li>
+        <li><a href="#reviews" class="nav-link">Reviews</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#faq" class="nav-link">FAQ</a></li>
       </ul>
@@ -50,17 +53,31 @@
   </nav>
 
   <section id="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <span class="orb orb-1" data-parallax="0.22"></span>
+      <span class="orb orb-2" data-parallax="-0.16"></span>
+      <span class="orb orb-3" data-parallax="0.10"></span>
+      <span class="float-emoji fe-1" data-parallax="0.30"><span class="float-inner">🐰</span></span>
+      <span class="float-emoji fe-2" data-parallax="-0.22"><span class="float-inner">🐱</span></span>
+      <span class="float-emoji fe-3" data-parallax="0.16"><span class="float-inner">🐻</span></span>
+      <span class="float-emoji fe-4" data-parallax="-0.28"><span class="float-inner">🐶</span></span>
+    </div>
     <div class="hero-content">
       <div class="hero-text">
         <p class="hero-subtitle">✦ CURATED DROPS FOR GEN-Z</p>
-        <h1 class="gradient-text">Your Daily<br>Stop To Shop</h1>
+        <h1 class="hero-title"><span class="gradient-text" data-kinetic>Your Daily</span><br><span class="gradient-text" data-kinetic>Stop To Shop</span></h1>
         <p class="hero-tagline">Limited editions. Trending picks. <span class="typing-text" id="typing-text"></span></p>
         <a href="#shop" class="btn-primary hero-cta">
           SHOP NOW
           <i data-lucide="arrow-right"></i>
         </a>
+        <div class="hero-perks">
+          <span class="perk-chip">🚚 Free shipping ₹999+</span>
+          <span class="perk-chip">🔒 Secure Razorpay checkout</span>
+          <span class="perk-chip">💝 7-day easy returns</span>
+        </div>
       </div>
-      <div class="hero-product">
+      <div class="hero-product" data-parallax="-0.08">
         <div class="product-glow"></div>
         <img src="./products/stanley/1.webp" alt="Stanley Quencher Tumbler - Limited Edition Flowttls" id="hero-product-img">
       </div>
@@ -73,6 +90,15 @@
       <h2 class="section-title">The Collection</h2>
     </div>
     <div id="products-grid"></div>
+  </section>
+
+  <section id="reviews">
+    <div class="section-header fade-in">
+      <p class="section-subtitle">✦ THE HYPE IS REAL</p>
+      <h2 class="section-title">Squad Reviews</h2>
+    </div>
+    <div class="marquee" id="reviews-marquee-1" aria-label="Customer reviews"></div>
+    <div class="marquee marquee-b" id="reviews-marquee-2" aria-label="More customer reviews"></div>
   </section>
 
   <section id="about">
@@ -88,9 +114,9 @@
       </div>
       <div class="about-visual fade-in-right">
         <div class="stats-grid">
-          <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Happy Customers</div></div>
-          <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Quality Score</div></div>
-          <div class="stat-item"><div class="stat-number">0</div><div class="stat-label">Support</div></div>
+          <div class="stat-item"><div class="stat-number" data-target="500" data-suffix="+">0</div><div class="stat-label">Happy Customers</div></div>
+          <div class="stat-item"><div class="stat-number" data-target="98" data-suffix="%">0</div><div class="stat-label">Quality Score</div></div>
+          <div class="stat-item"><div class="stat-number" data-target="24" data-suffix="/7">0</div><div class="stat-label">Support</div></div>
         </div>
       </div>
     </div>
@@ -137,7 +163,7 @@
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <a href="#shop">Shop</a><a href="#about">About Us</a><a href="#faq">FAQ</a>
+        <a href="#shop">Shop</a><a href="#reviews">Reviews</a><a href="#about">About Us</a><a href="#faq">FAQ</a>
       </div>
       <div class="footer-col">
         <h4>Support</h4>
