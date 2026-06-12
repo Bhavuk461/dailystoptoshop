@@ -462,6 +462,7 @@ function renderProducts() {
           ${product.inStock ? 'ADD TO BAG' : 'SOLD OUT'}
         </button>
         ${product.inStock ? '<p class="urgency-text">⚡ Only a few left — don\'t sleep on it</p>' : ''}
+        <a class="details-link" href="./product.html?id=${product.id}">View full details <span aria-hidden="true">→</span></a>
       </div>
     </div>
   `;
