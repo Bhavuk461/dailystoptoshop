@@ -1345,12 +1345,21 @@ function setupParallax() {
     scheduleRender();
   }, { passive: true });
 
-  // Reset only when cursor leaves the browser window entirely
-  document.addEventListener('mouseleave', () => {
-    targetX = 0;
-    targetY = 0;
-    scheduleRender();
-  }, { passive: true });
+  // When hero scrolls out of view, silently reset drift to zero.
+  // The lerp eases emojis back while they're offscreen — no visible jitter.
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) {
+          targetX = 0;
+          targetY = 0;
+          scheduleRender();
+        }
+      });
+    }, { threshold: 0 });
+    observer.observe(hero);
+  }
 
   render();
 }
