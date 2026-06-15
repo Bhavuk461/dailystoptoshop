@@ -1292,48 +1292,67 @@ function setupParallax() {
   const progressBar = document.getElementById('scroll-progress');
   if (!layers.length && !progressBar) return;
 
-  let mouseX = 0;
-  let mouseY = 0;
-  let ticking = false;
+  // Lerp-based mouse drift: targetX/Y = where mouse wants emojis to go,
+  // currentX/Y = where they actually are, smoothly chasing the target.
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  const LERP = 0.08;       // smoothing factor — lower = slower ease
+  const THRESHOLD = 0.01;  // snap-to-target threshold (px)
+  let rafId = null;
 
-  function update() {
+  function render() {
+    // Lerp toward target
+    currentX += (targetX - currentX) * LERP;
+    currentY += (targetY - currentY) * LERP;
+
+    // Snap when close enough to avoid endless micro-updates
+    if (Math.abs(currentX - targetX) < THRESHOLD) currentX = targetX;
+    if (Math.abs(currentY - targetY) < THRESHOLD) currentY = targetY;
+
     const y = window.scrollY;
     layers.forEach(el => {
       const speed = parseFloat(el.getAttribute('data-parallax')) || 0;
       const depth = parseFloat(el.getAttribute('data-depth')) || 0;
-      const tx = mouseX * depth;
-      const ty = y * speed + mouseY * depth;
+      const tx = currentX * depth;
+      const ty = y * speed + currentY * depth;
       el.style.transform = `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0)`;
     });
     if (progressBar) {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       progressBar.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
     }
-    ticking = false;
+
+    // Keep the loop alive while lerping; auto-stop once converged
+    if (currentX !== targetX || currentY !== targetY) {
+      rafId = requestAnimationFrame(render);
+    } else {
+      rafId = null;
+    }
   }
 
-  function requestUpdate() {
-    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  function scheduleRender() {
+    if (rafId === null) {
+      rafId = requestAnimationFrame(render);
+    }
   }
 
-  window.addEventListener('scroll', requestUpdate, { passive: true });
+  window.addEventListener('scroll', scheduleRender, { passive: true });
 
-  const hero = document.getElementById('hero');
-  if (hero && layers.length) {
-    hero.addEventListener('mousemove', (e) => {
-      const rect = hero.getBoundingClientRect();
-      mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      requestUpdate();
-    }, { passive: true });
-    hero.addEventListener('mouseleave', () => {
-      mouseX = 0;
-      mouseY = 0;
-      requestUpdate();
-    }, { passive: true });
-  }
+  // Track cursor across the entire window (not just #hero)
+  window.addEventListener('mousemove', (e) => {
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+    scheduleRender();
+  }, { passive: true });
 
-  update();
+  // Reset only when cursor leaves the browser window entirely
+  document.addEventListener('mouseleave', () => {
+    targetX = 0;
+    targetY = 0;
+    scheduleRender();
+  }, { passive: true });
+
+  render();
 }
 
 
