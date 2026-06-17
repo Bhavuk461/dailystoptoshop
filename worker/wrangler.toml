@@ -10,7 +10,7 @@ zone_name = "dailystoptoshop.com"
 ALLOWED_ORIGIN = "https://dailystoptoshop.com"
 ORDER_EMAIL_TO = "Connect@dailystoptoshop.com"
 ORDER_EMAIL_FROM = "orders@dailystoptoshop.com"
-GOOGLE_CLIENT_ID = "REPLACE_WITH_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = "492637039414-iibisalh71efb9497qhe18qktkma57nc.apps.googleusercontent.com"
 
 # D1 Database for reviews
 [[d1_databases]]

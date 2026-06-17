@@ -1467,7 +1467,7 @@ function renderProductPage() {
 // ───────────────────────────────────────────
 
 // Google Client ID (must match the one in wrangler.toml)
-const GOOGLE_CLIENT_ID = 'REPLACE_WITH_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '492637039414-iibisalh71efb9497qhe18qktkma57nc.apps.googleusercontent.com';
 
 // Current Google user session (in-memory only, cleared on page refresh)
 let googleUser = null; // { credential (JWT), name, picture, sub }
