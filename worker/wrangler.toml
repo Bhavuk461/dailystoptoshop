@@ -16,7 +16,7 @@ GOOGLE_CLIENT_ID = "492637039414-iibisalh71efb9497qhe18qktkma57nc.apps.googleuse
 [[d1_databases]]
 binding = "DB"
 database_name = "dailystoptoshop-reviews"
-database_id = "REPLACE_AFTER_RUNNING_wrangler_d1_create"
+database_id = "199a2737-2d58-4079-b542-9a3d9ee62d37"
 
 # SECRETS - DO NOT put values here. Set with:
 #   wrangler secret put RAZORPAY_KEY_ID
