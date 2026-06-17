@@ -231,7 +231,7 @@ async function handleLikeReview(reviewId, env) {
   const result = await env.DB.prepare(
     'UPDATE reviews SET likes = likes + 1 WHERE id = ?'
   ).bind(reviewId).run();
-  if (!result.changes) return json({ error: 'Review not found' }, 404, env);
+  if (!result.meta.changes) return json({ error: 'Review not found' }, 404, env);
   return json({ ok: true }, 200, env);
 }
 
@@ -244,7 +244,7 @@ async function handleDeleteReview(reviewId, request, env) {
   const result = await env.DB.prepare(
     'DELETE FROM reviews WHERE id = ? AND user_sub = ?'
   ).bind(reviewId, user.sub).run();
-  if (!result.changes) return json({ error: 'Review not found or not yours' }, 404, env);
+  if (!result.meta.changes) return json({ error: 'Review not found or not yours' }, 404, env);
   return json({ ok: true }, 200, env);
 }
 
