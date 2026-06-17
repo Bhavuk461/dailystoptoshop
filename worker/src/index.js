@@ -1,10 +1,13 @@
-/* dailystoptoshop - Payments API (Cloudflare Worker)
-   Endpoints: /api/order  /api/verify  /api/webhook
+/* dailystoptoshop - API (Cloudflare Worker)
+   Endpoints:
+     Payments: /api/order  /api/verify  /api/webhook
+     Reviews:  /api/reviews (GET/POST)  /api/reviews/:id/like (POST)  /api/reviews/:id (DELETE)
 
    Secrets (set via `wrangler secret put`):
      RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET,
      RESEND_API_KEY, SHEETS_WEBAPP_URL, SHEETS_TOKEN
-   Vars (wrangler.toml): ALLOWED_ORIGIN, ORDER_EMAIL_TO, ORDER_EMAIL_FROM
+   Vars (wrangler.toml): ALLOWED_ORIGIN, ORDER_EMAIL_TO, ORDER_EMAIL_FROM, GOOGLE_CLIENT_ID
+   Bindings: DB (D1 — dailystoptoshop-reviews)
 */
 
 // TRUSTED PRODUCT CATALOGUE (server-side source of truth).
@@ -22,6 +25,13 @@ const FREE_SHIPPING_THRESHOLD = 999;
 const SHIPPING_FEE = 49;
 const CURRENCY = 'INR';
 
+// Valid product IDs for review validation
+const VALID_PRODUCT_IDS = new Set(Object.keys(CATALOGUE));
+
+// Google JWT public keys cache
+let googleKeysCache = null;
+let googleKeysCacheExpiry = 0;
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -30,9 +40,22 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(env) });
 
     try {
+      // Payment endpoints
       if (path === '/api/order' && request.method === 'POST') return await handleCreateOrder(request, env);
       if (path === '/api/verify' && request.method === 'POST') return await handleVerify(request, env);
       if (path === '/api/webhook' && request.method === 'POST') return await handleWebhook(request, env);
+
+      // Review endpoints
+      if (path === '/api/reviews' && request.method === 'GET') return await handleGetReviews(request, env);
+      if (path === '/api/reviews' && request.method === 'POST') return await handlePostReview(request, env);
+
+      // /api/reviews/:id/like and /api/reviews/:id (DELETE)
+      const likeMatch = path.match(/^\/api\/reviews\/([a-f0-9-]+)\/like$/);
+      if (likeMatch && request.method === 'POST') return await handleLikeReview(likeMatch[1], env);
+
+      const deleteMatch = path.match(/^\/api\/reviews\/([a-f0-9-]+)$/);
+      if (deleteMatch && request.method === 'DELETE') return await handleDeleteReview(deleteMatch[1], request, env);
+
       return json({ error: 'Not found' }, 404, env);
     } catch (err) {
       console.error('Unhandled error:', err && err.stack ? err.stack : err);
@@ -151,6 +174,150 @@ async function appendToSheet(order, env) {
   if (!res.ok) throw new Error(`Sheets append failed: ${res.status} ${await res.text()}`);
 }
 
+
+// ───────────────────────────────────────────
+// REVIEW ENDPOINTS
+// ───────────────────────────────────────────
+
+// GET /api/reviews?product_id=xxx
+async function handleGetReviews(request, env) {
+  const url = new URL(request.url);
+  const productId = url.searchParams.get('product_id');
+  if (!productId || !VALID_PRODUCT_IDS.has(productId)) {
+    return json({ error: 'Invalid or missing product_id' }, 400, env);
+  }
+  const { results } = await env.DB.prepare(
+    'SELECT id, product_id, user_name, user_pic, rating, body, likes, created_at FROM reviews WHERE product_id = ? ORDER BY created_at DESC'
+  ).bind(productId).all();
+  return json({ reviews: results || [] }, 200, env);
+}
+
+// POST /api/reviews  { product_id, rating, body } + Authorization: Bearer <google_id_token>
+async function handlePostReview(request, env) {
+  const user = await verifyGoogleToken(request, env);
+  if (!user) return json({ error: 'Invalid or missing Google token' }, 401, env);
+
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ error: 'Invalid JSON' }, 400, env);
+
+  const productId = body.product_id;
+  const rating = parseInt(body.rating, 10);
+  const reviewBody = typeof body.body === 'string' ? body.body.trim().slice(0, 1000) : '';
+
+  if (!productId || !VALID_PRODUCT_IDS.has(productId)) return json({ error: 'Invalid product_id' }, 400, env);
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return json({ error: 'Rating must be 1-5' }, 400, env);
+  if (reviewBody.length < 10) return json({ error: 'Review must be at least 10 characters' }, 400, env);
+
+  const id = generateUUID();
+  try {
+    await env.DB.prepare(
+      'INSERT INTO reviews (id, product_id, user_sub, user_name, user_pic, rating, body) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).bind(id, productId, user.sub, esc(user.name), user.picture, rating, esc(reviewBody)).run();
+  } catch (err) {
+    // UNIQUE constraint violation = user already reviewed this product
+    if (err.message && err.message.includes('UNIQUE')) {
+      return json({ error: 'You have already reviewed this product' }, 409, env);
+    }
+    throw err;
+  }
+
+  return json({
+    review: { id, product_id: productId, user_name: esc(user.name), user_pic: user.picture, rating, body: esc(reviewBody), likes: 0, created_at: new Date().toISOString() }
+  }, 201, env);
+}
+
+// POST /api/reviews/:id/like  (anonymous)
+async function handleLikeReview(reviewId, env) {
+  const result = await env.DB.prepare(
+    'UPDATE reviews SET likes = likes + 1 WHERE id = ?'
+  ).bind(reviewId).run();
+  if (!result.changes) return json({ error: 'Review not found' }, 404, env);
+  return json({ ok: true }, 200, env);
+}
+
+// DELETE /api/reviews/:id  + Authorization: Bearer <google_id_token>
+async function handleDeleteReview(reviewId, request, env) {
+  const user = await verifyGoogleToken(request, env);
+  if (!user) return json({ error: 'Invalid or missing Google token' }, 401, env);
+
+  // Only the author can delete their own review
+  const result = await env.DB.prepare(
+    'DELETE FROM reviews WHERE id = ? AND user_sub = ?'
+  ).bind(reviewId, user.sub).run();
+  if (!result.changes) return json({ error: 'Review not found or not yours' }, 404, env);
+  return json({ ok: true }, 200, env);
+}
+
+
+// ───────────────────────────────────────────
+// GOOGLE JWT VERIFICATION
+// ───────────────────────────────────────────
+
+async function verifyGoogleToken(request, env) {
+  const authHeader = request.headers.get('Authorization') || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) return null;
+
+  try {
+    // Decode header and payload without verification first
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+    // Basic payload checks
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp < now) return null;                    // expired
+    if (payload.aud !== env.GOOGLE_CLIENT_ID) return null;  // wrong audience
+    if (payload.iss !== 'accounts.google.com' && payload.iss !== 'https://accounts.google.com') return null;
+
+    // Fetch Google's public keys (cached)
+    const keys = await getGooglePublicKeys();
+    const key = keys[header.kid];
+    if (!key) return null;
+
+    // Verify signature
+    const cryptoKey = await crypto.subtle.importKey(
+      'jwk', key, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']
+    );
+    const signatureBytes = base64UrlDecode(parts[2]);
+    const dataBytes = new TextEncoder().encode(parts[0] + '.' + parts[1]);
+    const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', cryptoKey, signatureBytes, dataBytes);
+    if (!valid) return null;
+
+    return { sub: payload.sub, name: payload.name || 'Anonymous', picture: payload.picture || '' };
+  } catch (err) {
+    console.error('Google token verification failed:', err);
+    return null;
+  }
+}
+
+async function getGooglePublicKeys() {
+  if (googleKeysCache && Date.now() < googleKeysCacheExpiry) return googleKeysCache;
+  const res = await fetch('https://www.googleapis.com/oauth2/v3/certs');
+  if (!res.ok) throw new Error('Failed to fetch Google public keys');
+  const data = await res.json();
+  const keysMap = {};
+  for (const key of data.keys) keysMap[key.kid] = key;
+  googleKeysCache = keysMap;
+  googleKeysCacheExpiry = Date.now() + 3600_000; // Cache for 1 hour
+  return keysMap;
+}
+
+function base64UrlDecode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const binary = atob(str);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+function generateUUID() {
+  return crypto.randomUUID();
+}
+
 async function hmacSha256Hex(secret, message) {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
@@ -168,7 +335,7 @@ function timingSafeEqual(a, b) {
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 function corsHeaders(env) {
-  return { 'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400' };
+  return { 'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*', 'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization', 'Access-Control-Max-Age': '86400' };
 }
 
 function json(obj, status, env) { return new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json', ...corsHeaders(env) } }); }

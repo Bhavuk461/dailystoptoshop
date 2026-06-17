@@ -10,6 +10,13 @@ zone_name = "dailystoptoshop.com"
 ALLOWED_ORIGIN = "https://dailystoptoshop.com"
 ORDER_EMAIL_TO = "Connect@dailystoptoshop.com"
 ORDER_EMAIL_FROM = "orders@dailystoptoshop.com"
+GOOGLE_CLIENT_ID = "REPLACE_WITH_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+
+# D1 Database for reviews
+[[d1_databases]]
+binding = "DB"
+database_name = "dailystoptoshop-reviews"
+database_id = "REPLACE_AFTER_RUNNING_wrangler_d1_create"
 
 # SECRETS - DO NOT put values here. Set with:
 #   wrangler secret put RAZORPAY_KEY_ID

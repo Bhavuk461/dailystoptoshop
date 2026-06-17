@@ -1,6 +1,7 @@
 /* ╔══════════════════════════════════════════════════════════════╗
    ║  dailystoptoshop — Main JavaScript                          ║
-   ║  Cart, navigation, animations, Razorpay, particles          ║
+   ║  Cart, navigation, animations, Razorpay, particles,         ║
+   ║  product reviews (Google Sign-In + D1)                      ║
    ╚══════════════════════════════════════════════════════════════╝ */
 
 // ───────────────────────────────────────────
@@ -1438,7 +1439,10 @@ function renderProductPage() {
       <div class="pp-related-grid">
         ${related.map(p => `<a class="pp-rel-card" href="./product.html?id=${p.id}"><img src="${getProductCover(p)}" alt="${p.name}" loading="lazy"><span>${p.shortName}</span><strong>${formatPrice(p.price)}</strong></a>`).join('')}
       </div>
-    </div>`;
+    </div>
+    <div id="pp-reviews-section"></div>`;
+
+  renderProductReviews(product.id);
 
   // Image zoom + thumbnail switching with a soft pop transition
   const mainImg = document.getElementById('pp-main-img');
@@ -1459,7 +1463,372 @@ function renderProductPage() {
 
 
 // ───────────────────────────────────────────
-// 20. INITIALIZATION
+// 20. PRODUCT REVIEWS (Google Sign-In + D1)
+// ───────────────────────────────────────────
+
+// Google Client ID (must match the one in wrangler.toml)
+const GOOGLE_CLIENT_ID = 'REPLACE_WITH_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+// Current Google user session (in-memory only, cleared on page refresh)
+let googleUser = null; // { credential (JWT), name, picture, sub }
+
+function initGoogleSignIn() {
+  if (typeof google === 'undefined' || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: onGoogleSignIn,
+    auto_select: false,
+    context: 'signin'
+  });
+}
+
+function onGoogleSignIn(response) {
+  if (!response.credential) return;
+  // Decode the JWT payload (we don't verify on client — server does that)
+  try {
+    const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    googleUser = {
+      credential: response.credential,
+      sub: payload.sub,
+      name: payload.name || 'Anonymous',
+      picture: payload.picture || ''
+    };
+    // If a review form was waiting for sign-in, show it now
+    const formArea = document.getElementById('pp-review-form-area');
+    if (formArea) renderReviewForm(formArea);
+  } catch (e) {
+    console.error('Failed to decode Google credential', e);
+  }
+}
+
+function promptGoogleSignIn() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    showToast('Google Sign-In is loading, please try again in a moment');
+    return;
+  }
+  google.accounts.id.prompt();
+}
+
+// Render the full reviews section on the product page
+async function renderProductReviews(productId) {
+  const container = document.getElementById('pp-reviews-section');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="pp-reviews">
+      <div class="pp-reviews-header">
+        <h2>Customer Reviews ✍️</h2>
+        <button class="pp-write-review-btn" id="pp-write-review-btn">Write a Review</button>
+      </div>
+      <div id="pp-review-form-area"></div>
+      <div id="pp-reviews-summary"></div>
+      <div id="pp-reviews-list" class="pp-reviews-list">
+        <div class="pp-reviews-loading">Loading reviews…</div>
+      </div>
+    </div>`;
+
+  // Wire "Write a Review" button
+  const writeBtn = document.getElementById('pp-write-review-btn');
+  if (writeBtn) {
+    writeBtn.addEventListener('click', () => {
+      const formArea = document.getElementById('pp-review-form-area');
+      if (!formArea) return;
+      if (formArea.classList.contains('open')) {
+        formArea.classList.remove('open');
+        formArea.innerHTML = '';
+        return;
+      }
+      if (googleUser) {
+        renderReviewForm(formArea);
+      } else {
+        formArea.classList.add('open');
+        formArea.innerHTML = `
+          <div class="pp-review-signin">
+            <p>Sign in with Google to write a review</p>
+            <div id="pp-google-signin-btn"></div>
+          </div>`;
+        if (typeof google !== 'undefined' && google.accounts) {
+          google.accounts.id.renderButton(
+            document.getElementById('pp-google-signin-btn'),
+            { theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with' }
+          );
+        }
+      }
+    });
+  }
+
+  // Fetch and display reviews
+  try {
+    const res = await fetch(`${API_BASE}/reviews?product_id=${encodeURIComponent(productId)}`);
+    const data = await res.json();
+    displayReviews(data.reviews || [], productId);
+  } catch (err) {
+    console.error('Failed to fetch reviews:', err);
+    const list = document.getElementById('pp-reviews-list');
+    if (list) list.innerHTML = '<p class="pp-reviews-empty">Could not load reviews. Please try again later.</p>';
+  }
+}
+
+function displayReviews(reviews, productId) {
+  const list = document.getElementById('pp-reviews-list');
+  const summary = document.getElementById('pp-reviews-summary');
+  if (!list) return;
+
+  // Summary
+  if (summary && reviews.length > 0) {
+    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    const fullStars = Math.floor(avg);
+    const halfStar = (avg - fullStars) >= 0.5 ? 1 : 0;
+    const emptyStars = 5 - fullStars - halfStar;
+    const starsHtml = '★'.repeat(fullStars) + (halfStar ? '⯨' : '') + '☆'.repeat(emptyStars);
+    summary.innerHTML = `
+      <div class="pp-reviews-summary">
+        <span class="pp-reviews-avg">${avg.toFixed(1)}</span>
+        <span class="pp-reviews-avg-stars">${starsHtml}</span>
+        <span class="pp-reviews-count">${reviews.length} review${reviews.length !== 1 ? 's' : ''}</span>
+      </div>`;
+  }
+
+  // Reviews list
+  if (reviews.length === 0) {
+    list.innerHTML = '<p class="pp-reviews-empty">No reviews yet — be the first! ✨</p>';
+    return;
+  }
+
+  const likedReviews = getLocalLikes();
+
+  list.innerHTML = reviews.map(r => {
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const isOwn = googleUser && googleUser.sub === r.user_sub;
+    const isLiked = likedReviews.includes(r.id);
+    const timeAgo = formatTimeAgo(r.created_at);
+
+    return `
+      <div class="pp-review-card" data-review-id="${r.id}">
+        <div class="pp-review-card-header">
+          <img class="pp-review-avatar" src="${r.user_pic || ''}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">
+          <div class="pp-review-user-info">
+            <strong>${r.user_name}</strong>
+            <span class="pp-review-time">${timeAgo}</span>
+          </div>
+          ${isOwn ? `<button class="pp-review-delete" data-review-id="${r.id}" aria-label="Delete review">🗑️</button>` : ''}
+        </div>
+        <div class="pp-review-stars" aria-label="${r.rating} out of 5 stars">${stars}</div>
+        <p class="pp-review-body">${r.body}</p>
+        <button class="pp-review-like ${isLiked ? 'liked' : ''}" data-review-id="${r.id}">
+          <span class="pp-like-icon">${isLiked ? '❤️' : '🤍'}</span>
+          <span class="pp-like-count">${r.likes || 0}</span>
+        </button>
+      </div>`;
+  }).join('');
+
+  // Attach like handlers
+  list.querySelectorAll('.pp-review-like').forEach(btn => {
+    btn.addEventListener('click', () => handleLikeReview(btn.dataset.reviewId, btn));
+  });
+
+  // Attach delete handlers
+  list.querySelectorAll('.pp-review-delete').forEach(btn => {
+    btn.addEventListener('click', () => handleDeleteReview(btn.dataset.reviewId, productId));
+  });
+}
+
+function renderReviewForm(formArea) {
+  formArea.classList.add('open');
+  formArea.innerHTML = `
+    <form class="pp-review-form" id="pp-review-form">
+      <div class="pp-review-form-user">
+        <img src="${googleUser.picture}" alt="" class="pp-review-avatar" referrerpolicy="no-referrer" onerror="this.style.display='none'">
+        <span>${googleUser.name}</span>
+      </div>
+      <div class="pp-star-picker" id="pp-star-picker">
+        ${[1,2,3,4,5].map(i => `<button type="button" class="pp-star-btn" data-value="${i}" aria-label="${i} star${i > 1 ? 's' : ''}">☆</button>`).join('')}
+      </div>
+      <textarea id="pp-review-input" placeholder="Share your experience with this product…" maxlength="1000" rows="4"></textarea>
+      <div class="pp-review-form-footer">
+        <span class="pp-char-count"><span id="pp-char-current">0</span>/1000</span>
+        <button type="submit" class="pp-review-submit" id="pp-review-submit" disabled>Submit Review</button>
+      </div>
+    </form>`;
+
+  let selectedRating = 0;
+
+  // Star picker
+  const starBtns = formArea.querySelectorAll('.pp-star-btn');
+  starBtns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      const val = parseInt(btn.dataset.value);
+      starBtns.forEach((b, i) => { b.textContent = i < val ? '★' : '☆'; });
+    });
+    btn.addEventListener('click', () => {
+      selectedRating = parseInt(btn.dataset.value);
+      starBtns.forEach((b, i) => {
+        b.textContent = i < selectedRating ? '★' : '☆';
+        b.classList.toggle('active', i < selectedRating);
+      });
+      validateReviewForm();
+    });
+  });
+
+  const picker = document.getElementById('pp-star-picker');
+  if (picker) {
+    picker.addEventListener('mouseleave', () => {
+      starBtns.forEach((b, i) => { b.textContent = i < selectedRating ? '★' : '☆'; });
+    });
+  }
+
+  // Character counter
+  const textarea = document.getElementById('pp-review-input');
+  const charCount = document.getElementById('pp-char-current');
+  if (textarea && charCount) {
+    textarea.addEventListener('input', () => {
+      charCount.textContent = textarea.value.length;
+      validateReviewForm();
+    });
+  }
+
+  function validateReviewForm() {
+    const submitBtn = document.getElementById('pp-review-submit');
+    if (submitBtn) {
+      submitBtn.disabled = !(selectedRating >= 1 && textarea && textarea.value.trim().length >= 10);
+    }
+  }
+
+  // Submit handler
+  const form = document.getElementById('pp-review-form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!googleUser) return;
+
+      const submitBtn = document.getElementById('pp-review-submit');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+      const productId = new URLSearchParams(window.location.search).get('id');
+
+      try {
+        const res = await fetch(`${API_BASE}/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${googleUser.credential}`
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            rating: selectedRating,
+            body: textarea.value.trim()
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'Failed to submit review');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Review'; }
+          return;
+        }
+
+        showToast('Review submitted! 🎉');
+        formArea.classList.remove('open');
+        formArea.innerHTML = '';
+        // Refresh reviews
+        renderProductReviews(productId);
+      } catch (err) {
+        console.error('Review submit error:', err);
+        showToast('Something went wrong. Please try again.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Review'; }
+      }
+    });
+  }
+}
+
+async function handleLikeReview(reviewId, btn) {
+  const likedReviews = getLocalLikes();
+  if (likedReviews.includes(reviewId)) {
+    showToast('You already liked this review');
+    return;
+  }
+
+  // Optimistic UI update
+  const countEl = btn.querySelector('.pp-like-count');
+  const iconEl = btn.querySelector('.pp-like-icon');
+  const currentCount = parseInt(countEl.textContent) || 0;
+  countEl.textContent = currentCount + 1;
+  iconEl.textContent = '❤️';
+  btn.classList.add('liked');
+
+  try {
+    const res = await fetch(`${API_BASE}/reviews/${reviewId}/like`, { method: 'POST' });
+    if (!res.ok) throw new Error('Like failed');
+    // Persist in localStorage
+    likedReviews.push(reviewId);
+    localStorage.setItem('dsts_liked_reviews', JSON.stringify(likedReviews));
+  } catch (err) {
+    // Revert on failure
+    countEl.textContent = currentCount;
+    iconEl.textContent = '🤍';
+    btn.classList.remove('liked');
+    showToast('Could not like this review. Try again.');
+  }
+}
+
+async function handleDeleteReview(reviewId, productId) {
+  if (!googleUser) return;
+  if (!confirm('Delete your review? This cannot be undone.')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/reviews/${reviewId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${googleUser.credential}` }
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      showToast(data.error || 'Failed to delete review');
+      return;
+    }
+    showToast('Review deleted');
+    // Animate removal
+    const card = document.querySelector(`.pp-review-card[data-review-id="${reviewId}"]`);
+    if (card) {
+      card.style.transition = 'opacity 0.3s, transform 0.3s';
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        card.remove();
+        renderProductReviews(productId);
+      }, 300);
+    }
+  } catch (err) {
+    console.error('Delete review error:', err);
+    showToast('Something went wrong. Please try again.');
+  }
+}
+
+function getLocalLikes() {
+  try {
+    return JSON.parse(localStorage.getItem('dsts_liked_reviews') || '[]');
+  } catch { return []; }
+}
+
+function formatTimeAgo(dateStr) {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+}
+
+
+// ───────────────────────────────────────────
+// 21. INITIALIZATION
 // ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize Lucide icons
@@ -1471,6 +1840,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
   renderProductPage();
   renderReviews();
+  initGoogleSignIn();
 
   // Load and render cart
   loadCart();
