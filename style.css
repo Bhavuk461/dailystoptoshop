@@ -803,6 +803,17 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   display: flex; justify-content: center;
 }
 
+.pp-google-fallback-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 24px; background: #fff; color: #3c4043;
+  border: 1px solid #dadce0; border-radius: 50px; font-size: 0.92rem;
+  font-weight: 500; font-family: 'Roboto', var(--font-body), sans-serif;
+  cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+}
+.pp-google-fallback-btn:hover {
+  background: #f7f8f8; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 /* Review form */
 #pp-review-form-area {
   max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease-out);
