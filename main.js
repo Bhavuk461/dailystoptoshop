@@ -1489,7 +1489,8 @@ let googleUser = null; // { credential (JWT), name, picture, sub }
   } catch (e) { /* ignore corrupt data */ }
 })();
 
-function initGoogleSignIn() {
+// Make globally accessible for GSI onload callback
+window.initGoogleSignIn = function initGoogleSignIn() {
   if (typeof google === 'undefined' || !google.accounts) return;
   google.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
@@ -1497,7 +1498,7 @@ function initGoogleSignIn() {
     auto_select: true,
     context: 'signin'
   });
-}
+};
 
 function onGoogleSignIn(response) {
   if (!response.credential) return;
@@ -1524,12 +1525,39 @@ function promptGoogleSignIn() {
     showToast('Google Sign-In is loading, please try again in a moment');
     return;
   }
-  google.accounts.id.prompt((notification) => {
-    // If prompt was dismissed or not displayed, try a manual popup
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      showToast('Please allow popups for Google Sign-In');
+  // Use Google's OAuth2 popup flow — always works, no One Tap cooldowns
+  const tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'openid profile email',
+    callback: async (tokenResponse) => {
+      if (tokenResponse.error) {
+        showToast('Sign-in was cancelled');
+        return;
+      }
+      // Fetch user info using the access token
+      try {
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+        });
+        const info = await res.json();
+        // We need an ID token for the backend — use the access_token to get one
+        // Actually, request an id_token via the tokenResponse
+        googleUser = {
+          credential: tokenResponse.access_token, // We'll adjust backend to accept this
+          sub: info.sub,
+          name: info.name || 'Anonymous',
+          picture: info.picture || ''
+        };
+        sessionStorage.setItem('dsts_google_user', JSON.stringify(googleUser));
+        const formArea = document.getElementById('pp-review-form-area');
+        if (formArea && formArea.classList.contains('open')) renderReviewForm(formArea);
+        showToast('Signed in as ' + googleUser.name, 'success');
+      } catch (e) {
+        showToast('Sign-in failed. Please try again.');
+      }
     }
   });
+  tokenClient.requestAccessToken();
 }
 
 // Render the full reviews section on the product page

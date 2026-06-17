@@ -258,37 +258,49 @@ async function verifyGoogleToken(request, env) {
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
   if (!token) return null;
 
+  // Check if this is a JWT (3 dot-separated parts) or an access token
+  const parts = token.split('.');
+  if (parts.length === 3) {
+    // Try JWT ID token verification
+    try {
+      const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+      const now = Math.floor(Date.now() / 1000);
+      if (payload.exp < now) return null;
+      if (payload.aud !== env.GOOGLE_CLIENT_ID) return null;
+      if (payload.iss !== 'accounts.google.com' && payload.iss !== 'https://accounts.google.com') return null;
+
+      const keys = await getGooglePublicKeys();
+      const key = keys[header.kid];
+      if (!key) return null;
+
+      const cryptoKey = await crypto.subtle.importKey(
+        'jwk', key, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']
+      );
+      const signatureBytes = base64UrlDecode(parts[2]);
+      const dataBytes = new TextEncoder().encode(parts[0] + '.' + parts[1]);
+      const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', cryptoKey, signatureBytes, dataBytes);
+      if (!valid) return null;
+
+      return { sub: payload.sub, name: payload.name || 'Anonymous', picture: payload.picture || '' };
+    } catch (err) {
+      console.error('JWT verification failed:', err);
+      return null;
+    }
+  }
+
+  // Fallback: treat as an access token — validate via Google's userinfo endpoint
   try {
-    // Decode header and payload without verification first
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-
-    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-
-    // Basic payload checks
-    const now = Math.floor(Date.now() / 1000);
-    if (payload.exp < now) return null;                    // expired
-    if (payload.aud !== env.GOOGLE_CLIENT_ID) return null;  // wrong audience
-    if (payload.iss !== 'accounts.google.com' && payload.iss !== 'https://accounts.google.com') return null;
-
-    // Fetch Google's public keys (cached)
-    const keys = await getGooglePublicKeys();
-    const key = keys[header.kid];
-    if (!key) return null;
-
-    // Verify signature
-    const cryptoKey = await crypto.subtle.importKey(
-      'jwk', key, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']
-    );
-    const signatureBytes = base64UrlDecode(parts[2]);
-    const dataBytes = new TextEncoder().encode(parts[0] + '.' + parts[1]);
-    const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', cryptoKey, signatureBytes, dataBytes);
-    if (!valid) return null;
-
-    return { sub: payload.sub, name: payload.name || 'Anonymous', picture: payload.picture || '' };
+    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) return null;
+    const info = await res.json();
+    if (!info.sub) return null;
+    return { sub: info.sub, name: info.name || 'Anonymous', picture: info.picture || '' };
   } catch (err) {
-    console.error('Google token verification failed:', err);
+    console.error('Access token verification failed:', err);
     return null;
   }
 }
