@@ -1428,6 +1428,7 @@ function renderProductPage() {
           ${product.originalPrice ? `<span class="original-price">${formatPrice(product.originalPrice)}</span>` : ''}
           ${discount > 0 ? `<span class="save-chip">SAVE ${discount}% 🎉</span>` : ''}
         </div>
+        <div id="pp-product-rating" class="pp-product-rating"></div>
         <button class="add-to-cart-btn pp-add" data-product-id="${product.id}" onclick="addToCart('${product.id}')" ${!product.inStock ? 'disabled' : ''}>${product.inStock ? 'ADD TO BAG' : 'SOLD OUT'}</button>
         ${product.inStock ? '<p class="urgency-text">⚡ Only a few left — don\'t sleep on it</p>' : ''}
         ${specsHtml}
@@ -1663,6 +1664,17 @@ function displayReviews(reviews, productId) {
         <span class="pp-reviews-avg-stars">${starsHtml}</span>
         <span class="pp-reviews-count">${reviews.length} review${reviews.length !== 1 ? 's' : ''}</span>
       </div>`;
+
+    // Also populate the product info rating (between price and Add to Bag)
+    const productRating = document.getElementById('pp-product-rating');
+    if (productRating) {
+      productRating.innerHTML = `
+        <a href="#pp-reviews-section" class="pp-product-rating-link">
+          <span class="pp-product-rating-stars">${starsHtml}</span>
+          <span class="pp-product-rating-score">${avg.toFixed(1)}</span>
+          <span class="pp-product-rating-count">(${reviews.length} review${reviews.length !== 1 ? 's' : ''})</span>
+        </a>`;
+    }
   }
 
   // Reviews list

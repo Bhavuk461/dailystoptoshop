@@ -714,6 +714,24 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   font-size: 0.78rem; font-weight: 700; padding: 5px 12px; border-radius: 999px;
 }
 
+.pp-product-rating { margin-bottom: 16px; }
+.pp-product-rating-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  text-decoration: none; color: var(--ink);
+  transition: opacity 0.2s;
+}
+.pp-product-rating-link:hover { opacity: 0.75; }
+.pp-product-rating-stars {
+  font-size: 1.25rem; color: #f59e0b; letter-spacing: 1px;
+}
+.pp-product-rating-score {
+  font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+  color: var(--ink);
+}
+.pp-product-rating-count {
+  font-size: 0.88rem; color: var(--muted);
+}
+
 .pp-add { max-width: 380px; padding: 16px; font-size: 0.95rem; }
 .pp-info .urgency-text { text-align: left; }
 
