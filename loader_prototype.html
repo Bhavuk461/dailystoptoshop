@@ -21,7 +21,7 @@
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
     background: #f5f5f0;
-    animation: loaderFadeOut 0.9s ease 4.05s forwards;
+    animation: loaderFadeOut 0.9s ease 4.65s forwards;
   }
 
   .loader-scene {
@@ -69,21 +69,16 @@
   }
   .loader-figure svg { width: 100%; height: 100%; overflow: visible; }
 
-  /* Subtle vertical body bob, two steps per gait cycle */
-  .figure-body {
-    animation: bodyBob 0.34s ease-in-out 6;
-  }
-
-  /* Limb pivots — origins sit exactly on hip / shoulder joints.
-     Gait cycle = 0.68s. Arms swing in opposition to legs.
-     The walk runs 3 strides, then settles into a standing rest pose. */
-  .leg-front { transform-origin: 55px 96px; animation: legA 0.68s ease-in-out 3, legSettle 0.35s ease-out 2.09s forwards; }
-  .leg-back  { transform-origin: 55px 96px; animation: legB 0.68s ease-in-out 3, legSettle 0.35s ease-out 2.09s forwards; }
-  .shin-front { transform-origin: 55px 130px; animation: shinA 0.68s ease-in-out 3, shinSettle 0.35s ease-out 2.09s forwards; }
-  .shin-back  { transform-origin: 55px 130px; animation: shinB 0.68s ease-in-out 3, shinSettle 0.35s ease-out 2.09s forwards; }
-  .arm-back  { transform-origin: 55px 60px; animation: armB 0.68s ease-in-out 3, armSettle 0.35s ease-out 2.09s forwards; }
-  .arm-front { transform-origin: 55px 60px; animation: armA 0.68s ease-in-out 3, armSettle 0.35s ease-out 2.09s forwards; }
-  .bag-group { transform-origin: 55px 60px; animation: armA 0.68s ease-in-out 3, armSettle 0.35s ease-out 2.09s forwards; }
+  /* Each limb runs ONE finite 2.4s timeline: walk strides baked in, then it
+     locks into a FULL mid-stride pose (limbs swung outward) and holds forever. */
+  .figure-body { animation: body 2.4s ease-in-out forwards; }
+  .leg-front { transform-origin: 55px 96px; animation: leg 2.4s ease-in-out forwards; }
+  .leg-back  { transform-origin: 55px 96px; animation: legAlt 2.4s ease-in-out forwards; }
+  .shin-front { transform-origin: 55px 130px; animation: shin 2.4s ease-in-out forwards; }
+  .shin-back  { transform-origin: 55px 130px; animation: shinAlt 2.4s ease-in-out forwards; }
+  .arm-back  { transform-origin: 55px 60px; animation: armAlt 2.4s ease-in-out forwards; }
+  .arm-front { transform-origin: 55px 60px; animation: arm 2.4s ease-in-out forwards; }
+  .bag-group { transform-origin: 55px 60px; animation: arm 2.4s ease-in-out forwards; }
 
   /* ───────────── Brand text ───────────── */
   .loader-text {
@@ -92,31 +87,31 @@
     font-weight: 800;
     letter-spacing: -0.5px;
     white-space: nowrap;
+    perspective: 600px;
   }
+  .loader-text > span { display: inline-block; }
   .loader-text .t-daily { color: #1a1a1a; }
   .loader-text .t-stop  { color: #e8a308; }
-  .loader-text .t-toshop{ color: #1a1a1a; }
-  .loader-text span span {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(14px) scale(0.6);
-    animation: charBounce 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  .loader-text .t-to    { color: #1a1a1a; }
+  .loader-text .t-shop  { color: #e8a308; }
+
+  /* "Daily" — letters cascade down and bounce in */
+  .t-daily span {
+    display: inline-block; opacity: 0;
+    transform: translateY(-22px) scale(0.7);
+    animation: drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
-  .t-daily  span:nth-child(1){animation-delay:1.45s}
-  .t-daily  span:nth-child(2){animation-delay:1.50s}
-  .t-daily  span:nth-child(3){animation-delay:1.55s}
-  .t-daily  span:nth-child(4){animation-delay:1.60s}
-  .t-daily  span:nth-child(5){animation-delay:1.65s}
-  .t-stop   span:nth-child(1){animation-delay:1.75s}
-  .t-stop   span:nth-child(2){animation-delay:1.80s}
-  .t-stop   span:nth-child(3){animation-delay:1.85s}
-  .t-stop   span:nth-child(4){animation-delay:1.90s}
-  .t-toshop span:nth-child(1){animation-delay:2.00s}
-  .t-toshop span:nth-child(2){animation-delay:2.05s}
-  .t-toshop span:nth-child(3){animation-delay:2.10s}
-  .t-toshop span:nth-child(4){animation-delay:2.15s}
-  .t-toshop span:nth-child(5){animation-delay:2.20s}
-  .t-toshop span:nth-child(6){animation-delay:2.25s}
+  .t-daily span:nth-child(1){animation-delay:1.45s}
+  .t-daily span:nth-child(2){animation-delay:1.52s}
+  .t-daily span:nth-child(3){animation-delay:1.59s}
+  .t-daily span:nth-child(4){animation-delay:1.66s}
+  .t-daily span:nth-child(5){animation-delay:1.73s}
+  /* "Stop" — springs/pops in */
+  .t-stop { opacity: 0; transform: scale(0.2); animation: pop 0.55s cubic-bezier(0.34, 1.8, 0.5, 1) 1.95s forwards; }
+  /* "To" — flips in on X */
+  .t-to { opacity: 0; transform-origin: center bottom; transform: rotateX(-90deg); animation: flip 0.5s cubic-bezier(0.22, 1, 0.36, 1) 2.3s forwards; }
+  /* "Shop" — slides in from right, blur sharpens */
+  .t-shop { opacity: 0; transform: translateX(34px); filter: blur(6px); animation: slideSharp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2.6s forwards; }
 
   /* ───────────── Keyframes ───────────── */
   @keyframes sunReveal {
@@ -136,65 +131,67 @@
     25%  { opacity: 1; }
     100% { opacity: 1; transform: translateX(-50%); }
   }
-  @keyframes charBounce {
-    0%   { opacity: 0; transform: translateY(14px) scale(0.6); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
   @keyframes loaderFadeOut {
     0%   { opacity: 1; }
     100% { opacity: 0; visibility: hidden; pointer-events: none; }
   }
 
-  /* Body bobs up at the passing pose, down at contact — twice per gait cycle */
-  @keyframes bodyBob {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(-2.5px); }
-    100% { transform: translateY(0); }
-  }
+  /* Per-word brand entrances */
+  @keyframes drop { 0%{opacity:0;transform:translateY(-22px) scale(0.7)} 60%{opacity:1} 100%{opacity:1;transform:translateY(0) scale(1)} }
+  @keyframes pop { 0%{opacity:0;transform:scale(0.2)} 70%{opacity:1;transform:scale(1.12)} 100%{opacity:1;transform:scale(1)} }
+  @keyframes flip { 0%{opacity:0;transform:rotateX(-90deg)} 100%{opacity:1;transform:rotateX(0deg)} }
+  @keyframes slideSharp { 0%{opacity:0;transform:translateX(34px);filter:blur(6px)} 100%{opacity:1;transform:translateX(0);filter:blur(0)} }
 
-  /* Thigh swing (pivot at hip). Front/back are half a cycle apart. */
-  @keyframes legA {
-    0%   { transform: rotate(28deg); }   /* contact, forward */
-    50%  { transform: rotate(-26deg); }  /* extended back */
-    100% { transform: rotate(28deg); }
+  /* Single finite limb timelines: 0-75% walking (3 strides), then hold a FULL
+     mid-stride pose — front limbs swung forward, back limbs swung back. */
+  @keyframes body {
+    0%{transform:translateY(0)} 12.5%{transform:translateY(-2.5px)}
+    25%{transform:translateY(0)} 37.5%{transform:translateY(-2.5px)}
+    50%{transform:translateY(0)} 62.5%{transform:translateY(-2.5px)}
+    75%,100%{transform:translateY(0)}
   }
-  @keyframes legB {
-    0%   { transform: rotate(-26deg); }
-    50%  { transform: rotate(28deg); }
-    100% { transform: rotate(-26deg); }
+  @keyframes leg {
+    0%{transform:rotate(28deg)} 12.5%{transform:rotate(-26deg)}
+    25%{transform:rotate(28deg)} 37.5%{transform:rotate(-26deg)}
+    50%{transform:rotate(28deg)} 62.5%{transform:rotate(-26deg)}
+    75%{transform:rotate(28deg)} 85%,100%{transform:rotate(30deg)}
   }
-  /* Shin bend (pivot at knee). Knee bends most as the leg passes under/behind. */
-  @keyframes shinA {
-    0%   { transform: rotate(2deg); }
-    25%  { transform: rotate(38deg); }   /* knee lifts during swing-through */
-    50%  { transform: rotate(10deg); }
-    100% { transform: rotate(2deg); }
+  @keyframes legAlt {
+    0%{transform:rotate(-26deg)} 12.5%{transform:rotate(28deg)}
+    25%{transform:rotate(-26deg)} 37.5%{transform:rotate(28deg)}
+    50%{transform:rotate(-26deg)} 62.5%{transform:rotate(28deg)}
+    75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-28deg)}
   }
-  @keyframes shinB {
-    0%   { transform: rotate(10deg); }
-    50%  { transform: rotate(2deg); }
-    75%  { transform: rotate(38deg); }
-    100% { transform: rotate(10deg); }
+  @keyframes shin {
+    0%{transform:rotate(2deg)} 6.25%{transform:rotate(38deg)} 12.5%{transform:rotate(10deg)}
+    25%{transform:rotate(2deg)} 31.25%{transform:rotate(38deg)} 37.5%{transform:rotate(10deg)}
+    50%{transform:rotate(2deg)} 56.25%{transform:rotate(38deg)} 62.5%{transform:rotate(10deg)}
+    75%{transform:rotate(2deg)} 85%,100%{transform:rotate(4deg)}
   }
-  /* Arms swing in opposition to legs (pivot at shoulder). */
-  @keyframes armA {
-    0%   { transform: rotate(-22deg); }
-    50%  { transform: rotate(20deg); }
-    100% { transform: rotate(-22deg); }
+  @keyframes shinAlt {
+    0%{transform:rotate(10deg)} 12.5%{transform:rotate(2deg)} 18.75%{transform:rotate(38deg)}
+    25%{transform:rotate(10deg)} 37.5%{transform:rotate(2deg)} 43.75%{transform:rotate(38deg)}
+    50%{transform:rotate(10deg)} 62.5%{transform:rotate(2deg)} 68.75%{transform:rotate(38deg)}
+    75%{transform:rotate(10deg)} 85%,100%{transform:rotate(22deg)}
   }
-  @keyframes armB {
-    0%   { transform: rotate(20deg); }
-    50%  { transform: rotate(-22deg); }
-    100% { transform: rotate(20deg); }
+  @keyframes arm {
+    0%{transform:rotate(-22deg)} 12.5%{transform:rotate(20deg)}
+    25%{transform:rotate(-22deg)} 37.5%{transform:rotate(20deg)}
+    50%{transform:rotate(-22deg)} 62.5%{transform:rotate(20deg)}
+    75%{transform:rotate(-22deg)} 85%,100%{transform:rotate(22deg)}
   }
-  /* Settle to a neutral standing pose and hold (figure pauses at destination) */
-  @keyframes legSettle  { from { transform: rotate(28deg); }  to { transform: rotate(6deg); } }
-  @keyframes shinSettle { from { transform: rotate(2deg); }   to { transform: rotate(0deg); } }
-  @keyframes armSettle  { from { transform: rotate(-22deg); } to { transform: rotate(-4deg); } }
+  @keyframes armAlt {
+    0%{transform:rotate(20deg)} 12.5%{transform:rotate(-22deg)}
+    25%{transform:rotate(20deg)} 37.5%{transform:rotate(-22deg)}
+    50%{transform:rotate(20deg)} 62.5%{transform:rotate(-22deg)}
+    75%{transform:rotate(20deg)} 85%,100%{transform:rotate(-22deg)}
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .figure-body, .leg-front, .leg-back, .shin-front, .shin-back,
-    .arm-back, .arm-front, .bag-group { animation: none; }
+    .arm-back, .arm-front, .bag-group,
+    .t-daily span, .t-stop, .t-to, .t-shop { animation: none; }
+    .t-daily span, .t-stop, .t-to, .t-shop { opacity: 1; transform: none; filter: none; }
   }
 </style>
 </head>
@@ -287,7 +284,7 @@
 
   <!-- Brand text -->
   <div class="loader-text">
-    <span class="t-daily"><span>d</span><span>a</span><span>i</span><span>l</span><span>y</span></span><span class="t-stop"><span>s</span><span>t</span><span>o</span><span>p</span></span><span class="t-toshop"><span>t</span><span>o</span><span>s</span><span>h</span><span>o</span><span>p</span></span>
+    <span class="t-daily"><span>D</span><span>a</span><span>i</span><span>l</span><span>y</span></span><span class="t-stop">Stop</span><span class="t-to">To</span><span class="t-shop">Shop</span>
   </div>
 </div>
 
@@ -297,7 +294,7 @@
     setTimeout(function () {
       var loader = document.getElementById('loader');
       if (loader) loader.remove();
-    }, 5000);
+    }, 5600);
   });
 </script>
 
