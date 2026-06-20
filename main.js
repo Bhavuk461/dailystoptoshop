@@ -1975,7 +1975,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // figure visibly standing still for a comfortable beat before a slow, smooth
   // fade into the site. Skip the wait entirely for reduced-motion users.
   const WALK_AND_SETTLE = 2450; // figure reaches destination and stops here
-  const PAUSE_HOLD = 800;       // how long the paused figure lingers, aesthetically
+  const PAUSE_HOLD = 350;       // how long the paused figure lingers, aesthetically
   const minDisplay = reduceMotion ? 300 : (WALK_AND_SETTLE + PAUSE_HOLD);
 
   function hideLoader() {
