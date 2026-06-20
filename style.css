@@ -42,7 +42,7 @@ html { scroll-behavior: smooth; }
 }
 .site-loader.is-hidden {
   opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity 0.55s ease, visibility 0s linear 0.55s;
+  transition: opacity 0.9s ease, visibility 0s linear 0.9s;
 }
 .site-loader .loader-scene { position: relative; width: 300px; height: 280px; }
 
