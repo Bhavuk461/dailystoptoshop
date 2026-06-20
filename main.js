@@ -1960,3 +1960,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('%c✦ dailystoptoshop loaded ✦', 'color: #FF5D8F; font-size: 16px; font-weight: bold;');
 });
+
+// ───────────────────────────────────────────
+// SITE LOADER — hide the walking-figure intro once the page is ready
+// ───────────────────────────────────────────
+(function () {
+  const loader = document.getElementById('site-loader');
+  if (!loader) return;
+
+  const reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Let the full ~3.2s reveal play, then fade out. Skip the wait if the user
+  // prefers reduced motion.
+  const minDisplay = reduceMotion ? 300 : 3200;
+
+  function hideLoader() {
+    loader.classList.add('is-hidden');
+    loader.addEventListener('transitionend', function () {
+      loader.remove();
+    }, { once: true });
+    // Fallback removal in case transitionend doesn't fire
+    setTimeout(function () { if (loader.isConnected) loader.remove(); }, 900);
+  }
+
+  if (document.readyState === 'complete') {
+    setTimeout(hideLoader, minDisplay);
+  } else {
+    window.addEventListener('load', function () {
+      setTimeout(hideLoader, minDisplay);
+    });
+  }
+})();
