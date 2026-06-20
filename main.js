@@ -1970,9 +1970,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const reduceMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Let the full ~3.2s reveal play, then fade out. Skip the wait if the user
-  // prefers reduced motion.
-  const minDisplay = reduceMotion ? 300 : 3200;
+  // Let the full reveal play (~2.4s) plus a short pause where the figure stands
+  // still at its destination (~1.2s), then fade out. Skip the wait entirely if
+  // the user prefers reduced motion.
+  const minDisplay = reduceMotion ? 300 : 3600;
 
   function hideLoader() {
     loader.classList.add('is-hidden');

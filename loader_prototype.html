@@ -21,7 +21,7 @@
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
     background: #f5f5f0;
-    animation: loaderFadeOut 0.55s ease 3.2s forwards;
+    animation: loaderFadeOut 0.55s ease 3.6s forwards;
   }
 
   .loader-scene {
@@ -71,18 +71,19 @@
 
   /* Subtle vertical body bob, two steps per gait cycle */
   .figure-body {
-    animation: bodyBob 0.34s ease-in-out infinite;
+    animation: bodyBob 0.34s ease-in-out 6;
   }
 
   /* Limb pivots — origins sit exactly on hip / shoulder joints.
-     Gait cycle = 0.68s. Arms swing in opposition to legs. */
-  .leg-front { transform-origin: 55px 96px; animation: legA 0.68s ease-in-out infinite; }
-  .leg-back  { transform-origin: 55px 96px; animation: legB 0.68s ease-in-out infinite; }
-  .shin-front { transform-origin: 55px 130px; animation: shinA 0.68s ease-in-out infinite; }
-  .shin-back  { transform-origin: 55px 130px; animation: shinB 0.68s ease-in-out infinite; }
-  .arm-back  { transform-origin: 55px 60px; animation: armB 0.68s ease-in-out infinite; }
-  .arm-front { transform-origin: 55px 60px; animation: armA 0.68s ease-in-out infinite; }
-  .bag-group { transform-origin: 55px 60px; animation: armA 0.68s ease-in-out infinite; }
+     Gait cycle = 0.68s. Arms swing in opposition to legs.
+     The walk runs 3 strides, then settles into a standing rest pose. */
+  .leg-front { transform-origin: 55px 96px; animation: legA 0.68s ease-in-out 3, legSettle 0.35s ease-out 2.09s forwards; }
+  .leg-back  { transform-origin: 55px 96px; animation: legB 0.68s ease-in-out 3, legSettle 0.35s ease-out 2.09s forwards; }
+  .shin-front { transform-origin: 55px 130px; animation: shinA 0.68s ease-in-out 3, shinSettle 0.35s ease-out 2.09s forwards; }
+  .shin-back  { transform-origin: 55px 130px; animation: shinB 0.68s ease-in-out 3, shinSettle 0.35s ease-out 2.09s forwards; }
+  .arm-back  { transform-origin: 55px 60px; animation: armB 0.68s ease-in-out 3, armSettle 0.35s ease-out 2.09s forwards; }
+  .arm-front { transform-origin: 55px 60px; animation: armA 0.68s ease-in-out 3, armSettle 0.35s ease-out 2.09s forwards; }
+  .bag-group { transform-origin: 55px 60px; animation: armA 0.68s ease-in-out 3, armSettle 0.35s ease-out 2.09s forwards; }
 
   /* ───────────── Brand text ───────────── */
   .loader-text {
@@ -186,6 +187,10 @@
     50%  { transform: rotate(-22deg); }
     100% { transform: rotate(20deg); }
   }
+  /* Settle to a neutral standing pose and hold (figure pauses at destination) */
+  @keyframes legSettle  { from { transform: rotate(28deg); }  to { transform: rotate(6deg); } }
+  @keyframes shinSettle { from { transform: rotate(2deg); }   to { transform: rotate(0deg); } }
+  @keyframes armSettle  { from { transform: rotate(-22deg); } to { transform: rotate(-4deg); } }
 
   @media (prefers-reduced-motion: reduce) {
     .figure-body, .leg-front, .leg-back, .shin-front, .shin-back,
@@ -254,7 +259,7 @@
           <!-- TORSO -->
           <line x1="55" y1="45" x2="55" y2="98" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
           <!-- Torso highlight (reflection), slightly left of centre -->
-          <path d="M52 50 Q49 72 52 92" fill="none" stroke="#f5f5f0" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M52 50 Q49 72 52 92" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
 
           <!-- FRONT LEG -->
           <g class="leg-front">
@@ -292,7 +297,7 @@
     setTimeout(function () {
       var loader = document.getElementById('loader');
       if (loader) loader.remove();
-    }, 3800);
+    }, 4200);
   });
 </script>
 
