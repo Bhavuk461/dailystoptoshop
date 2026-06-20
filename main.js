@@ -1970,25 +1970,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const reduceMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // Let the full reveal play (~2.4s) plus a short pause where the figure stands
-  // still at its destination (~1.2s), then fade out. Skip the wait entirely if
-  // the user prefers reduced motion.
-  const minDisplay = reduceMotion ? 300 : 3600;
+  // The figure walks in, then settles into a standing rest pose at ~2.45s and
+  // stays paused there (held by the CSS settle animation). We then keep the
+  // figure visibly standing still for a comfortable beat before a slow, smooth
+  // fade into the site. Skip the wait entirely for reduced-motion users.
+  const WALK_AND_SETTLE = 2450; // figure reaches destination and stops here
+  const PAUSE_HOLD = 1600;      // how long the paused figure lingers, aesthetically
+  const minDisplay = reduceMotion ? 300 : (WALK_AND_SETTLE + PAUSE_HOLD);
 
   function hideLoader() {
     loader.classList.add('is-hidden');
     loader.addEventListener('transitionend', function () {
       loader.remove();
     }, { once: true });
-    // Fallback removal in case transitionend doesn't fire
-    setTimeout(function () { if (loader.isConnected) loader.remove(); }, 900);
+    // Fallback removal in case transitionend doesn't fire (matches the 0.9s fade)
+    setTimeout(function () { if (loader.isConnected) loader.remove(); }, 1200);
   }
 
+  // Only fade out once BOTH the page has loaded and the figure has finished its
+  // walk + pause, so the standstill is always clearly visible.
+  function scheduleHide() { setTimeout(hideLoader, minDisplay); }
+
   if (document.readyState === 'complete') {
-    setTimeout(hideLoader, minDisplay);
+    scheduleHide();
   } else {
-    window.addEventListener('load', function () {
-      setTimeout(hideLoader, minDisplay);
-    });
+    window.addEventListener('load', scheduleHide);
   }
 })();
