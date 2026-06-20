@@ -76,62 +76,114 @@ html { scroll-behavior: smooth; }
 }
 .site-loader .loader-figure svg { width: 100%; height: 100%; overflow: visible; }
 
-/* Walk cycle runs a fixed number of strides, then each limb settles into a
-   neutral standing pose and holds (figure pauses at its destination). */
-.site-loader .figure-body { animation: dstsBodyBob 0.34s ease-in-out 6; }
-.site-loader .leg-front  { transform-origin: 55px 96px;  animation: dstsLegA 0.68s ease-in-out 3, dstsLegSettle 0.35s ease-out 2.09s forwards; }
-.site-loader .leg-back   { transform-origin: 55px 96px;  animation: dstsLegB 0.68s ease-in-out 3, dstsLegSettle 0.35s ease-out 2.09s forwards; }
-.site-loader .shin-front { transform-origin: 55px 130px; animation: dstsShinA 0.68s ease-in-out 3, dstsShinSettle 0.35s ease-out 2.09s forwards; }
-.site-loader .shin-back  { transform-origin: 55px 130px; animation: dstsShinB 0.68s ease-in-out 3, dstsShinSettle 0.35s ease-out 2.09s forwards; }
-.site-loader .arm-back   { transform-origin: 55px 60px;  animation: dstsArmB 0.68s ease-in-out 3, dstsArmSettle 0.35s ease-out 2.09s forwards; }
-.site-loader .arm-front  { transform-origin: 55px 60px;  animation: dstsArmA 0.68s ease-in-out 3, dstsArmSettle 0.35s ease-out 2.09s forwards; }
-.site-loader .bag-group  { transform-origin: 55px 60px;  animation: dstsArmA 0.68s ease-in-out 3, dstsArmSettle 0.35s ease-out 2.09s forwards; }
+/* Each limb runs ONE finite timeline that contains the walk strides AND ends
+   locked in a neutral standing pose. `forwards` holds that final pose forever,
+   so the figure pauses permanently at its destination with no snap or gap.
+   Timeline = 2.4s: 0-75% walking (3 strides), 75-85% settling, 85-100% held. */
+.site-loader .figure-body { animation: dstsBody 2.4s ease-in-out forwards; }
+.site-loader .leg-front  { transform-origin: 55px 96px;  animation: dstsLeg  2.4s ease-in-out forwards; }
+.site-loader .leg-back   { transform-origin: 55px 96px;  animation: dstsLegAlt 2.4s ease-in-out forwards; }
+.site-loader .shin-front { transform-origin: 55px 130px; animation: dstsShin 2.4s ease-in-out forwards; }
+.site-loader .shin-back  { transform-origin: 55px 130px; animation: dstsShinAlt 2.4s ease-in-out forwards; }
+.site-loader .arm-back   { transform-origin: 55px 60px;  animation: dstsArmAlt 2.4s ease-in-out forwards; }
+.site-loader .arm-front  { transform-origin: 55px 60px;  animation: dstsArm 2.4s ease-in-out forwards; }
+.site-loader .bag-group  { transform-origin: 55px 60px;  animation: dstsArm 2.4s ease-in-out forwards; }
 
 .site-loader .loader-text {
   margin-top: 18px; font-size: 30px; font-weight: 800;
   letter-spacing: -0.5px; white-space: nowrap;
+  perspective: 600px;
 }
-.site-loader .t-daily  { color: #1a1a1a; }
-.site-loader .t-stop   { color: #e8a308; }
-.site-loader .t-toshop { color: #1a1a1a; }
-.site-loader .loader-text span span {
+.site-loader .loader-text > span { display: inline-block; }
+.site-loader .t-daily { color: #1a1a1a; }
+.site-loader .t-stop  { color: #e8a308; }
+.site-loader .t-to    { color: #1a1a1a; }
+.site-loader .t-shop  { color: #e8a308; }
+
+/* "Daily" — letters cascade down and bounce in, one by one */
+.site-loader .t-daily span {
   display: inline-block; opacity: 0;
-  transform: translateY(14px) scale(0.6);
-  animation: dstsCharBounce 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform: translateY(-22px) scale(0.7);
+  animation: dstsDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-.site-loader .t-daily  span:nth-child(1){animation-delay:1.45s}
-.site-loader .t-daily  span:nth-child(2){animation-delay:1.50s}
-.site-loader .t-daily  span:nth-child(3){animation-delay:1.55s}
-.site-loader .t-daily  span:nth-child(4){animation-delay:1.60s}
-.site-loader .t-daily  span:nth-child(5){animation-delay:1.65s}
-.site-loader .t-stop   span:nth-child(1){animation-delay:1.75s}
-.site-loader .t-stop   span:nth-child(2){animation-delay:1.80s}
-.site-loader .t-stop   span:nth-child(3){animation-delay:1.85s}
-.site-loader .t-stop   span:nth-child(4){animation-delay:1.90s}
-.site-loader .t-toshop span:nth-child(1){animation-delay:2.00s}
-.site-loader .t-toshop span:nth-child(2){animation-delay:2.05s}
-.site-loader .t-toshop span:nth-child(3){animation-delay:2.10s}
-.site-loader .t-toshop span:nth-child(4){animation-delay:2.15s}
-.site-loader .t-toshop span:nth-child(5){animation-delay:2.20s}
-.site-loader .t-toshop span:nth-child(6){animation-delay:2.25s}
+.site-loader .t-daily span:nth-child(1){animation-delay:1.45s}
+.site-loader .t-daily span:nth-child(2){animation-delay:1.52s}
+.site-loader .t-daily span:nth-child(3){animation-delay:1.59s}
+.site-loader .t-daily span:nth-child(4){animation-delay:1.66s}
+.site-loader .t-daily span:nth-child(5){animation-delay:1.73s}
+
+/* "Stop" — whole word springs/pops in from small */
+.site-loader .t-stop {
+  opacity: 0; transform: scale(0.2);
+  animation: dstsPop 0.55s cubic-bezier(0.34, 1.8, 0.5, 1) 1.95s forwards;
+}
+
+/* "To" — flips in on the X axis */
+.site-loader .t-to {
+  opacity: 0; transform-origin: center bottom;
+  transform: rotateX(-90deg);
+  animation: dstsFlip 0.5s cubic-bezier(0.22, 1, 0.36, 1) 2.3s forwards;
+}
+
+/* "Shop" — slides in from the right, blur sharpens */
+.site-loader .t-shop {
+  opacity: 0; transform: translateX(34px);
+  filter: blur(6px);
+  animation: dstsSlideSharp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2.6s forwards;
+}
 
 @keyframes dstsSunReveal { 0%{transform:translateX(-50%) scale(0)} 100%{transform:translateX(-50%) scale(1)} }
 @keyframes dstsSkylineRise { 0%{transform:translateY(70px)} 100%{transform:translateY(0)} }
 @keyframes dstsShadowGrow { 0%{transform:translateX(-50%) scaleX(0);opacity:0} 100%{transform:translateX(-50%) scaleX(1);opacity:1} }
 @keyframes dstsFigureWalkIn { 0%{opacity:0;transform:translateX(-260%)} 25%{opacity:1} 100%{opacity:1;transform:translateX(-50%)} }
-@keyframes dstsCharBounce { 0%{opacity:0;transform:translateY(14px) scale(0.6)} 100%{opacity:1;transform:translateY(0) scale(1)} }
-@keyframes dstsBodyBob { 0%{transform:translateY(0)} 50%{transform:translateY(-2.5px)} 100%{transform:translateY(0)} }
-@keyframes dstsLegA { 0%{transform:rotate(28deg)} 50%{transform:rotate(-26deg)} 100%{transform:rotate(28deg)} }
-@keyframes dstsLegB { 0%{transform:rotate(-26deg)} 50%{transform:rotate(28deg)} 100%{transform:rotate(-26deg)} }
-@keyframes dstsShinA { 0%{transform:rotate(2deg)} 25%{transform:rotate(38deg)} 50%{transform:rotate(10deg)} 100%{transform:rotate(2deg)} }
-@keyframes dstsShinB { 0%{transform:rotate(10deg)} 50%{transform:rotate(2deg)} 75%{transform:rotate(38deg)} 100%{transform:rotate(10deg)} }
-@keyframes dstsArmA { 0%{transform:rotate(-22deg)} 50%{transform:rotate(20deg)} 100%{transform:rotate(-22deg)} }
-@keyframes dstsArmB { 0%{transform:rotate(20deg)} 50%{transform:rotate(-22deg)} 100%{transform:rotate(20deg)} }
-/* Settle keyframes: bring each limb to rest (standing) and hold. The 'from'
-   matches each limb's cycle-start pose so the transition is seamless. */
-@keyframes dstsLegSettle  { from{transform:rotate(28deg)}  to{transform:rotate(6deg)} }
-@keyframes dstsShinSettle { from{transform:rotate(2deg)}   to{transform:rotate(0deg)} }
-@keyframes dstsArmSettle  { from{transform:rotate(-22deg)} to{transform:rotate(-4deg)} }
+@keyframes dstsDrop { 0%{opacity:0;transform:translateY(-22px) scale(0.7)} 60%{opacity:1} 100%{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes dstsPop { 0%{opacity:0;transform:scale(0.2)} 70%{opacity:1;transform:scale(1.12)} 100%{opacity:1;transform:scale(1)} }
+@keyframes dstsFlip { 0%{opacity:0;transform:rotateX(-90deg)} 100%{opacity:1;transform:rotateX(0deg)} }
+@keyframes dstsSlideSharp { 0%{opacity:0;transform:translateX(34px);filter:blur(6px)} 100%{opacity:1;transform:translateX(0);filter:blur(0)} }
+/* Body bobs during the walk (0-75%), then holds still. */
+@keyframes dstsBody {
+  0%{transform:translateY(0)} 12.5%{transform:translateY(-2.5px)}
+  25%{transform:translateY(0)} 37.5%{transform:translateY(-2.5px)}
+  50%{transform:translateY(0)} 62.5%{transform:translateY(-2.5px)}
+  75%,100%{transform:translateY(0)}
+}
+/* Front leg/arm. 3 strides across 0-75%, settle to rest by 85%, hold to 100%. */
+@keyframes dstsLeg {
+  0%{transform:rotate(28deg)} 12.5%{transform:rotate(-26deg)}
+  25%{transform:rotate(28deg)} 37.5%{transform:rotate(-26deg)}
+  50%{transform:rotate(28deg)} 62.5%{transform:rotate(-26deg)}
+  75%{transform:rotate(28deg)} 85%,100%{transform:rotate(6deg)}
+}
+@keyframes dstsLegAlt {
+  0%{transform:rotate(-26deg)} 12.5%{transform:rotate(28deg)}
+  25%{transform:rotate(-26deg)} 37.5%{transform:rotate(28deg)}
+  50%{transform:rotate(-26deg)} 62.5%{transform:rotate(28deg)}
+  75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-6deg)}
+}
+@keyframes dstsShin {
+  0%{transform:rotate(2deg)} 6.25%{transform:rotate(38deg)} 12.5%{transform:rotate(10deg)}
+  25%{transform:rotate(2deg)} 31.25%{transform:rotate(38deg)} 37.5%{transform:rotate(10deg)}
+  50%{transform:rotate(2deg)} 56.25%{transform:rotate(38deg)} 62.5%{transform:rotate(10deg)}
+  75%{transform:rotate(2deg)} 85%,100%{transform:rotate(0deg)}
+}
+@keyframes dstsShinAlt {
+  0%{transform:rotate(10deg)} 12.5%{transform:rotate(2deg)} 18.75%{transform:rotate(38deg)}
+  25%{transform:rotate(10deg)} 37.5%{transform:rotate(2deg)} 43.75%{transform:rotate(38deg)}
+  50%{transform:rotate(10deg)} 62.5%{transform:rotate(2deg)} 68.75%{transform:rotate(38deg)}
+  75%{transform:rotate(10deg)} 85%,100%{transform:rotate(2deg)}
+}
+@keyframes dstsArm {
+  0%{transform:rotate(-22deg)} 12.5%{transform:rotate(20deg)}
+  25%{transform:rotate(-22deg)} 37.5%{transform:rotate(20deg)}
+  50%{transform:rotate(-22deg)} 62.5%{transform:rotate(20deg)}
+  75%{transform:rotate(-22deg)} 85%,100%{transform:rotate(-4deg)}
+}
+@keyframes dstsArmAlt {
+  0%{transform:rotate(20deg)} 12.5%{transform:rotate(-22deg)}
+  25%{transform:rotate(20deg)} 37.5%{transform:rotate(-22deg)}
+  50%{transform:rotate(20deg)} 62.5%{transform:rotate(-22deg)}
+  75%{transform:rotate(20deg)} 85%,100%{transform:rotate(4deg)}
+}
 
 @media (prefers-reduced-motion: reduce) {
   .site-loader .figure-body, .site-loader .leg-front, .site-loader .leg-back,
@@ -139,10 +191,14 @@ html { scroll-behavior: smooth; }
   .site-loader .arm-front, .site-loader .bag-group,
   .site-loader .loader-sun, .site-loader .loader-figure,
   .site-loader .loader-shadow, .site-loader .skyline-group,
-  .site-loader .loader-text span span { animation: none !important; }
+  .site-loader .t-daily span, .site-loader .t-stop,
+  .site-loader .t-to, .site-loader .t-shop { animation: none !important; }
   .site-loader .loader-sun { transform: translateX(-50%) scale(1); }
   .site-loader .loader-figure { opacity: 1; }
-  .site-loader .loader-text span span { opacity: 1; transform: none; }
+  .site-loader .t-daily span, .site-loader .t-stop,
+  .site-loader .t-to, .site-loader .t-shop {
+    opacity: 1; transform: none; filter: none;
+  }
 }
 
 body {
