@@ -70,7 +70,9 @@
   .loader-figure svg { width: 100%; height: 100%; overflow: visible; }
 
   /* Each limb runs ONE finite 2.4s timeline: walk strides baked in, then it
-     locks into a FULL mid-stride pose (limbs swung outward) and holds forever. */
+     locks into a FULL mid-stride pose (limbs swung outward) and holds forever.
+     Cadence slowed to 2 strides so arms/legs swing more gently, while the
+     timeline length (and therefore travel speed) is unchanged. */
   .figure-body { animation: body 2.4s ease-in-out forwards; }
   .leg-front { transform-origin: 55px 96px; animation: leg 2.4s ease-in-out forwards; }
   .leg-back  { transform-origin: 55px 96px; animation: legAlt 2.4s ease-in-out forwards; }
@@ -82,8 +84,8 @@
 
   /* ───────────── Brand text ───────────── */
   .loader-text {
-    margin-top: 18px;
-    font-size: 30px;
+    margin-top: 8px;
+    font-size: 34px;
     font-weight: 800;
     letter-spacing: -0.5px;
     white-space: nowrap;
@@ -142,49 +144,43 @@
   @keyframes flip { 0%{opacity:0;transform:rotateX(-90deg)} 100%{opacity:1;transform:rotateX(0deg)} }
   @keyframes slideSharp { 0%{opacity:0;transform:translateX(34px);filter:blur(6px)} 100%{opacity:1;transform:translateX(0);filter:blur(0)} }
 
-  /* Single finite limb timelines: 0-75% walking (3 strides), then hold a FULL
-     mid-stride pose — front limbs swung forward, back limbs swung back. */
+  /* Single finite limb timelines: 0-75% walking (now 2 slower strides), then
+     hold a FULL mid-stride pose — front limbs swung forward, back limbs swung
+     back. Total length stays 2.4s so the figure's travel speed is unchanged. */
   @keyframes body {
-    0%{transform:translateY(0)} 12.5%{transform:translateY(-2.5px)}
-    25%{transform:translateY(0)} 37.5%{transform:translateY(-2.5px)}
-    50%{transform:translateY(0)} 62.5%{transform:translateY(-2.5px)}
+    0%{transform:translateY(0)} 18.75%{transform:translateY(-2.5px)}
+    37.5%{transform:translateY(0)} 56.25%{transform:translateY(-2.5px)}
     75%,100%{transform:translateY(0)}
   }
   @keyframes leg {
-    0%{transform:rotate(28deg)} 12.5%{transform:rotate(-26deg)}
-    25%{transform:rotate(28deg)} 37.5%{transform:rotate(-26deg)}
-    50%{transform:rotate(28deg)} 62.5%{transform:rotate(-26deg)}
-    75%{transform:rotate(28deg)} 85%,100%{transform:rotate(30deg)}
+    0%{transform:rotate(28deg)} 18.75%{transform:rotate(-26deg)}
+    37.5%{transform:rotate(28deg)} 56.25%{transform:rotate(-26deg)}
+    75%{transform:rotate(28deg)} 88%,100%{transform:rotate(30deg)}
   }
   @keyframes legAlt {
-    0%{transform:rotate(-26deg)} 12.5%{transform:rotate(28deg)}
-    25%{transform:rotate(-26deg)} 37.5%{transform:rotate(28deg)}
-    50%{transform:rotate(-26deg)} 62.5%{transform:rotate(28deg)}
-    75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-28deg)}
+    0%{transform:rotate(-26deg)} 18.75%{transform:rotate(28deg)}
+    37.5%{transform:rotate(-26deg)} 56.25%{transform:rotate(28deg)}
+    75%{transform:rotate(-26deg)} 88%,100%{transform:rotate(-28deg)}
   }
   @keyframes shin {
-    0%{transform:rotate(2deg)} 6.25%{transform:rotate(38deg)} 12.5%{transform:rotate(10deg)}
-    25%{transform:rotate(2deg)} 31.25%{transform:rotate(38deg)} 37.5%{transform:rotate(10deg)}
-    50%{transform:rotate(2deg)} 56.25%{transform:rotate(38deg)} 62.5%{transform:rotate(10deg)}
-    75%{transform:rotate(2deg)} 85%,100%{transform:rotate(4deg)}
+    0%{transform:rotate(2deg)} 9.375%{transform:rotate(38deg)} 18.75%{transform:rotate(10deg)}
+    37.5%{transform:rotate(2deg)} 46.875%{transform:rotate(38deg)} 56.25%{transform:rotate(10deg)}
+    75%{transform:rotate(2deg)} 88%,100%{transform:rotate(4deg)}
   }
   @keyframes shinAlt {
-    0%{transform:rotate(10deg)} 12.5%{transform:rotate(2deg)} 18.75%{transform:rotate(38deg)}
-    25%{transform:rotate(10deg)} 37.5%{transform:rotate(2deg)} 43.75%{transform:rotate(38deg)}
-    50%{transform:rotate(10deg)} 62.5%{transform:rotate(2deg)} 68.75%{transform:rotate(38deg)}
-    75%{transform:rotate(10deg)} 85%,100%{transform:rotate(22deg)}
+    0%{transform:rotate(10deg)} 18.75%{transform:rotate(2deg)} 28.125%{transform:rotate(38deg)}
+    37.5%{transform:rotate(10deg)} 56.25%{transform:rotate(2deg)} 65.625%{transform:rotate(38deg)}
+    75%{transform:rotate(10deg)} 88%,100%{transform:rotate(22deg)}
   }
   @keyframes arm {
-    0%{transform:rotate(-22deg)} 12.5%{transform:rotate(20deg)}
-    25%{transform:rotate(-22deg)} 37.5%{transform:rotate(20deg)}
-    50%{transform:rotate(-22deg)} 62.5%{transform:rotate(20deg)}
-    75%{transform:rotate(-22deg)} 85%,100%{transform:rotate(22deg)}
+    0%{transform:rotate(-22deg)} 18.75%{transform:rotate(20deg)}
+    37.5%{transform:rotate(-22deg)} 56.25%{transform:rotate(20deg)}
+    75%{transform:rotate(-22deg)} 88%,100%{transform:rotate(22deg)}
   }
   @keyframes armAlt {
-    0%{transform:rotate(20deg)} 12.5%{transform:rotate(-22deg)}
-    25%{transform:rotate(20deg)} 37.5%{transform:rotate(-22deg)}
-    50%{transform:rotate(20deg)} 62.5%{transform:rotate(-22deg)}
-    75%{transform:rotate(20deg)} 85%,100%{transform:rotate(-22deg)}
+    0%{transform:rotate(20deg)} 18.75%{transform:rotate(-22deg)}
+    37.5%{transform:rotate(20deg)} 56.25%{transform:rotate(-22deg)}
+    75%{transform:rotate(20deg)} 88%,100%{transform:rotate(-22deg)}
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -200,21 +196,21 @@
 <div class="loader-overlay" id="loader">
   <div class="loader-scene">
 
-    <!-- Golden sun circle with skyline cut out as negative space -->
+    
     <div class="loader-sun">
       <svg viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <mask id="skylineMask">
             <rect x="0" y="0" width="190" height="190" fill="#fff"/>
             <g class="skyline-group" fill="#000">
-              <!-- NYC-style skyline cut out of the lower half -->
+              
               <rect x="18" y="120" width="14" height="70"/>
               <rect x="30" y="108" width="10" height="82"/>
               <rect x="42" y="126" width="12" height="64"/>
               <rect x="54" y="112" width="9" height="78"/>
               <rect x="64" y="122" width="12" height="68"/>
               <rect x="78" y="96" width="10" height="94"/>
-              <!-- central spire (Empire State) -->
+              
               <rect x="90" y="74" width="12" height="116"/>
               <rect x="94" y="60" width="4" height="22"/>
               <polygon points="93,62 99,62 96,50"/>
@@ -230,49 +226,51 @@
       </svg>
     </div>
 
-    <!-- Ground shadow -->
+    
     <div class="loader-shadow"></div>
 
-    <!-- Walking figure (faces right, walks left -> centre) -->
+    
     <div class="loader-figure">
       <svg viewBox="0 0 110 190" xmlns="http://www.w3.org/2000/svg">
         <g class="figure-body">
-          <!-- BACK LEG (drawn first so front leg overlaps) -->
+          
           <g class="leg-back">
-            <line x1="55" y1="96" x2="55" y2="132" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
+            <line x1="55" y1="96" x2="55" y2="132" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round"/>
             <g class="shin-back">
-              <line x1="55" y1="130" x2="55" y2="168" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round"/>
-              <line x1="55" y1="168" x2="66" y2="170" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+              <line x1="55" y1="130" x2="55" y2="168" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
+              <line x1="55" y1="168" x2="67" y2="170" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
             </g>
           </g>
 
-          <!-- BACK ARM -->
+          
           <g class="arm-back">
-            <line x1="55" y1="60" x2="55" y2="94" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="55" y2="94" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
           </g>
 
-          <!-- HEAD -->
-          <circle cx="55" cy="30" r="15" fill="#1a1a1a"/>
-          <!-- TORSO -->
-          <line x1="55" y1="45" x2="55" y2="98" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
-          <!-- Torso highlight (reflection), slightly left of centre -->
-          <path d="M52 50 Q49 72 52 92" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
+          
+          <circle cx="55" cy="28" r="17" fill="#1a1a1a"/>
+          
+          <line x1="55" y1="44" x2="55" y2="50" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round"/>
+          
+          <line x1="55" y1="48" x2="55" y2="99" stroke="#1a1a1a" stroke-width="13" stroke-linecap="round"/>
+          
+          <path d="M52 52 Q49 74 52 94" fill="none" stroke="#3a3a3a" stroke-width="2.2" stroke-linecap="round"/>
 
-          <!-- FRONT LEG -->
+          
           <g class="leg-front">
-            <line x1="55" y1="96" x2="55" y2="132" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
+            <line x1="55" y1="96" x2="55" y2="132" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round"/>
             <g class="shin-front">
-              <line x1="55" y1="130" x2="55" y2="168" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round"/>
-              <line x1="55" y1="168" x2="66" y2="170" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round"/>
+              <line x1="55" y1="130" x2="55" y2="168" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
+              <line x1="55" y1="168" x2="67" y2="170" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
             </g>
           </g>
 
-          <!-- FRONT ARM (the right hand, holds the bag) -->
+          
           <g class="arm-front">
-            <line x1="55" y1="60" x2="55" y2="96" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
+            <line x1="55" y1="60" x2="55" y2="96" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
           </g>
 
-          <!-- SHOPPING BAG, swings with the front arm -->
+          
           <g class="bag-group">
             <path d="M50 96 Q50 86 55 86 Q60 86 60 96" fill="none" stroke="#c78b06" stroke-width="2"/>
             <rect x="43" y="96" width="24" height="28" rx="3" fill="#e8a308" stroke="#c78b06" stroke-width="1.5"/>
@@ -282,7 +280,7 @@
     </div>
   </div>
 
-  <!-- Brand text -->
+  
   <div class="loader-text">
     <span class="t-daily"><span>D</span><span>a</span><span>i</span><span>l</span><span>y</span></span><span class="t-stop">Stop</span><span class="t-to">To</span><span class="t-shop">Shop</span>
   </div>
