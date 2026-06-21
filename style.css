@@ -75,6 +75,7 @@ html { scroll-behavior: smooth; }
   animation: dstsFigureWalkIn 1.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
 }
 .site-loader .loader-figure svg { width: 100%; height: 100%; overflow: visible; }
+.site-loader .loader-figure svg * { transform-box: view-box; }
 
 /* Each limb runs ONE finite timeline that contains the walk strides AND ends
    locked in a neutral standing pose. `forwards` holds that final pose forever,
