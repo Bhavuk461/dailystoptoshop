@@ -85,13 +85,13 @@ html { scroll-behavior: smooth; }
 .site-loader .upper-body   { transform-origin: 52px 120px; animation: dstsUpperBody 2.4s ease-in-out forwards; }
 .site-loader .leg-front    { transform-origin: 52px 120px; animation: dstsLeg       2.4s ease-in-out forwards; }
 .site-loader .leg-back     { transform-origin: 52px 120px; animation: dstsLegAlt    2.4s ease-in-out forwards; }
-.site-loader .shin-front   { transform-origin: 52px 160px; animation: dstsShin      2.4s ease-in-out forwards; }
-.site-loader .shin-back    { transform-origin: 52px 160px; animation: dstsShinAlt   2.4s ease-in-out forwards; }
-.site-loader .arm-back     { transform-origin: 52px 66px;  animation: dstsArmAlt    2.4s ease-in-out forwards; }
-.site-loader .arm-front    { transform-origin: 68px 66px;  animation: dstsArm       2.4s ease-in-out forwards; }
-.site-loader .forearm-front{ transform-origin: 68px 94px;  animation: dstsForearm    2.4s ease-in-out forwards; }
-.site-loader .forearm-back { transform-origin: 52px 94px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
-.site-loader .bag-group     { transform-origin: 68px 122px; animation: dstsBag        2.4s ease-in-out forwards; }
+.site-loader .shin-front   { transform-origin: 52px 162px; animation: dstsShin      2.4s ease-in-out forwards; }
+.site-loader .shin-back    { transform-origin: 52px 162px; animation: dstsShinAlt   2.4s ease-in-out forwards; }
+.site-loader .arm-back     { transform-origin: 52px 62px;  animation: dstsArmAlt    2.4s ease-in-out forwards; }
+.site-loader .arm-front    { transform-origin: 52px 62px;  animation: dstsArm       2.4s ease-in-out forwards; }
+.site-loader .forearm-front{ transform-origin: 52px 92px;  animation: dstsForearm    2.4s ease-in-out forwards; }
+.site-loader .forearm-back { transform-origin: 52px 92px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
+.site-loader .bag-group     { transform-origin: 52px 120px; animation: dstsBag        2.4s ease-in-out forwards; }
 
 .site-loader .loader-text {
   margin-top: 6px; font-size: 38px; font-weight: 800;
