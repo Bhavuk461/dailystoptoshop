@@ -1995,39 +1995,64 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ───────────────────────────────────────────
-// SITE LOADER — hide the walking-figure intro once the page is ready
+// SITE LOADER — hide the intro once the logo reveal video ends
 // ───────────────────────────────────────────
 (function () {
   const loader = document.getElementById('site-loader');
+  const video = document.getElementById('loader-video');
   if (!loader) return;
 
   const reduceMotion = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // The figure walks in, then settles into a standing rest pose at ~2.45s and
-  // stays paused there (held by the CSS settle animation). We then keep the
-  // figure visibly standing still for a comfortable beat before a slow, smooth
-  // fade into the site. Skip the wait entirely for reduced-motion users.
-  const WALK_AND_SETTLE = 2450; // figure reaches destination and stops here
-  const PAUSE_HOLD = 350;       // how long the paused figure lingers, aesthetically
-  const minDisplay = reduceMotion ? 300 : (WALK_AND_SETTLE + PAUSE_HOLD);
+
+  let pageLoaded = false;
+  let videoEnded = false;
 
   function hideLoader() {
     loader.classList.add('is-hidden');
     loader.addEventListener('transitionend', function () {
       loader.remove();
     }, { once: true });
-    // Fallback removal in case transitionend doesn't fire (matches the 0.9s fade)
     setTimeout(function () { if (loader.isConnected) loader.remove(); }, 1200);
   }
 
-  // Only fade out once BOTH the page has loaded and the figure has finished its
-  // walk + pause, so the standstill is always clearly visible.
-  function scheduleHide() { setTimeout(hideLoader, minDisplay); }
+  function checkAndHide() {
+    if (pageLoaded && videoEnded) {
+      hideLoader();
+    }
+  }
+
+  if (reduceMotion) {
+    // If user prefers reduced motion, hide the loader immediately once page loads
+    videoEnded = true;
+  } else if (video) {
+    video.addEventListener('ended', () => {
+      videoEnded = true;
+      checkAndHide();
+    });
+    // Safety fallback in case video fails to load/play
+    video.addEventListener('error', () => {
+      videoEnded = true;
+      checkAndHide();
+    });
+    // If the video takes too long, we also cap it
+    setTimeout(() => {
+      videoEnded = true;
+      checkAndHide();
+    }, 8500);
+  } else {
+    videoEnded = true;
+  }
+
+  function onPageLoad() {
+    pageLoaded = true;
+    checkAndHide();
+  }
 
   if (document.readyState === 'complete') {
-    scheduleHide();
+    onPageLoad();
   } else {
-    window.addEventListener('load', scheduleHide);
+    window.addEventListener('load', onPageLoad);
   }
 })();
 

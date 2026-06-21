@@ -32,226 +32,34 @@
 
 html { scroll-behavior: smooth; }
 
-/* ─── SITE LOADER (walking figure + sun logo reveal) ─── */
+/* ─── SITE LOADER (video logo reveal) ─── */
 .site-loader {
   position: fixed; inset: 0; z-index: 100000;
-  display: flex; flex-direction: column;
-  justify-content: center; align-items: center;
-  background: #f5f5f0;
-  font-family: var(--font-body);
+  display: flex; justify-content: center; align-items: center;
+  background: #f6f6f6;
 }
 .site-loader.is-hidden {
   opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity 0.9s ease, visibility 0s linear 0.9s;
 }
-.site-loader .loader-scene { position: relative; width: 400px; height: 360px; }
-
-.site-loader .loader-sun {
-  position: absolute; top: 10px; left: 50%;
-  transform: translateX(-50%) scale(0);
-  width: 240px; height: 240px; border-radius: 50%;
-  overflow: hidden;
-  animation: dstsSunReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+.site-loader .loader-video-wrap {
+  width: 640px;
+  max-width: 90vw;
+  aspect-ratio: 16/9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.site-loader .loader-sun svg { width: 100%; height: 100%; display: block; }
-.site-loader .skyline-group {
-  transform: translateY(70px);
-  animation: dstsSkylineRise 0.6s ease 0.55s forwards;
-}
-
-.site-loader .loader-shadow {
-  position: absolute; bottom: 56px; left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 130px; height: 18px;
-  background: radial-gradient(ellipse, rgba(0,0,0,0.16) 0%, transparent 70%);
-  border-radius: 50%;
-  animation: dstsShadowGrow 0.5s ease 0.85s forwards;
+.site-loader .loader-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.site-loader .loader-figure {
-  position: absolute; bottom: 28px; left: 50%;
-  width: 160px; height: 290px;
-  transform: translateX(-50%); opacity: 0;
-  animation: dstsFigureWalkIn 1.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
-}
-.site-loader .loader-figure svg { width: 100%; height: 100%; overflow: visible; }
-.site-loader .loader-figure svg * { transform-box: view-box; }
-
-/* Each limb runs ONE finite timeline that contains the walk strides AND ends
-   locked in a neutral standing pose. `forwards` holds that final pose forever,
-   so the figure pauses permanently at its destination with no snap or gap.
-   Timeline = 2.4s: 0-75% walking (3 strides), 75-85% settling, 85-100% held. */
-.site-loader .figure-body  { animation: dstsBody 2.4s ease-in-out forwards; }
-.site-loader .upper-body   { transform-origin: 52px 120px; animation: dstsUpperBody 2.4s ease-in-out forwards; }
-.site-loader .leg-front    { transform-origin: 52px 120px; animation: dstsLeg       2.4s ease-in-out forwards; }
-.site-loader .leg-back     { transform-origin: 52px 120px; animation: dstsLegAlt    2.4s ease-in-out forwards; }
-.site-loader .shin-front   { transform-origin: 52px 162px; animation: dstsShin      2.4s ease-in-out forwards; }
-.site-loader .shin-back    { transform-origin: 52px 162px; animation: dstsShinAlt   2.4s ease-in-out forwards; }
-.site-loader .arm-back     { transform-origin: 52px 62px;  animation: dstsArmAlt    2.4s ease-in-out forwards; }
-.site-loader .arm-front    { transform-origin: 52px 62px;  animation: dstsArm       2.4s ease-in-out forwards; }
-.site-loader .forearm-front{ transform-origin: 52px 92px;  animation: dstsForearm    2.4s ease-in-out forwards; }
-.site-loader .forearm-back { transform-origin: 52px 92px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
-.site-loader .bag-group     { transform-origin: 52px 134px; animation: dstsBag        2.4s ease-in-out forwards; }
-
-.site-loader .loader-text {
-  margin-top: 6px; font-size: 38px; font-weight: 800;
-  letter-spacing: -0.5px; white-space: nowrap;
-  perspective: 600px;
-}
-.site-loader .loader-text > span { display: inline-block; }
-.site-loader .t-daily { color: #1a1a1a; }
-.site-loader .t-stop  { color: #e8a308; }
-.site-loader .t-to    { color: #1a1a1a; }
-.site-loader .t-shop  { color: #e8a308; }
-
-/* "Daily" — letters cascade down and bounce in, one by one */
-.site-loader .t-daily span {
-  display: inline-block; opacity: 0;
-  transform: translateY(-22px) scale(0.7);
-  animation: dstsDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-.site-loader .t-daily span:nth-child(1){animation-delay:0.45s}
-.site-loader .t-daily span:nth-child(2){animation-delay:0.50s}
-.site-loader .t-daily span:nth-child(3){animation-delay:0.55s}
-.site-loader .t-daily span:nth-child(4){animation-delay:0.60s}
-.site-loader .t-daily span:nth-child(5){animation-delay:0.65s}
-
-/* "Stop" — whole word springs/pops in from small */
-.site-loader .t-stop {
-  opacity: 0; transform: scale(0.2);
-  animation: dstsPop 0.55s cubic-bezier(0.34, 1.8, 0.5, 1) 0.85s forwards;
-}
-
-/* "To" — flips in on the X axis */
-.site-loader .t-to {
-  opacity: 0; transform-origin: center bottom;
-  transform: rotateX(-90deg);
-  animation: dstsFlip 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.15s forwards;
-}
-
-/* "Shop" — slides in from the right, blur sharpens */
-.site-loader .t-shop {
-  opacity: 0; transform: translateX(34px);
-  filter: blur(6px);
-  animation: dstsSlideSharp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 1.40s forwards;
-}
-
-@keyframes dstsSunReveal { 0%{transform:translateX(-50%) scale(0)} 100%{transform:translateX(-50%) scale(1)} }
-@keyframes dstsSkylineRise { 0%{transform:translateY(70px)} 100%{transform:translateY(0)} }
-@keyframes dstsShadowGrow { 0%{transform:translateX(-50%) scaleX(0);opacity:0} 100%{transform:translateX(-50%) scaleX(1);opacity:1} }
-@keyframes dstsFigureWalkIn { 0%{opacity:0;transform:translateX(-260%)} 25%{opacity:1} 100%{opacity:1;transform:translateX(-50%)} }
-@keyframes dstsDrop { 0%{opacity:0;transform:translateY(-22px) scale(0.7)} 60%{opacity:1} 100%{opacity:1;transform:translateY(0) scale(1)} }
-@keyframes dstsPop { 0%{opacity:0;transform:scale(0.2)} 70%{opacity:1;transform:scale(1.12)} 100%{opacity:1;transform:scale(1)} }
-@keyframes dstsFlip { 0%{opacity:0;transform:rotateX(-90deg)} 100%{opacity:1;transform:rotateX(0deg)} }
-@keyframes dstsSlideSharp { 0%{opacity:0;transform:translateX(34px);filter:blur(6px)} 100%{opacity:1;transform:translateX(0);filter:blur(0)} }
-/* Body bobs during the walk (0-75%), then holds still. */
-@keyframes dstsBody {
-  0%{transform:translateY(0)} 12.5%{transform:translateY(-2.5px)}
-  25%{transform:translateY(0)} 37.5%{transform:translateY(-2.5px)}
-  50%{transform:translateY(0)} 62.5%{transform:translateY(-2.5px)}
-  75%,100%{transform:translateY(0)}
-}
-/* Front leg/arm. 3 strides across 0-75%, settle to rest by 85%, hold to 100%. */
-/* The walk runs 0-75%; from 85% on, each limb holds a FULL mid-stride pose:
-   front limbs swung fully forward, back limbs swung fully back. */
-@keyframes dstsLeg {
-  0%{transform:rotate(28deg)} 12.5%{transform:rotate(-26deg)}
-  25%{transform:rotate(28deg)} 37.5%{transform:rotate(-26deg)}
-  50%{transform:rotate(28deg)} 62.5%{transform:rotate(-26deg)}
-  75%{transform:rotate(28deg)} 85%,100%{transform:rotate(6deg)}
-}
-@keyframes dstsLegAlt {
-  0%{transform:rotate(-26deg)} 12.5%{transform:rotate(28deg)}
-  25%{transform:rotate(-26deg)} 37.5%{transform:rotate(28deg)}
-  50%{transform:rotate(-26deg)} 62.5%{transform:rotate(28deg)}
-  75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-8deg)}
-}
-/* Knee is a one-way hinge: the shin only ever trails the thigh (positive =
-   heel swings back/up). It is straight when the foot is planted and flexes
-   only as the leg lifts on the back swing. It never bends the wrong way. */
-@keyframes dstsShin {
-  0%{transform:rotate(0deg)} 6.25%{transform:rotate(22deg)} 12.5%{transform:rotate(22deg)}
-  25%{transform:rotate(0deg)} 31.25%{transform:rotate(22deg)} 37.5%{transform:rotate(22deg)}
-  50%{transform:rotate(0deg)} 56.25%{transform:rotate(22deg)} 62.5%{transform:rotate(22deg)}
-  75%{transform:rotate(0deg)} 85%,100%{transform:rotate(2deg)}
-}
-@keyframes dstsShinAlt {
-  0%{transform:rotate(22deg)} 12.5%{transform:rotate(0deg)} 18.75%{transform:rotate(22deg)}
-  25%{transform:rotate(22deg)} 37.5%{transform:rotate(0deg)} 43.75%{transform:rotate(22deg)}
-  50%{transform:rotate(22deg)} 62.5%{transform:rotate(0deg)} 68.75%{transform:rotate(22deg)}
-  75%{transform:rotate(22deg)} 85%,100%{transform:rotate(6deg)}
-}
-/* Torso and head lean gently forward on the contact strides, then settle
-   nearly upright with the figure standing relaxed. */
-@keyframes dstsUpperBody {
-  0% { transform: rotate(4deg); }
-  12.5% { transform: rotate(0deg); }
-  25% { transform: rotate(4deg); }
-  37.5% { transform: rotate(0deg); }
-  50% { transform: rotate(4deg); }
-  62.5% { transform: rotate(0deg); }
-  75% { transform: rotate(4deg); }
-  85%,100% { transform: rotate(1deg); }
-}
-@keyframes dstsArm {
-  0%{transform:rotate(-32deg)} 12.5%{transform:rotate(30deg)}
-  25%{transform:rotate(-32deg)} 37.5%{transform:rotate(30deg)}
-  50%{transform:rotate(-32deg)} 62.5%{transform:rotate(30deg)}
-  75%{transform:rotate(-32deg)} 85%,100%{transform:rotate(6deg)}
-}
-@keyframes dstsArmAlt {
-  0%{transform:rotate(30deg)} 12.5%{transform:rotate(-32deg)}
-  25%{transform:rotate(30deg)} 37.5%{transform:rotate(-32deg)}
-  50%{transform:rotate(30deg)} 62.5%{transform:rotate(-32deg)}
-  75%{transform:rotate(30deg)} 85%,100%{transform:rotate(-6deg)}
-}
-/* Forearm flexes RELATIVE to the upper arm and only ever folds toward the
-   front of the body (negative here = hand swings forward/up toward the hip),
-   so the elbow can never hyperextend backward past the upper-arm line.
-   It is near-straight while the arm swings forward and folds a little while
-   the arm swings back. dstsForearm tracks the front arm (dstsArm) phase;
-   dstsForearmAlt tracks the back arm (dstsArmAlt) phase. */
-@keyframes dstsForearm {
-  0%{transform:rotate(-6deg)} 12.5%{transform:rotate(-34deg)}
-  25%{transform:rotate(-6deg)} 37.5%{transform:rotate(-34deg)}
-  50%{transform:rotate(-6deg)} 62.5%{transform:rotate(-34deg)}
-  75%{transform:rotate(-6deg)} 85%,100%{transform:rotate(-10deg)}
-}
-@keyframes dstsForearmAlt {
-  0%{transform:rotate(-34deg)} 12.5%{transform:rotate(-6deg)}
-  25%{transform:rotate(-34deg)} 37.5%{transform:rotate(-6deg)}
-  50%{transform:rotate(-34deg)} 62.5%{transform:rotate(-6deg)}
-  75%{transform:rotate(-34deg)} 85%,100%{transform:rotate(-10deg)}
-}
-/* Shopping bag counter-rotation keeps it hanging vertical. It hangs off the
-   front forearm, so it cancels (front upper-arm + front forearm):
-   fwd: -(-32 + -6) = +38deg ; back: -(+30 + -34) = +4deg ; rest: -(6 + -10) = +4deg. */
-@keyframes dstsBag {
-  0%{transform:rotate(38deg)} 12.5%{transform:rotate(4deg)}
-  25%{transform:rotate(38deg)} 37.5%{transform:rotate(4deg)}
-  50%{transform:rotate(38deg)} 62.5%{transform:rotate(4deg)}
-  75%{transform:rotate(38deg)} 85%,100%{transform:rotate(4deg)}
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-loader .figure-body, .site-loader .upper-body, .site-loader .leg-front, .site-loader .leg-back,
-  .site-loader .shin-front, .site-loader .shin-back, .site-loader .arm-back,
-  .site-loader .arm-front, .site-loader .forearm-front, .site-loader .forearm-back,
-  .site-loader .bag-group,
-  .site-loader .loader-sun, .site-loader .loader-figure,
-  .site-loader .loader-shadow, .site-loader .skyline-group,
-  .site-loader .t-daily span, .site-loader .t-stop,
-  .site-loader .t-to, .site-loader .t-shop { animation: none !important; }
-  .site-loader .loader-sun { transform: translateX(-50%) scale(1); }
-  .site-loader .loader-figure { opacity: 1; }
-  .site-loader .t-daily span, .site-loader .t-stop,
-  .site-loader .t-to, .site-loader .t-shop {
-    opacity: 1; transform: none; filter: none;
-  }
-}
 @media (max-width: 440px) {
-  .site-loader .loader-scene { transform: scale(0.72); transform-origin: center center; }
-  .site-loader .loader-text { font-size: 30px; }
+  .site-loader .loader-video-wrap {
+    max-width: 95vw;
+  }
 }
 
 body {
