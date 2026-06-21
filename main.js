@@ -1994,67 +1994,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('%c✦ dailystoptoshop loaded ✦', 'color: #FF5D8F; font-size: 16px; font-weight: bold;');
 });
 
-// ───────────────────────────────────────────
-// SITE LOADER — hide the intro once the logo reveal video ends
-// ───────────────────────────────────────────
-(function () {
-  const loader = document.getElementById('site-loader');
-  const video = document.getElementById('loader-video');
-  if (!loader) return;
 
-  const reduceMotion = window.matchMedia &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  let pageLoaded = false;
-  let videoEnded = false;
-
-  function hideLoader() {
-    loader.classList.add('is-hidden');
-    loader.addEventListener('transitionend', function () {
-      loader.remove();
-    }, { once: true });
-    setTimeout(function () { if (loader.isConnected) loader.remove(); }, 1200);
-  }
-
-  function checkAndHide() {
-    if (pageLoaded && videoEnded) {
-      hideLoader();
-    }
-  }
-
-  if (reduceMotion) {
-    // If user prefers reduced motion, hide the loader immediately once page loads
-    videoEnded = true;
-  } else if (video) {
-    video.addEventListener('ended', () => {
-      videoEnded = true;
-      checkAndHide();
-    });
-    // Safety fallback in case video fails to load/play
-    video.addEventListener('error', () => {
-      videoEnded = true;
-      checkAndHide();
-    });
-    // If the video takes too long, we also cap it
-    setTimeout(() => {
-      videoEnded = true;
-      checkAndHide();
-    }, 4000);
-  } else {
-    videoEnded = true;
-  }
-
-  function onPageLoad() {
-    pageLoaded = true;
-    checkAndHide();
-  }
-
-  if (document.readyState === 'complete') {
-    onPageLoad();
-  } else {
-    window.addEventListener('load', onPageLoad);
-  }
-})();
 
 
 // ═══════════════════════════════════════════════════════════════
