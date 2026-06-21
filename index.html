@@ -59,47 +59,50 @@
           <g class="figure-body">
             <!-- Back leg -->
             <g class="leg-back">
-              <line x1="60" y1="108" x2="60" y2="148" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+              <line x1="52" y1="110" x2="52" y2="150" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
               <g class="shin-back">
-                <line x1="60" y1="146" x2="60" y2="188" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
-                <line x1="60" y1="188" x2="73" y2="190" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
+                <line x1="52" y1="148" x2="52" y2="190" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+                <line x1="52" y1="190" x2="65" y2="192" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
               </g>
             </g>
-
-            <!-- Back arm (with elbow) -->
-            <g class="arm-back">
-              <line x1="60" y1="54" x2="60" y2="82" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round"/>
-              <g class="forearm-back">
-                <line x1="60" y1="80" x2="60" y2="108" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
-              </g>
-            </g>
-
-            <!-- Head (floating above body with gap) -->
-            <circle cx="60" cy="20" r="20" fill="#1a1a1a"/>
-
-            <!-- Torso — thick capsule with slight forward lean -->
-            <line x1="57" y1="48" x2="60" y2="110" stroke="#1a1a1a" stroke-width="28" stroke-linecap="round"/>
-
-            <!-- Body highlight (off-white curve for 3D depth) -->
-            <path d="M49 52 Q46 80 49 106" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3" stroke-linecap="round"/>
 
             <!-- Front leg -->
             <g class="leg-front">
-              <line x1="60" y1="108" x2="60" y2="148" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+              <line x1="52" y1="110" x2="52" y2="150" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
               <g class="shin-front">
-                <line x1="60" y1="146" x2="60" y2="188" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
-                <line x1="60" y1="188" x2="73" y2="190" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
+                <line x1="52" y1="148" x2="52" y2="190" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+                <line x1="52" y1="190" x2="65" y2="192" stroke="#1a1a1a" stroke-width="9" stroke-linecap="round"/>
               </g>
             </g>
 
-            <!-- Front arm (with elbow + bag at wrist) -->
-            <g class="arm-front">
-              <line x1="60" y1="54" x2="60" y2="82" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round"/>
-              <g class="forearm-front">
-                <line x1="60" y1="80" x2="60" y2="108" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
-                <g class="bag-group">
-                  <path d="M50 108 Q50 96 60 96 Q70 96 70 108" fill="none" stroke="#c78b06" stroke-width="2.5"/>
-                  <rect x="42" y="108" width="36" height="40" rx="4" fill="#e8a308" stroke="#c78b06" stroke-width="1.8"/>
+            <!-- Upper Body Group (rocks dynamically in CSS) -->
+            <g class="upper-body">
+              <!-- Back arm -->
+              <g class="arm-back">
+                <line x1="52" y1="54" x2="52" y2="82" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round"/>
+                <g class="forearm-back">
+                  <line x1="52" y1="80" x2="52" y2="108" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
+                </g>
+              </g>
+
+              <!-- Head -->
+              <circle cx="62" cy="20" r="20" fill="#1a1a1a"/>
+
+              <!-- Torso — curved capsule leaning forward -->
+              <path d="M62 48 Q50 79 50 110" fill="none" stroke="#1a1a1a" stroke-width="28" stroke-linecap="round"/>
+
+              <!-- Body highlight (off-white curve for 3D depth) -->
+              <path d="M52 50 Q40 79 40 106" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3" stroke-linecap="round"/>
+
+              <!-- Front arm -->
+              <g class="arm-front">
+                <line x1="68" y1="54" x2="68" y2="82" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round"/>
+                <g class="forearm-front">
+                  <line x1="68" y1="80" x2="68" y2="108" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
+                  <g class="bag-group">
+                    <path d="M58 108 Q58 96 68 96 Q78 96 78 108" fill="none" stroke="#c78b06" stroke-width="2.5"/>
+                    <rect x="50" y="108" width="36" height="40" rx="4" fill="#e8a308" stroke="#c78b06" stroke-width="1.8"/>
+                  </g>
                 </g>
               </g>
             </g>
