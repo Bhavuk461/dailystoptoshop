@@ -1067,6 +1067,10 @@ function openCheckoutModal() {
   if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
   if (totalEl) totalEl.textContent = formatPrice(total);
   document.body.classList.add('checkout-open');
+
+  if (typeof window.applyWheelDiscountToCheckout === 'function') {
+    window.applyWheelDiscountToCheckout();
+  }
 }
 
 function closeCheckoutModal() {
@@ -1095,13 +1099,14 @@ async function handleCheckoutSubmit(e) {
 
   const form = e.target;
   const fd = new FormData(form);
+  const activeDiscount = (typeof getActiveSpinDiscount === 'function') ? getActiveSpinDiscount() : null;
   const delivery = {
     name: (fd.get('name') || '').trim(),
     phone: (fd.get('phone') || '').trim(),
     email: (fd.get('email') || '').trim(),
     address: (fd.get('address') || '').trim(),
     pincode: (fd.get('pincode') || '').trim(),
-    discount_pct: (fd.get('discount_pct') || '').trim()
+    discount_pct: (activeDiscount && activeDiscount.pct) ? String(activeDiscount.pct) : ''
   };
 
   const items = cart.map(item => ({ productId: item.productId, quantity: item.quantity }));
@@ -1156,6 +1161,11 @@ async function handleCheckoutSubmit(e) {
         const vdata = await vres.json();
         if (vres.ok && vdata.verified) {
           showToast('Payment successful! 🎉 Order confirmed!');
+          
+          if (typeof window.markActiveSpinDiscountUsed === 'function') {
+            window.markActiveSpinDiscountUsed();
+          }
+
           cart = [];
           saveCart();
           renderCart();
@@ -2277,7 +2287,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Close overlay ── */
   function closeWheelOverlay() {
-    const overlay = document.getElementById('wheel-overlay');
+    const overlay = document.getElementById('wheel-container');
     if (!overlay) return;
     overlay.classList.remove('wheel--open');
     document.body.classList.remove('wheel-panel-open');
@@ -2285,7 +2295,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Show overlay ── */
   function showWheelOverlay() {
-    const overlay = document.getElementById('wheel-overlay');
+    const overlay = document.getElementById('wheel-container');
     if (!overlay) return;
     void overlay.offsetWidth; // force reflow so transition fires
     overlay.classList.add('wheel--open');
@@ -2296,7 +2306,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function initSpinWheel() {
     loadSessionDiscount();
 
-    const overlay   = document.getElementById('wheel-overlay');
+    // Call renderCart immediately after loading so that any stored discount is visible in the cart drawer!
+    if (typeof renderCart === 'function') renderCart();
+
+    const overlay   = document.getElementById('wheel-container');
     const canvas    = document.getElementById('wheel-canvas');
     const spinBtn   = document.getElementById('wheel-spin-btn');
     const skipBtn   = document.getElementById('wheel-skip-btn');
@@ -2395,104 +2408,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Show overlay after 1.5s delay (only if not spun in the last week)
+    // Show overlay after 2s delay (only if not spun in the last week)
     if (canShowWheel()) {
       setTimeout(() => {
         showWheelOverlay();
-      }, 1500);
+      }, 2000);
     }
   }
 
-  /* ── Patch openCheckoutModal to show discount ── */
-  const _origOpenCheckout = window.openCheckoutModal;
-  if (typeof openCheckoutModal === 'function') {
-    window.openCheckoutModal = function () {
-      if (typeof _origOpenCheckout === 'function') _origOpenCheckout();
-      else {
-        // Fallback: call internal function
-        const subtotal = getCartSubtotal();
-        const shipping = getCartShipping();
-        const total    = subtotal + shipping;
-        const subtotalEl = document.getElementById('checkout-subtotal');
-        const shippingEl = document.getElementById('checkout-shipping');
-        const totalEl    = document.getElementById('checkout-total');
-        if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
-        if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
-        if (totalEl)    totalEl.textContent     = formatPrice(total);
-        document.body.classList.add('checkout-open');
-      }
-      applyWheelDiscountToCheckout();
-    };
-  }
-
-  /* ── Patch handleCheckoutSubmit to pass discount & clear after payment ── */
-  const _origHandleCheckoutSubmit = window.handleCheckoutSubmit;
-
-  // We intercept the checkout form submission at the DOM level so we can
-  // inject the discounted total into the Razorpay order creation request.
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('checkout-form');
-    if (!form) return;
-
-    // Attach our interceptor AFTER the existing one (capture=true fires first)
-    form.addEventListener('submit', function patchSubmit(e) {
-      if (!sessionDiscount || !sessionDiscount.pct) return; // nothing to do
-
-      // We mark discount as used immediately so a second fast click won't re-use it
-      // Actual clearing happens after payment.success too (belt & suspenders)
-    }, { capture: true });
-  });
-
-  // Override getCartTotal so Razorpay shows the discounted amount.
-  // The original function is used by the cart display; we override just the
-  // value passed to /api/order via the discount field in delivery notes.
-  // (The worker always recomputes from catalogue prices, so we send discount_pct
-  //  in the delivery notes for the email receipt.)
-  const _origHandleCheckout = window.handleCheckoutSubmit;
-  window.handleCheckoutSubmit = async function (e) {
-    // Inject discount_pct into the form data that handleCheckoutSubmit picks up
-    // by temporarily setting a hidden field.
-    const form  = e && e.target;
-    let hiddenPctInput = null;
-
-    if (sessionDiscount && sessionDiscount.pct && form) {
-      hiddenPctInput = document.createElement('input');
-      hiddenPctInput.type  = 'hidden';
-      hiddenPctInput.name  = 'discount_pct';
-      hiddenPctInput.value = String(sessionDiscount.pct);
-      form.appendChild(hiddenPctInput);
-    }
-
-    // Call original
-    if (typeof _origHandleCheckout === 'function') {
-      await _origHandleCheckout.call(this, e);
-    }
-
-    // Cleanup hidden field
-    if (hiddenPctInput && hiddenPctInput.parentNode) hiddenPctInput.parentNode.removeChild(hiddenPctInput);
-  };
-
-  // After successful payment, clear the discount so it can't be reused.
-  // We hook onto the verify call indirectly via MutationObserver on the cart clearing.
-  // The cleanest approach: wrap the verify success path. Since the original code is
-  // inline in handleCheckoutSubmit we listen for the cart becoming empty after payment.
-  const cartObserver = new MutationObserver(() => {
-    const count = typeof getCartCount === 'function' ? getCartCount() : 0;
-    if (count === 0 && sessionDiscount) {
-      markDiscountUsed();
-      sessionDiscount = null;
-      // Update checkout display (it'll be closed anyway, but just in case)
-      applyWheelDiscountToCheckout();
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const cartItemsEl = document.getElementById('cart-items');
-    if (cartItemsEl) cartObserver.observe(cartItemsEl, { childList: true, subtree: true });
-
-    // Also patch openCheckoutModal here once DOM is ready
+  /* ── Expose functions globally ── */
+  window.getActiveSpinDiscount = function () { return sessionDiscount; };
+  window.applyWheelDiscountToCheckout = applyWheelDiscountToCheckout;
+  window.markActiveSpinDiscountUsed = function () {
+    markDiscountUsed();
+    sessionDiscount = null;
     applyWheelDiscountToCheckout();
-  });
+  };
 
   /* ── Boot ── */
   if (document.readyState === 'loading') {

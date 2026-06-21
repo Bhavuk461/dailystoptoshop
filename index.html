@@ -358,45 +358,52 @@
     <img id="modal-image" src="" alt="Product zoom view">
   </div>
 
-  <!-- ─── Spin the Wheel — Left Slide Panel ─── -->
-  <!-- Floating tab to open/close the wheel -->
-  <button id="wheel-tab-btn" class="wheel-tab-btn" aria-label="Spin the wheel for a discount">
-    <span class="wheel-tab-icon">🎡</span>
-    <span class="wheel-tab-label">Spin &amp; Win!</span>
-  </button>
+  <!-- ─── Spin the Wheel — Left Slide Drawer ─── -->
+  <!--
+    .wheel-container = fixed, left:0, top:50%
+    closed → translateX(-320px): panel hidden, only the 44px tab shows on left edge
+    open   → translateX(0):      panel fully visible, tab becomes the close handle
+  -->
+  <div id="wheel-container" class="wheel-container" role="dialog" aria-label="Spin the wheel for a discount">
 
-  <div id="wheel-overlay" class="wheel-overlay" aria-modal="true" role="dialog" aria-label="Spin the wheel for a discount">
+    <!-- Panel (320px wide) -->
     <div class="wheel-panel">
       <div class="wheel-panel-header">
-        <div>
-          <span class="wheel-panel-emoji">✨</span>
-          <span class="wheel-panel-title">Spin &amp; Win!</span>
-        </div>
-        <button class="wheel-close-btn" id="wheel-close-btn" aria-label="Close">✕</button>
+        <span class="wheel-panel-emoji">✨</span>
+        <span class="wheel-panel-title">Spin &amp; Win!</span>
+        <button id="wheel-close-btn" class="wheel-close-btn" aria-label="Close drawer">&times;</button>
       </div>
 
       <div class="wheel-canvas-wrap">
-        <canvas id="wheel-canvas" width="300" height="300"></canvas>
-        <div class="wheel-pointer">▶</div>
+        <canvas id="wheel-canvas" width="260" height="260"></canvas>
+        <div class="wheel-pointer">&#9658;</div>
       </div>
 
       <p class="wheel-spin-hint" id="wheel-spin-hint">Enter your email &amp; spin!</p>
 
       <div class="wheel-form-wrap" id="wheel-form-wrap">
-        <input type="email" id="wheel-email-input" class="wheel-email-input" placeholder="your@email.com" autocomplete="email">
+        <input type="email" id="wheel-email-input" class="wheel-email-input"
+               placeholder="your@email.com" autocomplete="email">
         <button class="wheel-spin-btn" id="wheel-spin-btn">🎡 SPIN THE WHEEL!</button>
         <button class="wheel-skip-btn" id="wheel-skip-btn">No thanks</button>
-        <p class="wheel-legal">By spinning you agree to receive occasional emails.</p>
+        <p class="wheel-legal">Spin once a week. Discount applies to your session order.</p>
       </div>
 
       <div class="wheel-result-wrap" id="wheel-result-wrap" style="display:none;">
-        <div class="wheel-won-badge" id="wheel-won-badge">🎉</div>
+        <div class="wheel-won-badge">🎉</div>
         <p class="wheel-won-label">You won!</p>
         <p class="wheel-won-pct" id="wheel-won-pct">5% OFF</p>
-        <p class="wheel-won-desc">Discount auto-applied to your next order this session.</p>
-        <button class="wheel-shop-btn" id="wheel-shop-btn">Shop Now →</button>
+        <p class="wheel-won-desc">Discount auto-applied to your bag this session.</p>
+        <button class="wheel-shop-btn" id="wheel-shop-btn">Shop Now &rarr;</button>
       </div>
     </div>
+
+    <!-- Tab (44px wide) — always on the right edge of container, peeks out when closed -->
+    <button class="wheel-tab" id="wheel-tab-btn" aria-label="Toggle spin the wheel">
+      <span class="wheel-tab-icon">🎡</span>
+      <span class="wheel-tab-text">Spin &amp; Win!</span>
+    </button>
+
   </div>
 
   <div id="toast" class="toast"></div>
