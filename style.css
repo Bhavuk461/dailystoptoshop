@@ -158,72 +158,79 @@ html { scroll-behavior: smooth; }
   0%{transform:rotate(28deg)} 12.5%{transform:rotate(-26deg)}
   25%{transform:rotate(28deg)} 37.5%{transform:rotate(-26deg)}
   50%{transform:rotate(28deg)} 62.5%{transform:rotate(-26deg)}
-  75%{transform:rotate(28deg)} 85%,100%{transform:rotate(30deg)}
+  75%{transform:rotate(28deg)} 85%,100%{transform:rotate(6deg)}
 }
 @keyframes dstsLegAlt {
   0%{transform:rotate(-26deg)} 12.5%{transform:rotate(28deg)}
   25%{transform:rotate(-26deg)} 37.5%{transform:rotate(28deg)}
   50%{transform:rotate(-26deg)} 62.5%{transform:rotate(28deg)}
-  75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-28deg)}
+  75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-8deg)}
 }
+/* Knee is a one-way hinge: the shin only ever trails the thigh (positive =
+   heel swings back/up). It is straight when the foot is planted and flexes
+   only as the leg lifts on the back swing. It never bends the wrong way. */
 @keyframes dstsShin {
-  0%{transform:rotate(1deg)} 6.25%{transform:rotate(24deg)} 12.5%{transform:rotate(6deg)}
-  25%{transform:rotate(1deg)} 31.25%{transform:rotate(24deg)} 37.5%{transform:rotate(6deg)}
-  50%{transform:rotate(1deg)} 56.25%{transform:rotate(24deg)} 62.5%{transform:rotate(6deg)}
-  75%{transform:rotate(1deg)} 85%,100%{transform:rotate(3deg)}
+  0%{transform:rotate(0deg)} 6.25%{transform:rotate(22deg)} 12.5%{transform:rotate(22deg)}
+  25%{transform:rotate(0deg)} 31.25%{transform:rotate(22deg)} 37.5%{transform:rotate(22deg)}
+  50%{transform:rotate(0deg)} 56.25%{transform:rotate(22deg)} 62.5%{transform:rotate(22deg)}
+  75%{transform:rotate(0deg)} 85%,100%{transform:rotate(2deg)}
 }
 @keyframes dstsShinAlt {
-  0%{transform:rotate(6deg)} 12.5%{transform:rotate(1deg)} 18.75%{transform:rotate(24deg)}
-  25%{transform:rotate(6deg)} 37.5%{transform:rotate(1deg)} 43.75%{transform:rotate(24deg)}
-  50%{transform:rotate(6deg)} 62.5%{transform:rotate(1deg)} 68.75%{transform:rotate(24deg)}
-  75%{transform:rotate(6deg)} 85%,100%{transform:rotate(14deg)}
+  0%{transform:rotate(22deg)} 12.5%{transform:rotate(0deg)} 18.75%{transform:rotate(22deg)}
+  25%{transform:rotate(22deg)} 37.5%{transform:rotate(0deg)} 43.75%{transform:rotate(22deg)}
+  50%{transform:rotate(22deg)} 62.5%{transform:rotate(0deg)} 68.75%{transform:rotate(22deg)}
+  75%{transform:rotate(22deg)} 85%,100%{transform:rotate(6deg)}
 }
-/* Torso and head rock back and forth (leaning forward more during contact strides) */
+/* Torso and head lean gently forward on the contact strides, then settle
+   nearly upright with the figure standing relaxed. */
 @keyframes dstsUpperBody {
-  0% { transform: rotate(7deg); }
+  0% { transform: rotate(4deg); }
   12.5% { transform: rotate(0deg); }
-  25% { transform: rotate(7deg); }
+  25% { transform: rotate(4deg); }
   37.5% { transform: rotate(0deg); }
-  50% { transform: rotate(7deg); }
+  50% { transform: rotate(4deg); }
   62.5% { transform: rotate(0deg); }
-  75% { transform: rotate(7deg); }
-  85%,100% { transform: rotate(2deg); }
+  75% { transform: rotate(4deg); }
+  85%,100% { transform: rotate(1deg); }
 }
 @keyframes dstsArm {
-  0%{transform:rotate(-36deg)} 12.5%{transform:rotate(32deg)}
-  25%{transform:rotate(-36deg)} 37.5%{transform:rotate(32deg)}
-  50%{transform:rotate(-36deg)} 62.5%{transform:rotate(32deg)}
-  75%{transform:rotate(-36deg)} 85%,100%{transform:rotate(34deg)}
+  0%{transform:rotate(-32deg)} 12.5%{transform:rotate(30deg)}
+  25%{transform:rotate(-32deg)} 37.5%{transform:rotate(30deg)}
+  50%{transform:rotate(-32deg)} 62.5%{transform:rotate(30deg)}
+  75%{transform:rotate(-32deg)} 85%,100%{transform:rotate(6deg)}
 }
 @keyframes dstsArmAlt {
-  0%{transform:rotate(32deg)} 12.5%{transform:rotate(-36deg)}
-  25%{transform:rotate(32deg)} 37.5%{transform:rotate(-36deg)}
-  50%{transform:rotate(32deg)} 62.5%{transform:rotate(-36deg)}
-  75%{transform:rotate(32deg)} 85%,100%{transform:rotate(-36deg)}
+  0%{transform:rotate(30deg)} 12.5%{transform:rotate(-32deg)}
+  25%{transform:rotate(30deg)} 37.5%{transform:rotate(-32deg)}
+  50%{transform:rotate(30deg)} 62.5%{transform:rotate(-32deg)}
+  75%{transform:rotate(30deg)} 85%,100%{transform:rotate(-6deg)}
 }
-/* Forearm bends at the elbow as a one-way hinge: it only ever flexes inward
-   (positive), never crossing 0deg into backward hyperextension. It folds a
-   little more on the back-swing and straightens out on the forward-swing. */
+/* Forearm flexes RELATIVE to the upper arm and only ever folds toward the
+   front of the body (negative here = hand swings forward/up toward the hip),
+   so the elbow can never hyperextend backward past the upper-arm line.
+   It is near-straight while the arm swings forward and folds a little while
+   the arm swings back. dstsForearm tracks the front arm (dstsArm) phase;
+   dstsForearmAlt tracks the back arm (dstsArmAlt) phase. */
 @keyframes dstsForearm {
-  0%{transform:rotate(28deg)} 12.5%{transform:rotate(52deg)}
-  25%{transform:rotate(28deg)} 37.5%{transform:rotate(52deg)}
-  50%{transform:rotate(28deg)} 62.5%{transform:rotate(52deg)}
-  75%{transform:rotate(28deg)} 85%,100%{transform:rotate(50deg)}
+  0%{transform:rotate(-6deg)} 12.5%{transform:rotate(-34deg)}
+  25%{transform:rotate(-6deg)} 37.5%{transform:rotate(-34deg)}
+  50%{transform:rotate(-6deg)} 62.5%{transform:rotate(-34deg)}
+  75%{transform:rotate(-6deg)} 85%,100%{transform:rotate(-10deg)}
 }
 @keyframes dstsForearmAlt {
-  0%{transform:rotate(52deg)} 12.5%{transform:rotate(28deg)}
-  25%{transform:rotate(52deg)} 37.5%{transform:rotate(28deg)}
-  50%{transform:rotate(52deg)} 62.5%{transform:rotate(28deg)}
-  75%{transform:rotate(52deg)} 85%,100%{transform:rotate(30deg)}
+  0%{transform:rotate(-34deg)} 12.5%{transform:rotate(-6deg)}
+  25%{transform:rotate(-34deg)} 37.5%{transform:rotate(-6deg)}
+  50%{transform:rotate(-34deg)} 62.5%{transform:rotate(-6deg)}
+  75%{transform:rotate(-34deg)} 85%,100%{transform:rotate(-10deg)}
 }
-/* Shopping bag counter-rotation keeps it hanging vertical. The bag hangs off
-   the front forearm, so its rotation cancels (upper-arm swing + forearm flex).
-   arm-front: -36deg fwd / +32deg back; forearm: 28deg fwd / 52deg back. */
+/* Shopping bag counter-rotation keeps it hanging vertical. It hangs off the
+   front forearm, so it cancels (front upper-arm + front forearm):
+   fwd: -(-32 + -6) = +38deg ; back: -(+30 + -34) = +4deg ; rest: -(6 + -10) = +4deg. */
 @keyframes dstsBag {
-  0%{transform:rotate(8deg)} 12.5%{transform:rotate(-84deg)}
-  25%{transform:rotate(8deg)} 37.5%{transform:rotate(-84deg)}
-  50%{transform:rotate(8deg)} 62.5%{transform:rotate(-84deg)}
-  75%{transform:rotate(8deg)} 85%,100%{transform:rotate(-84deg)}
+  0%{transform:rotate(38deg)} 12.5%{transform:rotate(4deg)}
+  25%{transform:rotate(38deg)} 37.5%{transform:rotate(4deg)}
+  50%{transform:rotate(38deg)} 62.5%{transform:rotate(4deg)}
+  75%{transform:rotate(38deg)} 85%,100%{transform:rotate(4deg)}
 }
 
 @media (prefers-reduced-motion: reduce) {
