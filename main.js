@@ -2039,7 +2039,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       videoEnded = true;
       checkAndHide();
-    }, 8500);
+    }, 4500);
   } else {
     videoEnded = true;
   }
