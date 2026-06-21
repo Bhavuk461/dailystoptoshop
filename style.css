@@ -91,6 +91,7 @@ html { scroll-behavior: smooth; }
 .site-loader .arm-front    { transform-origin: 68px 66px;  animation: dstsArm       2.4s ease-in-out forwards; }
 .site-loader .forearm-front{ transform-origin: 68px 94px;  animation: dstsForearm    2.4s ease-in-out forwards; }
 .site-loader .forearm-back { transform-origin: 52px 94px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
+.site-loader .bag-group     { transform-origin: 68px 122px; animation: dstsBag        2.4s ease-in-out forwards; }
 
 .site-loader .loader-text {
   margin-top: 6px; font-size: 38px; font-weight: 800;
@@ -166,16 +167,16 @@ html { scroll-behavior: smooth; }
   75%{transform:rotate(-26deg)} 85%,100%{transform:rotate(-28deg)}
 }
 @keyframes dstsShin {
-  0%{transform:rotate(2deg)} 6.25%{transform:rotate(38deg)} 12.5%{transform:rotate(10deg)}
-  25%{transform:rotate(2deg)} 31.25%{transform:rotate(38deg)} 37.5%{transform:rotate(10deg)}
-  50%{transform:rotate(2deg)} 56.25%{transform:rotate(38deg)} 62.5%{transform:rotate(10deg)}
-  75%{transform:rotate(2deg)} 85%,100%{transform:rotate(4deg)}
+  0%{transform:rotate(1deg)} 6.25%{transform:rotate(24deg)} 12.5%{transform:rotate(6deg)}
+  25%{transform:rotate(1deg)} 31.25%{transform:rotate(24deg)} 37.5%{transform:rotate(6deg)}
+  50%{transform:rotate(1deg)} 56.25%{transform:rotate(24deg)} 62.5%{transform:rotate(6deg)}
+  75%{transform:rotate(1deg)} 85%,100%{transform:rotate(3deg)}
 }
 @keyframes dstsShinAlt {
-  0%{transform:rotate(10deg)} 12.5%{transform:rotate(2deg)} 18.75%{transform:rotate(38deg)}
-  25%{transform:rotate(10deg)} 37.5%{transform:rotate(2deg)} 43.75%{transform:rotate(38deg)}
-  50%{transform:rotate(10deg)} 62.5%{transform:rotate(2deg)} 68.75%{transform:rotate(38deg)}
-  75%{transform:rotate(10deg)} 85%,100%{transform:rotate(22deg)}
+  0%{transform:rotate(6deg)} 12.5%{transform:rotate(1deg)} 18.75%{transform:rotate(24deg)}
+  25%{transform:rotate(6deg)} 37.5%{transform:rotate(1deg)} 43.75%{transform:rotate(24deg)}
+  50%{transform:rotate(6deg)} 62.5%{transform:rotate(1deg)} 68.75%{transform:rotate(24deg)}
+  75%{transform:rotate(6deg)} 85%,100%{transform:rotate(14deg)}
 }
 /* Torso and head rock back and forth (leaning forward more during contact strides) */
 @keyframes dstsUpperBody {
@@ -200,24 +201,32 @@ html { scroll-behavior: smooth; }
   50%{transform:rotate(32deg)} 62.5%{transform:rotate(-36deg)}
   75%{transform:rotate(32deg)} 85%,100%{transform:rotate(-36deg)}
 }
-/* Forearm bends at elbow: bends INWARD (negative rotation when arm forward, positive when backward) */
+/* Forearm bends at elbow: bent at an acute angle (positive when arm forward, negative when backward) */
 @keyframes dstsForearm {
-  0%{transform:rotate(30deg)} 12.5%{transform:rotate(-40deg)}
-  25%{transform:rotate(30deg)} 37.5%{transform:rotate(-40deg)}
-  50%{transform:rotate(30deg)} 62.5%{transform:rotate(-40deg)}
-  75%{transform:rotate(30deg)} 85%,100%{transform:rotate(-25deg)}
+  0%{transform:rotate(95deg)} 12.5%{transform:rotate(-95deg)}
+  25%{transform:rotate(95deg)} 37.5%{transform:rotate(-95deg)}
+  50%{transform:rotate(95deg)} 62.5%{transform:rotate(-95deg)}
+  75%{transform:rotate(95deg)} 85%,100%{transform:rotate(-90deg)}
 }
 @keyframes dstsForearmAlt {
-  0%{transform:rotate(-40deg)} 12.5%{transform:rotate(30deg)}
-  25%{transform:rotate(-40deg)} 37.5%{transform:rotate(30deg)}
-  50%{transform:rotate(-40deg)} 62.5%{transform:rotate(30deg)}
-  75%{transform:rotate(-40deg)} 85%,100%{transform:rotate(20deg)}
+  0%{transform:rotate(-95deg)} 12.5%{transform:rotate(95deg)}
+  25%{transform:rotate(-95deg)} 37.5%{transform:rotate(95deg)}
+  50%{transform:rotate(-95deg)} 62.5%{transform:rotate(95deg)}
+  75%{transform:rotate(-95deg)} 85%,100%{transform:rotate(90deg)}
+}
+/* Shopping bag counter-rotation to keep it hanging perfectly vertical */
+@keyframes dstsBag {
+  0%{transform:rotate(-59deg)} 12.5%{transform:rotate(63deg)}
+  25%{transform:rotate(-59deg)} 37.5%{transform:rotate(63deg)}
+  50%{transform:rotate(-59deg)} 62.5%{transform:rotate(63deg)}
+  75%{transform:rotate(-59deg)} 85%,100%{transform:rotate(56deg)}
 }
 
 @media (prefers-reduced-motion: reduce) {
   .site-loader .figure-body, .site-loader .upper-body, .site-loader .leg-front, .site-loader .leg-back,
   .site-loader .shin-front, .site-loader .shin-back, .site-loader .arm-back,
   .site-loader .arm-front, .site-loader .forearm-front, .site-loader .forearm-back,
+  .site-loader .bag-group,
   .site-loader .loader-sun, .site-loader .loader-figure,
   .site-loader .loader-shadow, .site-loader .skyline-group,
   .site-loader .t-daily span, .site-loader .t-stop,
