@@ -60,7 +60,7 @@ html { scroll-behavior: smooth; }
 }
 
 .site-loader .loader-shadow {
-  position: absolute; bottom: 50px; left: 50%;
+  position: absolute; bottom: 56px; left: 50%;
   transform: translateX(-50%) scaleX(0);
   width: 130px; height: 18px;
   background: radial-gradient(ellipse, rgba(0,0,0,0.16) 0%, transparent 70%);
@@ -69,8 +69,8 @@ html { scroll-behavior: smooth; }
 }
 
 .site-loader .loader-figure {
-  position: absolute; bottom: 36px; left: 50%;
-  width: 160px; height: 270px;
+  position: absolute; bottom: 28px; left: 50%;
+  width: 160px; height: 290px;
   transform: translateX(-50%); opacity: 0;
   animation: dstsFigureWalkIn 1.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
 }
@@ -81,13 +81,14 @@ html { scroll-behavior: smooth; }
    so the figure pauses permanently at its destination with no snap or gap.
    Timeline = 2.4s: 0-75% walking (3 strides), 75-85% settling, 85-100% held. */
 .site-loader .figure-body { animation: dstsBody 2.4s ease-in-out forwards; }
-.site-loader .leg-front  { transform-origin: 55px 96px;  animation: dstsLeg  2.4s ease-in-out forwards; }
-.site-loader .leg-back   { transform-origin: 55px 96px;  animation: dstsLegAlt 2.4s ease-in-out forwards; }
-.site-loader .shin-front { transform-origin: 55px 130px; animation: dstsShin 2.4s ease-in-out forwards; }
-.site-loader .shin-back  { transform-origin: 55px 130px; animation: dstsShinAlt 2.4s ease-in-out forwards; }
-.site-loader .arm-back   { transform-origin: 55px 60px;  animation: dstsArmAlt 2.4s ease-in-out forwards; }
-.site-loader .arm-front  { transform-origin: 55px 60px;  animation: dstsArm 2.4s ease-in-out forwards; }
-.site-loader .bag-group  { transform-origin: 55px 60px;  animation: dstsArm 2.4s ease-in-out forwards; }
+.site-loader .leg-front    { transform-origin: 60px 108px; animation: dstsLeg     2.4s ease-in-out forwards; }
+.site-loader .leg-back     { transform-origin: 60px 108px; animation: dstsLegAlt  2.4s ease-in-out forwards; }
+.site-loader .shin-front   { transform-origin: 60px 148px; animation: dstsShin    2.4s ease-in-out forwards; }
+.site-loader .shin-back    { transform-origin: 60px 148px; animation: dstsShinAlt 2.4s ease-in-out forwards; }
+.site-loader .arm-back     { transform-origin: 60px 54px;  animation: dstsArmAlt  2.4s ease-in-out forwards; }
+.site-loader .arm-front    { transform-origin: 60px 54px;  animation: dstsArm     2.4s ease-in-out forwards; }
+.site-loader .forearm-front{ transform-origin: 60px 82px;  animation: dstsForearm    2.4s ease-in-out forwards; }
+.site-loader .forearm-back { transform-origin: 60px 82px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
 
 .site-loader .loader-text {
   margin-top: 6px; font-size: 38px; font-weight: 800;
@@ -186,11 +187,25 @@ html { scroll-behavior: smooth; }
   50%{transform:rotate(20deg)} 62.5%{transform:rotate(-22deg)}
   75%{transform:rotate(20deg)} 85%,100%{transform:rotate(-22deg)}
 }
+/* Forearm bends at elbow: more bend (18°) when arm forward, straighter (5°) when back.
+   Nested inside arm groups, so angles are additive with the upper-arm rotation. */
+@keyframes dstsForearm {
+  0%{transform:rotate(5deg)} 12.5%{transform:rotate(18deg)}
+  25%{transform:rotate(5deg)} 37.5%{transform:rotate(18deg)}
+  50%{transform:rotate(5deg)} 62.5%{transform:rotate(18deg)}
+  75%{transform:rotate(5deg)} 85%,100%{transform:rotate(14deg)}
+}
+@keyframes dstsForearmAlt {
+  0%{transform:rotate(18deg)} 12.5%{transform:rotate(5deg)}
+  25%{transform:rotate(18deg)} 37.5%{transform:rotate(5deg)}
+  50%{transform:rotate(18deg)} 62.5%{transform:rotate(5deg)}
+  75%{transform:rotate(18deg)} 85%,100%{transform:rotate(10deg)}
+}
 
 @media (prefers-reduced-motion: reduce) {
   .site-loader .figure-body, .site-loader .leg-front, .site-loader .leg-back,
   .site-loader .shin-front, .site-loader .shin-back, .site-loader .arm-back,
-  .site-loader .arm-front, .site-loader .bag-group,
+  .site-loader .arm-front, .site-loader .forearm-front, .site-loader .forearm-back,
   .site-loader .loader-sun, .site-loader .loader-figure,
   .site-loader .loader-shadow, .site-loader .skyline-group,
   .site-loader .t-daily span, .site-loader .t-stop,
