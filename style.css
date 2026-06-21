@@ -1309,10 +1309,10 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   transform: scale(1.08);
 }
 
-/* ── Tab (44px) — always beside the panel, peeks when closed ── */
 .wheel-tab {
   width: 44px;
-  height: 96px;
+  height: auto;
+  align-self: center;
   flex-shrink: 0;
   background: var(--grad);
   border: none;
@@ -1323,7 +1323,7 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 0;
+  padding: 12px 0;
   /* tab is always clickable regardless of container open state */
   pointer-events: auto;
 }
