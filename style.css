@@ -201,25 +201,29 @@ html { scroll-behavior: smooth; }
   50%{transform:rotate(32deg)} 62.5%{transform:rotate(-36deg)}
   75%{transform:rotate(32deg)} 85%,100%{transform:rotate(-36deg)}
 }
-/* Forearm bends at elbow: bent at an acute angle (positive when arm forward, negative when backward to bend inward) */
+/* Forearm bends at the elbow as a one-way hinge: it only ever flexes inward
+   (positive), never crossing 0deg into backward hyperextension. It folds a
+   little more on the back-swing and straightens out on the forward-swing. */
 @keyframes dstsForearm {
-  0%{transform:rotate(95deg)} 12.5%{transform:rotate(-95deg)}
-  25%{transform:rotate(95deg)} 37.5%{transform:rotate(-95deg)}
-  50%{transform:rotate(95deg)} 62.5%{transform:rotate(-95deg)}
-  75%{transform:rotate(95deg)} 85%,100%{transform:rotate(-95deg)}
+  0%{transform:rotate(28deg)} 12.5%{transform:rotate(52deg)}
+  25%{transform:rotate(28deg)} 37.5%{transform:rotate(52deg)}
+  50%{transform:rotate(28deg)} 62.5%{transform:rotate(52deg)}
+  75%{transform:rotate(28deg)} 85%,100%{transform:rotate(50deg)}
 }
 @keyframes dstsForearmAlt {
-  0%{transform:rotate(-95deg)} 12.5%{transform:rotate(95deg)}
-  25%{transform:rotate(-95deg)} 37.5%{transform:rotate(95deg)}
-  50%{transform:rotate(-95deg)} 62.5%{transform:rotate(95deg)}
-  75%{transform:rotate(-95deg)} 85%,100%{transform:rotate(95deg)}
+  0%{transform:rotate(52deg)} 12.5%{transform:rotate(28deg)}
+  25%{transform:rotate(52deg)} 37.5%{transform:rotate(28deg)}
+  50%{transform:rotate(52deg)} 62.5%{transform:rotate(28deg)}
+  75%{transform:rotate(52deg)} 85%,100%{transform:rotate(30deg)}
 }
-/* Shopping bag counter-rotation to keep it hanging perfectly vertical */
+/* Shopping bag counter-rotation keeps it hanging vertical. The bag hangs off
+   the front forearm, so its rotation cancels (upper-arm swing + forearm flex).
+   arm-front: -36deg fwd / +32deg back; forearm: 28deg fwd / 52deg back. */
 @keyframes dstsBag {
-  0%{transform:rotate(-59deg)} 12.5%{transform:rotate(63deg)}
-  25%{transform:rotate(-59deg)} 37.5%{transform:rotate(63deg)}
-  50%{transform:rotate(-59deg)} 62.5%{transform:rotate(63deg)}
-  75%{transform:rotate(-59deg)} 85%,100%{transform:rotate(61deg)}
+  0%{transform:rotate(8deg)} 12.5%{transform:rotate(-84deg)}
+  25%{transform:rotate(8deg)} 37.5%{transform:rotate(-84deg)}
+  50%{transform:rotate(8deg)} 62.5%{transform:rotate(-84deg)}
+  75%{transform:rotate(8deg)} 85%,100%{transform:rotate(-84deg)}
 }
 
 @media (prefers-reduced-motion: reduce) {
