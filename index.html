@@ -341,6 +341,9 @@
         <label>Pincode<input type="text" name="pincode" inputmode="numeric" pattern="[0-9]{4,10}" autocomplete="postal-code" required></label>
         <div class="checkout-summary"><span>Subtotal</span><span id="checkout-subtotal">₹0</span></div>
         <div class="checkout-summary"><span>Shipping</span><span id="checkout-shipping">₹0</span></div>
+        <div class="checkout-summary checkout-discount-row" id="checkout-discount-row" style="display:none;">
+          <span>🎡 Spin Discount</span><span id="checkout-discount-amount" style="color:var(--success);font-weight:700;">−₹0</span>
+        </div>
         <div class="checkout-summary checkout-summary-total"><span>Total to pay</span><span id="checkout-total">₹0</span></div>
         <button type="submit" id="pay-now-btn">PAY NOW</button>
       </form>
@@ -350,6 +353,38 @@
   <div id="modal-overlay">
     <button id="close-modal" aria-label="Close image viewer"><i data-lucide="x"></i></button>
     <img id="modal-image" src="" alt="Product zoom view">
+  </div>
+
+  <!-- ─── Spin the Wheel Popup ─── -->
+  <div id="wheel-overlay" class="wheel-overlay" aria-modal="true" role="dialog" aria-label="Spin the wheel for a discount" style="display:none;">
+    <div class="wheel-modal">
+      <button class="wheel-close-btn" id="wheel-close-btn" aria-label="Close">&times;</button>
+      <div class="wheel-left">
+        <div class="wheel-canvas-wrap">
+          <canvas id="wheel-canvas" width="340" height="340"></canvas>
+          <div class="wheel-pointer">▶</div>
+        </div>
+        <p class="wheel-spin-hint" id="wheel-spin-hint">Enter your email &amp; spin!</p>
+      </div>
+      <div class="wheel-right">
+        <div class="wheel-logo">✨</div>
+        <h2 class="wheel-title">Try Your Luck!</h2>
+        <p class="wheel-subtitle">Spin the wheel for an <strong>instant discount</strong> on your order today.</p>
+        <div class="wheel-form-wrap" id="wheel-form-wrap">
+          <input type="email" id="wheel-email-input" class="wheel-email-input" placeholder="your@email.com" autocomplete="email" required>
+          <button class="wheel-spin-btn" id="wheel-spin-btn">🎡 SPIN!</button>
+          <button class="wheel-skip-btn" id="wheel-skip-btn">No thanks</button>
+          <p class="wheel-legal">By spinning you agree to receive occasional emails from dailystoptoshop.</p>
+        </div>
+        <div class="wheel-result-wrap" id="wheel-result-wrap" style="display:none;">
+          <div class="wheel-won-badge" id="wheel-won-badge">🎉</div>
+          <p class="wheel-won-label" id="wheel-won-label">You won!</p>
+          <p class="wheel-won-pct" id="wheel-won-pct">5% OFF</p>
+          <p class="wheel-won-desc">Discount auto-applied to your next order this session.</p>
+          <button class="wheel-shop-btn" id="wheel-shop-btn">Shop Now →</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="toast"></div>

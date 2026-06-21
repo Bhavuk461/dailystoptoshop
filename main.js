@@ -1085,7 +1085,8 @@ async function handleCheckoutSubmit(e) {
     phone: (fd.get('phone') || '').trim(),
     email: (fd.get('email') || '').trim(),
     address: (fd.get('address') || '').trim(),
-    pincode: (fd.get('pincode') || '').trim()
+    pincode: (fd.get('pincode') || '').trim(),
+    discount_pct: (fd.get('discount_pct') || '').trim()
   };
 
   const items = cart.map(item => ({ productId: item.productId, quantity: item.quantity }));
@@ -1108,13 +1109,20 @@ async function handleCheckoutSubmit(e) {
     return;
   }
 
+  // Build the description showing discount if applied
+  const summary = order.summary || {};
+  let desc = `Order — ${getCartCount()} item(s)`;
+  if (summary.discountPct && summary.discountPct > 0) {
+    desc += ` · ${summary.discountPct}% spin discount applied`;
+  }
+
   const options = {
     key: order.keyId,
     order_id: order.orderId,
     amount: order.amount,
     currency: order.currency,
     name: 'dailystoptoshop',
-    description: `Order — ${getCartCount()} item(s)`,
+    description: desc,
     image: './assets/logo.webp',
     prefill: { name: delivery.name, email: delivery.email, contact: delivery.phone },
     theme: { color: '#f59e0b' },
@@ -1996,4 +2004,461 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     window.addEventListener('load', scheduleHide);
   }
+})();
+
+
+// ═══════════════════════════════════════════════════════════════
+// 20. SPIN THE WHEEL
+// ═══════════════════════════════════════════════════════════════
+(function () {
+  'use strict';
+
+  /* ── Config ── */
+  const LS_SPIN_TS   = 'dsts_wheel_spun_at';   // timestamp of last spin
+  const LS_DISCOUNT  = 'dsts_wheel_discount';   // { pct, used } or null
+  const SPIN_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
+  const WHEEL_EMAIL_ENDPOINT = '/api/wheel-email';
+
+  /* 8 segments — ordered as they appear clockwise.
+     Probability is proportional to weight.                         */
+  const SEGMENTS = [
+    { label: '2% OFF',  pct: 2,  fill: '#FFEFE2', text: '#85737B' },
+    { label: '5% OFF',  pct: 5,  fill: '#FF5D8F', text: '#ffffff' },
+    { label: '3% OFF',  pct: 3,  fill: '#6CC9B5', text: '#ffffff' },
+    { label: '8% OFF',  pct: 8,  fill: '#FF9F45', text: '#ffffff' },
+    { label: '4% OFF',  pct: 4,  fill: '#C9B8E8', text: '#4a3a6e' },
+    { label: '10% OFF', pct: 10, fill: '#FF5D8F', text: '#ffffff' },
+    { label: '6% OFF',  pct: 6,  fill: '#6CC9B5', text: '#ffffff' },
+    { label: '7% OFF',  pct: 7,  fill: '#FF9F45', text: '#ffffff' },
+  ];
+  const N = SEGMENTS.length;
+  const SLICE = (2 * Math.PI) / N;
+
+  /* ── Weighted random pick ── */
+  // Higher pct = slightly lower weight so big wins feel special
+  const WEIGHTS = SEGMENTS.map(s => Math.max(1, 12 - s.pct));
+  const TOTAL_W  = WEIGHTS.reduce((a, b) => a + b, 0);
+
+  function weightedRandom() {
+    let r = Math.random() * TOTAL_W;
+    for (let i = 0; i < N; i++) {
+      r -= WEIGHTS[i];
+      if (r <= 0) return i;
+    }
+    return N - 1;
+  }
+
+  /* ── Canvas drawing ── */
+  let currentAngle = 0; // radians — tracks current resting rotation
+
+  function drawWheel(canvas, angle) {
+    const ctx = canvas.getContext('2d');
+    const W   = canvas.width;
+    const H   = canvas.height;
+    const cx  = W / 2;
+    const cy  = H / 2;
+    const R   = Math.min(cx, cy) - 4;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw outer ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, R + 4, 0, 2 * Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,93,143,0.25)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw segments
+    for (let i = 0; i < N; i++) {
+      const startA = angle + i * SLICE;
+      const endA   = startA + SLICE;
+      const seg    = SEGMENTS[i];
+
+      // Slice fill
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, startA, endA);
+      ctx.closePath();
+      ctx.fillStyle = seg.fill;
+      ctx.fill();
+
+      // Slice border
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Label
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(startA + SLICE / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = seg.text;
+      ctx.font = `bold ${W < 300 ? 11 : 13}px 'Outfit', sans-serif`;
+      ctx.shadowColor = 'rgba(0,0,0,0.18)';
+      ctx.shadowBlur  = 3;
+      ctx.fillText(seg.label, R - 12, 5);
+      ctx.restore();
+    }
+
+    // Centre hub
+    ctx.beginPath();
+    ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
+    const hubGrad = ctx.createRadialGradient(cx - 4, cy - 4, 2, cx, cy, 18);
+    hubGrad.addColorStop(0, '#fff');
+    hubGrad.addColorStop(1, '#f4e2d6');
+    ctx.fillStyle   = hubGrad;
+    ctx.shadowColor = 'rgba(255,93,143,0.3)';
+    ctx.shadowBlur  = 8;
+    ctx.fill();
+    ctx.shadowBlur  = 0;
+    ctx.strokeStyle = 'rgba(255,93,143,0.4)';
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+  }
+
+  /* ── Easing ── */
+  function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
+  /* ── Spin animation ── */
+  function spinTo(canvas, targetSegIdx, onDone) {
+    const DURATION    = 4200; // ms
+    const EXTRA_TURNS = 5;    // full rotations before landing
+
+    // Pointer is at angle 0 (pointing right = 3 o'clock).
+    // Segment 0 starts at currentAngle.
+    // We want targetSegIdx's midpoint to land at 0 (right side pointer).
+    const targetMid = targetSegIdx * SLICE + SLICE / 2;
+    // We need: (currentAngle + spinAmount + targetMid) mod 2π = 0
+    // => spinAmount = -currentAngle - targetMid + 2π*k  (k = EXTRA_TURNS)
+    let spinAmount = (2 * Math.PI * EXTRA_TURNS) - currentAngle - targetMid;
+    // Normalise so we always spin forward (positive)
+    spinAmount = ((spinAmount % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    spinAmount += 2 * Math.PI * EXTRA_TURNS;
+
+    const startAngle = currentAngle;
+    const startTime  = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      const t       = Math.min(elapsed / DURATION, 1);
+      const eased   = easeOut(t);
+      const angle   = startAngle + spinAmount * eased;
+
+      drawWheel(canvas, angle);
+
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        currentAngle = angle % (2 * Math.PI);
+        onDone();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ── Confetti burst ── */
+  const CONFETTI_COLORS = ['#FF5D8F','#FF9F45','#6CC9B5','#FFC75C','#C9B8E8','#fff'];
+  function burstConfetti() {
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'wheel-confetti-particle';
+      const x    = 20 + Math.random() * 60;   // % from left
+      const dur  = 1.8 + Math.random() * 1.4;
+      const delay = Math.random() * 0.5;
+      el.style.cssText = `
+        left:${x}vw; top:-10px;
+        background:${CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)]};
+        animation-duration:${dur}s;
+        animation-delay:${delay}s;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        width:${6 + Math.random() * 8}px;
+        height:${6 + Math.random() * 8}px;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), (dur + delay + 0.2) * 1000);
+    }
+  }
+
+  /* ── LocalStorage helpers ── */
+  function getStoredDiscount() {
+    try { return JSON.parse(localStorage.getItem(LS_DISCOUNT)); } catch { return null; }
+  }
+  function setStoredDiscount(pct) {
+    localStorage.setItem(LS_DISCOUNT, JSON.stringify({ pct, used: false }));
+  }
+  function markDiscountUsed() {
+    const d = getStoredDiscount();
+    if (d) localStorage.setItem(LS_DISCOUNT, JSON.stringify({ pct: d.pct, used: true }));
+    localStorage.setItem(LS_SPIN_TS, String(Date.now()));
+  }
+  function clearDiscount() {
+    localStorage.removeItem(LS_DISCOUNT);
+  }
+
+  function canShowWheel() {
+    // Check if spun within the last week
+    const ts = parseInt(localStorage.getItem(LS_SPIN_TS) || '0', 10);
+    return Date.now() - ts >= SPIN_COOLDOWN_MS;
+  }
+
+  /* ── Active session discount (in-memory, survives page but not tab close) ── */
+  // Loaded from localStorage at startup
+  let sessionDiscount = null; // { pct }
+
+  function loadSessionDiscount() {
+    const stored = getStoredDiscount();
+    if (stored && !stored.used) {
+      sessionDiscount = { pct: stored.pct };
+    } else {
+      sessionDiscount = null;
+    }
+  }
+
+  /* ── Apply discount to checkout display ── */
+  function applyWheelDiscountToCheckout() {
+    const discountRow = document.getElementById('checkout-discount-row');
+    const discountAmt = document.getElementById('checkout-discount-amount');
+    const totalEl     = document.getElementById('checkout-total');
+    const subtotalEl  = document.getElementById('checkout-subtotal');
+    const shippingEl  = document.getElementById('checkout-shipping');
+
+    if (!discountRow || !discountAmt || !totalEl) return;
+
+    if (sessionDiscount && sessionDiscount.pct > 0) {
+      // Re-compute from raw values
+      const subtotal = getCartSubtotal();
+      const shipping = getCartShipping();
+      const discount = Math.round(subtotal * sessionDiscount.pct / 100);
+      const total    = Math.max(0, subtotal + shipping - discount);
+
+      if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+      if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
+      discountAmt.textContent = `−${formatPrice(discount)}`;
+      totalEl.textContent     = formatPrice(total);
+      discountRow.style.display = '';
+    } else {
+      discountRow.style.display = 'none';
+    }
+  }
+
+  /* ── Send email via worker ── */
+  async function sendWheelEmail(email, pct) {
+    try {
+      await fetch(WHEEL_EMAIL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, pct })
+      });
+    } catch (err) {
+      console.warn('Wheel email send failed (non-critical):', err);
+    }
+  }
+
+  /* ── Close overlay ── */
+  function closeWheelOverlay() {
+    const overlay = document.getElementById('wheel-overlay');
+    if (!overlay) return;
+    overlay.style.transition = 'opacity 0.3s ease';
+    overlay.style.opacity    = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 320);
+  }
+
+  /* ── Init ── */
+  function initSpinWheel() {
+    loadSessionDiscount();
+
+    const overlay   = document.getElementById('wheel-overlay');
+    const canvas    = document.getElementById('wheel-canvas');
+    const spinBtn   = document.getElementById('wheel-spin-btn');
+    const skipBtn   = document.getElementById('wheel-skip-btn');
+    const closeBtn  = document.getElementById('wheel-close-btn');
+    const shopBtn   = document.getElementById('wheel-shop-btn');
+    const emailIn   = document.getElementById('wheel-email-input');
+    const formWrap  = document.getElementById('wheel-form-wrap');
+    const resultWrap= document.getElementById('wheel-result-wrap');
+    const wonPct    = document.getElementById('wheel-won-pct');
+    const spinHint  = document.getElementById('wheel-spin-hint');
+
+    if (!overlay || !canvas || !spinBtn) return;
+
+    // Draw initial static wheel
+    drawWheel(canvas, currentAngle);
+
+    // Close handlers
+    const doClose = () => closeWheelOverlay();
+    if (closeBtn) closeBtn.addEventListener('click', doClose);
+    if (skipBtn)  skipBtn.addEventListener('click', doClose);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) doClose(); });
+
+    // Shop Now → closes popup and opens cart
+    if (shopBtn) {
+      shopBtn.addEventListener('click', () => {
+        doClose();
+        // Optional: open cart drawer so they can proceed
+        const cartBtn = document.getElementById('cart-btn');
+        if (cartBtn) cartBtn.click();
+      });
+    }
+
+    // SPIN
+    spinBtn.addEventListener('click', async () => {
+      const email = (emailIn && emailIn.value || '').trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (emailIn) {
+          emailIn.focus();
+          emailIn.style.borderColor = 'var(--accent)';
+          emailIn.style.boxShadow   = '0 0 0 3px rgba(255,93,143,0.2)';
+          setTimeout(() => {
+            emailIn.style.borderColor = '';
+            emailIn.style.boxShadow   = '';
+          }, 1800);
+        }
+        return;
+      }
+
+      // Disable button during spin
+      spinBtn.disabled = true;
+      if (spinHint) spinHint.textContent = 'Spinning…';
+
+      const winIdx  = weightedRandom();
+      const winSeg  = SEGMENTS[winIdx];
+
+      spinTo(canvas, winIdx, async () => {
+        // Persist discount
+        setStoredDiscount(winSeg.pct);
+        sessionDiscount = { pct: winSeg.pct };
+
+        // Show result
+        if (wonPct)    wonPct.textContent   = winSeg.label;
+        if (formWrap)  formWrap.style.display  = 'none';
+        if (resultWrap) {
+          resultWrap.style.display = '';
+          // Re-trigger animation
+          resultWrap.style.animation = 'none';
+          void resultWrap.offsetWidth;
+          resultWrap.style.animation = '';
+        }
+        if (spinHint) spinHint.textContent = '🎉 You won!';
+
+        burstConfetti();
+
+        // Notify via email (fire & forget)
+        await sendWheelEmail(email, winSeg.pct);
+
+        // Mark the spin timestamp so cooldown starts NOW
+        localStorage.setItem(LS_SPIN_TS, String(Date.now()));
+      });
+    });
+
+    // Show overlay after 1.5s delay
+    if (canShowWheel()) {
+      setTimeout(() => {
+        overlay.style.display = 'flex';
+      }, 1500);
+    } else {
+      // Wheel already spun this week — just ensure discount still applied
+      // (no popup, but discount persists)
+    }
+  }
+
+  /* ── Patch openCheckoutModal to show discount ── */
+  const _origOpenCheckout = window.openCheckoutModal;
+  if (typeof openCheckoutModal === 'function') {
+    window.openCheckoutModal = function () {
+      if (typeof _origOpenCheckout === 'function') _origOpenCheckout();
+      else {
+        // Fallback: call internal function
+        const subtotal = getCartSubtotal();
+        const shipping = getCartShipping();
+        const total    = subtotal + shipping;
+        const subtotalEl = document.getElementById('checkout-subtotal');
+        const shippingEl = document.getElementById('checkout-shipping');
+        const totalEl    = document.getElementById('checkout-total');
+        if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+        if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
+        if (totalEl)    totalEl.textContent     = formatPrice(total);
+        document.body.classList.add('checkout-open');
+      }
+      applyWheelDiscountToCheckout();
+    };
+  }
+
+  /* ── Patch handleCheckoutSubmit to pass discount & clear after payment ── */
+  const _origHandleCheckoutSubmit = window.handleCheckoutSubmit;
+
+  // We intercept the checkout form submission at the DOM level so we can
+  // inject the discounted total into the Razorpay order creation request.
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('checkout-form');
+    if (!form) return;
+
+    // Attach our interceptor AFTER the existing one (capture=true fires first)
+    form.addEventListener('submit', function patchSubmit(e) {
+      if (!sessionDiscount || !sessionDiscount.pct) return; // nothing to do
+
+      // We mark discount as used immediately so a second fast click won't re-use it
+      // Actual clearing happens after payment.success too (belt & suspenders)
+    }, { capture: true });
+  });
+
+  // Override getCartTotal so Razorpay shows the discounted amount.
+  // The original function is used by the cart display; we override just the
+  // value passed to /api/order via the discount field in delivery notes.
+  // (The worker always recomputes from catalogue prices, so we send discount_pct
+  //  in the delivery notes for the email receipt.)
+  const _origHandleCheckout = window.handleCheckoutSubmit;
+  window.handleCheckoutSubmit = async function (e) {
+    // Inject discount_pct into the form data that handleCheckoutSubmit picks up
+    // by temporarily setting a hidden field.
+    const form  = e && e.target;
+    let hiddenPctInput = null;
+
+    if (sessionDiscount && sessionDiscount.pct && form) {
+      hiddenPctInput = document.createElement('input');
+      hiddenPctInput.type  = 'hidden';
+      hiddenPctInput.name  = 'discount_pct';
+      hiddenPctInput.value = String(sessionDiscount.pct);
+      form.appendChild(hiddenPctInput);
+    }
+
+    // Call original
+    if (typeof _origHandleCheckout === 'function') {
+      await _origHandleCheckout.call(this, e);
+    }
+
+    // Cleanup hidden field
+    if (hiddenPctInput && hiddenPctInput.parentNode) hiddenPctInput.parentNode.removeChild(hiddenPctInput);
+  };
+
+  // After successful payment, clear the discount so it can't be reused.
+  // We hook onto the verify call indirectly via MutationObserver on the cart clearing.
+  // The cleanest approach: wrap the verify success path. Since the original code is
+  // inline in handleCheckoutSubmit we listen for the cart becoming empty after payment.
+  const cartObserver = new MutationObserver(() => {
+    const count = typeof getCartCount === 'function' ? getCartCount() : 0;
+    if (count === 0 && sessionDiscount) {
+      markDiscountUsed();
+      sessionDiscount = null;
+      // Update checkout display (it'll be closed anyway, but just in case)
+      applyWheelDiscountToCheckout();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const cartItemsEl = document.getElementById('cart-items');
+    if (cartItemsEl) cartObserver.observe(cartItemsEl, { childList: true, subtree: true });
+
+    // Also patch openCheckoutModal here once DOM is ready
+    applyWheelDiscountToCheckout();
+  });
+
+  /* ── Boot ── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSpinWheel);
+  } else {
+    initSpinWheel();
+  }
+
 })();

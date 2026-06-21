@@ -1,7 +1,8 @@
 /* dailystoptoshop - API (Cloudflare Worker)
    Endpoints:
-     Payments: /api/order  /api/verify  /api/webhook
-     Reviews:  /api/reviews (GET/POST)  /api/reviews/:id/like (POST)  /api/reviews/:id (DELETE)
+     Payments:  /api/order  /api/verify  /api/webhook
+     Reviews:   /api/reviews (GET/POST)  /api/reviews/:id/like (POST)  /api/reviews/:id (DELETE)
+     Spin Wheel:/api/wheel-email
 
    Secrets (set via `wrangler secret put`):
      RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET,
@@ -45,6 +46,9 @@ export default {
       if (path === '/api/verify' && request.method === 'POST') return await handleVerify(request, env);
       if (path === '/api/webhook' && request.method === 'POST') return await handleWebhook(request, env);
 
+      // Spin the Wheel — email capture
+      if (path === '/api/wheel-email' && request.method === 'POST') return await handleWheelEmail(request, env);
+
       // Review endpoints
       if (path === '/api/reviews' && request.method === 'GET') return await handleGetReviews(request, env);
       if (path === '/api/reviews' && request.method === 'POST') return await handlePostReview(request, env);
@@ -80,9 +84,15 @@ async function handleCreateOrder(request, env) {
   }
 
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-  const total = subtotal + shipping;
 
+  // Apply spin-the-wheel discount if provided (1–10% only, server-validated range)
   const d = body.delivery || {};
+  const rawDiscountPct = parseFloat(d.discount_pct || 0);
+  const discountPct = (Number.isFinite(rawDiscountPct) && rawDiscountPct >= 1 && rawDiscountPct <= 10)
+    ? rawDiscountPct : 0;
+  const discountAmt = discountPct > 0 ? Math.round(subtotal * discountPct / 100) : 0;
+  const total = Math.max(1, subtotal + shipping - discountAmt); // Razorpay min = ₹1
+
   for (const f of ['name', 'phone', 'address', 'pincode']) {
     if (!d[f] || String(d[f]).trim().length === 0) return json({ error: `Missing delivery field: ${f}` }, 400, env);
   }
@@ -95,7 +105,9 @@ async function handleCreateOrder(request, env) {
     pincode: String(d.pincode).slice(0, 12),
     items: JSON.stringify(lineItems).slice(0, 480),
     subtotal: String(subtotal),
-    shipping: String(shipping)
+    shipping: String(shipping),
+    discount_pct: String(discountPct),
+    discount_amt: String(discountAmt)
   };
 
   const auth = 'Basic ' + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
@@ -111,7 +123,7 @@ async function handleCreateOrder(request, env) {
   }
 
   const order = await rzpRes.json();
-  return json({ orderId: order.id, amount: order.amount, currency: order.currency, keyId: env.RAZORPAY_KEY_ID, summary: { subtotal, shipping, total } }, 200, env);
+  return json({ orderId: order.id, amount: order.amount, currency: order.currency, keyId: env.RAZORPAY_KEY_ID, summary: { subtotal, shipping, discountPct, discountAmt, total } }, 200, env);
 }
 
 async function handleVerify(request, env) {
@@ -172,6 +184,52 @@ async function appendToSheet(order, env) {
   if (!env.SHEETS_WEBAPP_URL) return;
   const res = await fetch(env.SHEETS_WEBAPP_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: env.SHEETS_TOKEN, order }) });
   if (!res.ok) throw new Error(`Sheets append failed: ${res.status} ${await res.text()}`);
+}
+
+// POST /api/wheel-email  { email, pct }
+// Sends a notification to connect@dailystoptoshop.com with the customer's spin result.
+async function handleWheelEmail(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !body.email || !body.pct) return json({ error: 'Missing email or pct' }, 400, env);
+
+  const email = String(body.email).trim().slice(0, 200);
+  const pct   = parseFloat(body.pct);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Invalid email' }, 400, env);
+  if (!Number.isFinite(pct) || pct < 1 || pct > 10) return json({ error: 'Invalid pct' }, 400, env);
+
+  const subject = `🎡 New spin result — ${email} won ${pct}% OFF`;
+  const text    = `A visitor spun the wheel and won a discount!\n\nEmail: ${email}\nDiscount: ${pct}% OFF\n\nThis discount will be auto-applied to their next order this session.`;
+  const html    = `
+    <h2 style="color:#FF5D8F;">🎡 New Spin the Wheel Result</h2>
+    <p>A visitor just spun the wheel on <strong>dailystoptoshop</strong>!</p>
+    <table cellpadding="8" style="border-collapse:collapse;margin-top:12px;">
+      <tr><td style="font-weight:600;">Email</td><td>${esc(email)}</td></tr>
+      <tr><td style="font-weight:600;">Discount Won</td><td style="color:#FF5D8F;font-size:20px;font-weight:700;">${pct}% OFF</td></tr>
+    </table>
+    <p style="color:#85737B;font-size:13px;margin-top:16px;">The discount is auto-applied to their session purchase.</p>
+  `;
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: env.ORDER_EMAIL_FROM,
+        to: ['connect@dailystoptoshop.com'],
+        reply_to: email,
+        subject, text, html
+      })
+    });
+    if (!res.ok) {
+      console.error('Resend wheel email failed:', res.status, await res.text());
+      return json({ ok: false }, 500, env);
+    }
+  } catch (err) {
+    console.error('Wheel email error:', err);
+    return json({ ok: false }, 500, env);
+  }
+
+  return json({ ok: true }, 200, env);
 }
 
 
