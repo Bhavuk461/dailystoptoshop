@@ -2260,9 +2260,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeWheelOverlay() {
     const overlay = document.getElementById('wheel-overlay');
     if (!overlay) return;
-    overlay.style.transition = 'opacity 0.3s ease';
-    overlay.style.opacity    = '0';
-    setTimeout(() => { overlay.style.display = 'none'; }, 320);
+    overlay.classList.remove('wheel--open');
+    // pointer-events are removed via CSS when class is gone
+  }
+
+  /* ── Show overlay ── */
+  function showWheelOverlay() {
+    const overlay = document.getElementById('wheel-overlay');
+    if (!overlay) return;
+    // Force a reflow so the transition triggers correctly
+    void overlay.offsetWidth;
+    overlay.classList.add('wheel--open');
   }
 
   /* ── Init ── */
@@ -2352,14 +2360,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Show overlay after 1.5s delay
+    // Show overlay after 1.5s delay (only if not spun in the last week)
     if (canShowWheel()) {
       setTimeout(() => {
-        overlay.style.display = 'flex';
+        showWheelOverlay();
       }, 1500);
-    } else {
-      // Wheel already spun this week — just ensure discount still applied
-      // (no popup, but discount persists)
     }
   }
 

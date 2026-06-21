@@ -1239,7 +1239,13 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   display: flex; align-items: center; justify-content: center;
   padding: 16px;
   opacity: 0;
-  animation: wheelOverlayIn 0.4s var(--ease-out) forwards;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out);
+}
+.wheel-overlay.wheel--open {
+  opacity: 1;
+  pointer-events: auto;
+  animation: none;
 }
 @keyframes wheelOverlayIn {
   from { opacity: 0; }
@@ -1255,8 +1261,14 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   box-shadow: var(--shadow-lg), 0 0 0 1px var(--border);
   overflow: hidden;
   max-width: 780px; width: 100%;
-  transform: scale(0.85) translateY(24px);
-  animation: wheelModalIn 0.5s var(--ease-pop) 0.08s forwards;
+  transform: scale(0.92) translateY(20px);
+  opacity: 0;
+  transition: transform 0.45s var(--ease-pop), opacity 0.35s var(--ease-out);
+  transition-delay: 0.05s;
+}
+.wheel-overlay.wheel--open .wheel-modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
 }
 @keyframes wheelModalIn {
   from { transform: scale(0.85) translateY(24px); opacity: 0; }
