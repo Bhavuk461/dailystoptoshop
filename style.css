@@ -82,15 +82,15 @@ html { scroll-behavior: smooth; }
    so the figure pauses permanently at its destination with no snap or gap.
    Timeline = 2.4s: 0-75% walking (3 strides), 75-85% settling, 85-100% held. */
 .site-loader .figure-body  { animation: dstsBody 2.4s ease-in-out forwards; }
-.site-loader .upper-body   { transform-origin: 52px 110px; animation: dstsUpperBody 2.4s ease-in-out forwards; }
-.site-loader .leg-front    { transform-origin: 52px 110px; animation: dstsLeg       2.4s ease-in-out forwards; }
-.site-loader .leg-back     { transform-origin: 52px 110px; animation: dstsLegAlt    2.4s ease-in-out forwards; }
-.site-loader .shin-front   { transform-origin: 52px 150px; animation: dstsShin      2.4s ease-in-out forwards; }
-.site-loader .shin-back    { transform-origin: 52px 150px; animation: dstsShinAlt   2.4s ease-in-out forwards; }
-.site-loader .arm-back     { transform-origin: 52px 54px;  animation: dstsArmAlt    2.4s ease-in-out forwards; }
-.site-loader .arm-front    { transform-origin: 68px 54px;  animation: dstsArm       2.4s ease-in-out forwards; }
-.site-loader .forearm-front{ transform-origin: 68px 82px;  animation: dstsForearm    2.4s ease-in-out forwards; }
-.site-loader .forearm-back { transform-origin: 52px 82px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
+.site-loader .upper-body   { transform-origin: 52px 120px; animation: dstsUpperBody 2.4s ease-in-out forwards; }
+.site-loader .leg-front    { transform-origin: 52px 120px; animation: dstsLeg       2.4s ease-in-out forwards; }
+.site-loader .leg-back     { transform-origin: 52px 120px; animation: dstsLegAlt    2.4s ease-in-out forwards; }
+.site-loader .shin-front   { transform-origin: 52px 160px; animation: dstsShin      2.4s ease-in-out forwards; }
+.site-loader .shin-back    { transform-origin: 52px 160px; animation: dstsShinAlt   2.4s ease-in-out forwards; }
+.site-loader .arm-back     { transform-origin: 52px 66px;  animation: dstsArmAlt    2.4s ease-in-out forwards; }
+.site-loader .arm-front    { transform-origin: 68px 66px;  animation: dstsArm       2.4s ease-in-out forwards; }
+.site-loader .forearm-front{ transform-origin: 68px 94px;  animation: dstsForearm    2.4s ease-in-out forwards; }
+.site-loader .forearm-back { transform-origin: 52px 94px;  animation: dstsForearmAlt 2.4s ease-in-out forwards; }
 
 .site-loader .loader-text {
   margin-top: 6px; font-size: 38px; font-weight: 800;
@@ -200,19 +200,18 @@ html { scroll-behavior: smooth; }
   50%{transform:rotate(32deg)} 62.5%{transform:rotate(-36deg)}
   75%{transform:rotate(32deg)} 85%,100%{transform:rotate(-36deg)}
 }
-/* Forearm bends at elbow: more bend (45°) when arm forward, straighter (5°) when back.
-   Nested inside arm groups, so angles are additive with the upper-arm rotation. */
+/* Forearm bends at elbow: bends INWARD (negative rotation when arm forward, positive when backward) */
 @keyframes dstsForearm {
-  0%{transform:rotate(5deg)} 12.5%{transform:rotate(45deg)}
-  25%{transform:rotate(5deg)} 37.5%{transform:rotate(45deg)}
-  50%{transform:rotate(5deg)} 62.5%{transform:rotate(45deg)}
-  75%{transform:rotate(5deg)} 85%,100%{transform:rotate(20deg)}
+  0%{transform:rotate(30deg)} 12.5%{transform:rotate(-40deg)}
+  25%{transform:rotate(30deg)} 37.5%{transform:rotate(-40deg)}
+  50%{transform:rotate(30deg)} 62.5%{transform:rotate(-40deg)}
+  75%{transform:rotate(30deg)} 85%,100%{transform:rotate(-25deg)}
 }
 @keyframes dstsForearmAlt {
-  0%{transform:rotate(45deg)} 12.5%{transform:rotate(5deg)}
-  25%{transform:rotate(45deg)} 37.5%{transform:rotate(5deg)}
-  50%{transform:rotate(45deg)} 62.5%{transform:rotate(5deg)}
-  75%{transform:rotate(45deg)} 85%,100%{transform:rotate(12deg)}
+  0%{transform:rotate(-40deg)} 12.5%{transform:rotate(30deg)}
+  25%{transform:rotate(-40deg)} 37.5%{transform:rotate(30deg)}
+  50%{transform:rotate(-40deg)} 62.5%{transform:rotate(30deg)}
+  75%{transform:rotate(-40deg)} 85%,100%{transform:rotate(20deg)}
 }
 
 @media (prefers-reduced-motion: reduce) {
