@@ -1311,8 +1311,8 @@ body.checkout-open .checkout-modal-inner { transform: none; }
 
 .wheel-tab {
   width: 44px;
-  height: auto;
-  align-self: center;
+  height: 100px !important;
+  align-self: center !important;
   flex-shrink: 0;
   background: var(--grad);
   border: none;
