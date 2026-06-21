@@ -345,7 +345,22 @@ function renderCart() {
   cartSubtotal.textContent = formatPrice(subtotal);
   const cartShipping = document.getElementById('cart-shipping');
   if (cartShipping) cartShipping.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
-  cartTotal.textContent = formatPrice(total);
+
+  // Apply spin discount if active
+  const cartDiscountRow = document.getElementById('cart-discount-row');
+  const cartDiscountAmt = document.getElementById('cart-discount-amount');
+  // sessionDiscount is defined in the spin wheel IIFE — read via a global getter
+  const activeDiscount = (typeof getActiveSpinDiscount === 'function') ? getActiveSpinDiscount() : null;
+  if (activeDiscount && activeDiscount.pct > 0 && count > 0) {
+    const discountAmt = Math.round(subtotal * activeDiscount.pct / 100);
+    const discountedTotal = Math.max(0, subtotal + shipping - discountAmt);
+    if (cartDiscountRow) cartDiscountRow.style.display = '';
+    if (cartDiscountAmt) cartDiscountAmt.textContent = `−${formatPrice(discountAmt)}`;
+    cartTotal.textContent = formatPrice(discountedTotal);
+  } else {
+    if (cartDiscountRow) cartDiscountRow.style.display = 'none';
+    cartTotal.textContent = formatPrice(total);
+  }
 
   // Enable/disable checkout
   checkoutBtn.disabled = count === 0;
@@ -2019,6 +2034,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const SPIN_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
   const WHEEL_EMAIL_ENDPOINT = '/api/wheel-email';
 
+  // Expose discount to renderCart() which lives outside this IIFE
+  window.getActiveSpinDiscount = function () { return sessionDiscount; };
+
+
   /* 8 segments — ordered as they appear clockwise.
      Probability is proportional to weight.                         */
   const SEGMENTS = [
@@ -2261,16 +2280,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('wheel-overlay');
     if (!overlay) return;
     overlay.classList.remove('wheel--open');
-    // pointer-events are removed via CSS when class is gone
+    document.body.classList.remove('wheel-panel-open');
   }
 
   /* ── Show overlay ── */
   function showWheelOverlay() {
     const overlay = document.getElementById('wheel-overlay');
     if (!overlay) return;
-    // Force a reflow so the transition triggers correctly
-    void overlay.offsetWidth;
+    void overlay.offsetWidth; // force reflow so transition fires
     overlay.classList.add('wheel--open');
+    document.body.classList.add('wheel-panel-open');
   }
 
   /* ── Init ── */
@@ -2293,6 +2312,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Draw initial static wheel
     drawWheel(canvas, currentAngle);
+
+    // ── Tab button toggles the panel
+    const tabBtn = document.getElementById('wheel-tab-btn');
+    if (tabBtn) {
+      tabBtn.addEventListener('click', () => {
+        if (overlay.classList.contains('wheel--open')) {
+          closeWheelOverlay();
+        } else {
+          showWheelOverlay();
+        }
+      });
+    }
 
     // Close handlers
     const doClose = () => closeWheelOverlay();
@@ -2337,6 +2368,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Persist discount
         setStoredDiscount(winSeg.pct);
         sessionDiscount = { pct: winSeg.pct };
+
+        // Re-render cart so discount row appears immediately in the bag
+        if (typeof renderCart === 'function') renderCart();
+        applyWheelDiscountToCheckout();
 
         // Show result
         if (wonPct)    wonPct.textContent   = winSeg.label;
