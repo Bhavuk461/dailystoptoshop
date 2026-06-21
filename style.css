@@ -201,25 +201,25 @@ html { scroll-behavior: smooth; }
   50%{transform:rotate(32deg)} 62.5%{transform:rotate(-36deg)}
   75%{transform:rotate(32deg)} 85%,100%{transform:rotate(-36deg)}
 }
-/* Forearm bends at elbow: bent at an acute angle (positive when arm forward, negative when backward) */
+/* Forearm bends at elbow: bent at an acute angle (always negative/counter-clockwise to flex forward) */
 @keyframes dstsForearm {
-  0%{transform:rotate(95deg)} 12.5%{transform:rotate(-95deg)}
-  25%{transform:rotate(95deg)} 37.5%{transform:rotate(-95deg)}
-  50%{transform:rotate(95deg)} 62.5%{transform:rotate(-95deg)}
-  75%{transform:rotate(95deg)} 85%,100%{transform:rotate(-90deg)}
+  0%{transform:rotate(-90deg)} 12.5%{transform:rotate(-95deg)}
+  25%{transform:rotate(-90deg)} 37.5%{transform:rotate(-95deg)}
+  50%{transform:rotate(-90deg)} 62.5%{transform:rotate(-95deg)}
+  75%{transform:rotate(-90deg)} 85%,100%{transform:rotate(-95deg)}
 }
 @keyframes dstsForearmAlt {
-  0%{transform:rotate(-95deg)} 12.5%{transform:rotate(95deg)}
-  25%{transform:rotate(-95deg)} 37.5%{transform:rotate(95deg)}
-  50%{transform:rotate(-95deg)} 62.5%{transform:rotate(95deg)}
-  75%{transform:rotate(-95deg)} 85%,100%{transform:rotate(90deg)}
+  0%{transform:rotate(-80deg)} 12.5%{transform:rotate(-95deg)}
+  25%{transform:rotate(-80deg)} 37.5%{transform:rotate(-95deg)}
+  50%{transform:rotate(-80deg)} 62.5%{transform:rotate(-95deg)}
+  75%{transform:rotate(-80deg)} 85%,100%{transform:rotate(-95deg)}
 }
 /* Shopping bag counter-rotation to keep it hanging perfectly vertical */
 @keyframes dstsBag {
-  0%{transform:rotate(-59deg)} 12.5%{transform:rotate(63deg)}
-  25%{transform:rotate(-59deg)} 37.5%{transform:rotate(63deg)}
-  50%{transform:rotate(-59deg)} 62.5%{transform:rotate(63deg)}
-  75%{transform:rotate(-59deg)} 85%,100%{transform:rotate(56deg)}
+  0%{transform:rotate(126deg)} 12.5%{transform:rotate(63deg)}
+  25%{transform:rotate(126deg)} 37.5%{transform:rotate(63deg)}
+  50%{transform:rotate(126deg)} 62.5%{transform:rotate(63deg)}
+  75%{transform:rotate(126deg)} 85%,100%{transform:rotate(61deg)}
 }
 
 @media (prefers-reduced-motion: reduce) {
