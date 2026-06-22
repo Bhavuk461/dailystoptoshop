@@ -1,0 +1,5 @@
+# Raw videos folder at root
+/vids/
+
+# Local logs
+*.log

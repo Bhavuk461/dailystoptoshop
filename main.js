@@ -82,6 +82,7 @@ const products = [
       '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
       '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
+    video: './assets/vids/black-cat.mp4',
     inStock: true
   },
   {
@@ -120,6 +121,7 @@ const products = [
       '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
       '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
+    video: './assets/vids/happy-puppy.mp4',
     inStock: true
   },
   {
@@ -196,6 +198,7 @@ const products = [
       '🔒 100% LEAKPROOF DESIGN — Secure screw cap with a tight seal for mess-free carrying in your bag, zero spills or leaks 🙌',
       '🎀 ULTRA-PORTABLE HANDLE — Sturdy carry handle strap for easy on-the-go sips, perfect for kids, girls, teens, and adults alike 💖'
     ],
+    video: './assets/vids/sleeping-bear.mp4',
     inStock: true
   }
 ];
@@ -1431,12 +1434,6 @@ function renderProductPage() {
       <table>${Object.entries(product.specs).map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</table>
     </div>` : '';
 
-  const aboutHtml = product.about ? `
-    <div class="pp-about fade-in">
-      <h2>About this item 💕</h2>
-      <ul>${product.about.map(a => `<li>${a}</li>`).join('')}</ul>
-    </div>` : '';
-
   const related = products.filter(p => p.id !== product.id).slice(0, 4);
 
   root.innerHTML = `
@@ -1465,9 +1462,23 @@ function renderProductPage() {
         <button class="add-to-cart-btn pp-add" data-product-id="${product.id}" onclick="addToCart('${product.id}')" ${!product.inStock ? 'disabled' : ''}>${product.inStock ? 'ADD TO BAG' : 'SOLD OUT'}</button>
         ${product.inStock ? '<p class="urgency-text">⚡ Only a few left — don\'t sleep on it</p>' : ''}
         ${specsHtml}
-        ${aboutHtml}
       </div>
     </div>
+
+    ${product.about ? `
+    <div class="pp-about-row fade-in">
+      <div class="pp-about-video">
+        ${product.video ? `
+          <video class="lazy-video" data-src="${product.video}" autoplay muted loop playsinline></video>
+        ` : ''}
+      </div>
+      <div class="pp-about">
+        <h2>About this item 💕</h2>
+        <ul>${product.about.map(a => `<li>${a}</li>`).join('')}</ul>
+      </div>
+    </div>
+    ` : ''}
+
     <div class="pp-related">
       <h2>You may also like ✨</h2>
       <div class="pp-related-grid">
@@ -1477,6 +1488,7 @@ function renderProductPage() {
     <div id="pp-reviews-section"></div>`;
 
   renderProductReviews(product.id);
+  initLazyVideos();
 
   // Image zoom + thumbnail switching with a soft pop transition
   const mainImg = document.getElementById('pp-main-img');
@@ -1493,6 +1505,31 @@ function renderProductPage() {
       }
     });
   });
+}
+
+function initLazyVideos() {
+  const lazyVideos = document.querySelectorAll('.lazy-video');
+  if (lazyVideos.length === 0) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target;
+      if (entry.isIntersecting) {
+        if (video.dataset.src) {
+          video.src = video.dataset.src;
+          video.removeAttribute('data-src');
+          video.load();
+        }
+        video.play().catch(err => {
+          console.log('Autoplay play failed:', err);
+        });
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: 0.1 });
+
+  lazyVideos.forEach(v => observer.observe(v));
 }
 
 
