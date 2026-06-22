@@ -1469,7 +1469,7 @@ function renderProductPage() {
     <div class="pp-about-row fade-in">
       <div class="pp-about-video">
         ${product.video ? `
-          <video class="lazy-video" data-src="${product.video}" autoplay muted loop playsinline></video>
+          <video class="lazy-video ${product.id === 'black-cat' ? 'video-landscape' : 'video-portrait'}" data-src="${product.video}" autoplay muted loop playsinline></video>
         ` : ''}
       </div>
       <div class="pp-about">
