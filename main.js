@@ -21,7 +21,7 @@ const products = [
       './products/stanley/3.webp',
       './products/stanley/4.webp'
     ],
-    video: '5KdNI6QArig',
+    video: './assets/vids/stanley.mp4',
     badge: '🔥 Limited Edition',
     description: '40oz / 1.18L · All Day Hydration · Bow Straw Topper',
     features: [
