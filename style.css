@@ -779,11 +779,13 @@ body.checkout-open .checkout-modal-inner { transform: none; }
 .pp-about-video video.video-landscape {
   width: 100%;
   height: auto;
+  aspect-ratio: 16 / 9;
 }
 .pp-about-video video.video-portrait {
   height: 520px;
   width: auto;
   max-width: 100%;
+  aspect-ratio: 9 / 16;
 }
 .pp-about {
   width: 100%;
