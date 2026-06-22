@@ -775,6 +775,7 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   box-shadow: var(--shadow-sm);
   background: var(--surface-2);
   display: block;
+  object-fit: cover;
 }
 .pp-about-video video.video-landscape {
   width: 100%;
@@ -782,9 +783,10 @@ body.checkout-open .checkout-modal-inner { transform: none; }
   aspect-ratio: 16 / 9;
 }
 .pp-about-video video.video-portrait {
-  height: 520px;
+  height: 680px;
   width: auto;
   max-width: 100%;
+  max-height: 80vh;
   aspect-ratio: 9 / 16;
 }
 .pp-about {
