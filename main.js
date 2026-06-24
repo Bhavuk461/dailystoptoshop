@@ -353,7 +353,7 @@ function renderCart() {
   const cartDiscountRow = document.getElementById('cart-discount-row');
   const cartDiscountAmt = document.getElementById('cart-discount-amount');
   // sessionDiscount is defined in the spin wheel IIFE — read via a global getter
-  const activeDiscount = (typeof getActiveSpinDiscount === 'function') ? getActiveSpinDiscount() : null;
+  const activeDiscount = (typeof window.getActiveSpinDiscount === 'function') ? window.getActiveSpinDiscount() : null;
   if (activeDiscount && activeDiscount.pct > 0 && count > 0) {
     const discountAmt = Math.round(subtotal * activeDiscount.pct / 100);
     const discountedTotal = Math.max(0, subtotal + shipping - discountAmt);
@@ -1102,7 +1102,7 @@ async function handleCheckoutSubmit(e) {
 
   const form = e.target;
   const fd = new FormData(form);
-  const activeDiscount = (typeof getActiveSpinDiscount === 'function') ? getActiveSpinDiscount() : null;
+  const activeDiscount = (typeof window.getActiveSpinDiscount === 'function') ? window.getActiveSpinDiscount() : null;
   const delivery = {
     name: (fd.get('name') || '').trim(),
     phone: (fd.get('phone') || '').trim(),

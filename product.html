@@ -130,9 +130,12 @@
         <label>Phone number<input type="tel" name="phone" autocomplete="tel" pattern="[0-9+ ]{7,15}" required></label>
         <label>Email<input type="email" name="email" autocomplete="email" required></label>
         <label>Delivery address<textarea name="address" rows="3" autocomplete="street-address" required></textarea></label>
-        <label>Pincode<input type="text" name="pincode" inputmode="numeric" pattern="[0-9]{4,10}" autocomplete="postal-code" required></label>
+        <label>Pincode<input type="text" name="pincode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="postal-code" required></label>
         <div class="checkout-summary"><span>Subtotal</span><span id="checkout-subtotal">₹0</span></div>
         <div class="checkout-summary"><span>Shipping</span><span id="checkout-shipping">₹0</span></div>
+        <div class="checkout-summary checkout-discount-row" id="checkout-discount-row" style="display:none;">
+          <span>🎡 Spin Discount</span><span id="checkout-discount-amount" style="color:var(--success);font-weight:700;">−₹0</span>
+        </div>
         <div class="checkout-summary checkout-summary-total"><span>Total to pay</span><span id="checkout-total">₹0</span></div>
         <button type="submit" id="pay-now-btn">PAY NOW</button>
       </form>

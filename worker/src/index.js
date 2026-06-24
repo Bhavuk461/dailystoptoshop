@@ -96,6 +96,9 @@ async function handleCreateOrder(request, env) {
   for (const f of ['name', 'phone', 'address', 'pincode']) {
     if (!d[f] || String(d[f]).trim().length === 0) return json({ error: `Missing delivery field: ${f}` }, 400, env);
   }
+  if (!/^[0-9]{6}$/.test(d.pincode)) {
+    return json({ error: 'Pincode must be exactly 6 digits' }, 400, env);
+  }
 
   const notes = {
     name: String(d.name).slice(0, 120),
