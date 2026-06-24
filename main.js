@@ -1169,6 +1169,10 @@ async function handleCheckoutSubmit(e) {
             window.markActiveSpinDiscountUsed();
           }
 
+          if (typeof window.saveOrderToHistory === 'function') {
+            window.saveOrderToHistory(order, delivery, response.razorpay_payment_id);
+          }
+
           cart = [];
           saveCart();
           renderCart();
@@ -2434,4 +2438,361 @@ document.addEventListener('DOMContentLoaded', () => {
     initSpinWheel();
   }
 
+})();
+
+
+// ═══════════════════════════════════════════════════════════════
+// 22. MY ORDERS HISTORY
+// ═══════════════════════════════════════════════════════════════
+(function () {
+  'use strict';
+
+  const LS_ORDERS = 'dsts_orders';
+
+  function getStoredOrders() {
+    try {
+      return JSON.parse(localStorage.getItem(LS_ORDERS) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function setStoredOrders(orders) {
+    localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
+  }
+
+  window.saveOrderToHistory = function (order, delivery, paymentId) {
+    try {
+      const orders = getStoredOrders();
+      const currentCart = [...cart]; // copy cart
+      const newOrder = {
+        orderId: order.orderId,
+        paymentId: paymentId,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        items: currentCart.map(item => {
+          const product = products.find(p => p.id === item.productId) || {};
+          return {
+            productId: item.productId,
+            name: product.name || 'Unknown Product',
+            price: product.price || 0,
+            quantity: item.quantity,
+            image: product.images ? product.images[0] : './assets/logo.webp'
+          };
+        }),
+        summary: order.summary,
+        delivery: { ...delivery },
+        status: 'Confirmed'
+      };
+      orders.unshift(newOrder);
+      setStoredOrders(orders);
+    } catch (err) {
+      console.error('Error saving order:', err);
+    }
+  };
+
+  function openOrdersDrawer() {
+    const drawer = document.getElementById('orders-drawer');
+    const overlay = document.getElementById('orders-overlay');
+    if (!drawer || !overlay) return;
+    
+    // Close other drawers
+    if (typeof closeCart === 'function') closeCart();
+    
+    document.body.classList.add('orders-open');
+    renderOrders();
+  }
+
+  function closeOrdersDrawer() {
+    document.body.classList.remove('orders-open');
+    const drawer = document.getElementById('orders-drawer');
+    if (drawer) drawer.classList.remove('drawer-wide');
+  }
+
+  function renderOrders() {
+    const container = document.getElementById('orders-content');
+    const drawer = document.getElementById('orders-drawer');
+    if (!container || !drawer) return;
+
+    const orders = getStoredOrders();
+    if (orders.length === 0) {
+      drawer.classList.remove('drawer-wide');
+      container.innerHTML = `
+        <div class="orders-empty">
+          <div class="orders-empty-icon">📦</div>
+          <div class="orders-empty-text">No orders yet</div>
+          <div class="orders-empty-sub">Your purchase history is empty. Treat yourself to some cute drops!</div>
+          <button class="orders-demo-btn" id="orders-demo-btn">
+            <span>✨</span> See a Demo Order
+          </button>
+        </div>
+      `;
+      const demoBtn = document.getElementById('orders-demo-btn');
+      if (demoBtn) {
+        demoBtn.addEventListener('click', loadDemoOrder);
+      }
+      return;
+    }
+
+    drawer.classList.remove('drawer-wide');
+    let html = `
+      <div class="orders-list">
+        <h3 class="orders-list-title">Your Order History</h3>
+    `;
+
+    orders.forEach(order => {
+      const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalText = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.summary.total);
+      html += `
+        <div class="order-card" data-order-id="${order.orderId}">
+          <div class="order-card-left">
+            <span class="order-card-id">Order #${order.orderId.substring(order.orderId.length - 6).toUpperCase()}</span>
+            <span class="order-card-date">${order.date} · ${itemCount} item(s)</span>
+          </div>
+          <div class="order-card-right">
+            <span class="order-card-total">${totalText}</span>
+            <span class="order-card-status">✓ Confirmed</span>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+
+    // Attach click events to cards
+    const cards = container.querySelectorAll('.order-card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const orderId = card.getAttribute('data-order-id');
+        viewOrderDetail(orderId);
+      });
+    });
+  }
+
+  function viewOrderDetail(orderId) {
+    const container = document.getElementById('orders-content');
+    const drawer = document.getElementById('orders-drawer');
+    if (!container || !drawer) return;
+
+    const orders = getStoredOrders();
+    const order = orders.find(o => o.orderId === orderId);
+    if (!order) return;
+
+    drawer.classList.add('drawer-wide');
+
+    const subtotalText = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.summary.subtotal);
+    const shippingText = order.summary.shipping === 0 ? 'Free' : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.summary.shipping);
+    const totalText = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.summary.total);
+    const discountText = order.summary.discountAmt && order.summary.discountAmt > 0 ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.summary.discountAmt) : null;
+
+    let itemsHtml = '';
+    order.items.forEach(item => {
+      const itemPriceText = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price);
+      itemsHtml += `
+        <div class="order-item-row">
+          <div class="order-item-img-wrap">
+            <img src="${item.image}" alt="${item.name}" class="order-item-img">
+            <span class="order-item-qty-badge">${item.quantity}</span>
+          </div>
+          <div class="order-item-info">
+            <div class="order-item-name">${item.name}</div>
+          </div>
+          <div class="order-item-price">${itemPriceText}</div>
+        </div>
+      `;
+    });
+
+    let totalsHtml = `
+      <div class="order-totals-section">
+        <div class="order-total-row"><span>Subtotal</span><span>${subtotalText}</span></div>
+        <div class="order-total-row"><span>Shipping</span><span>${shippingText}</span></div>
+    `;
+    if (discountText) {
+      totalsHtml += `<div class="order-total-row" style="color: #1a7a52;"><span>🎡 Spin Discount</span><span>−${discountText}</span></div>`;
+    }
+    totalsHtml += `
+        <div class="order-total-row row-grand"><span>Total</span><span>INR ${totalText}</span></div>
+      </div>
+    `;
+
+    const displayOrderId = order.orderId.substring(order.orderId.length - 6).toUpperCase();
+
+    container.innerHTML = `
+      <div class="order-detail">
+        <div class="order-detail-header-row">
+          <button class="order-back-btn" id="order-back-btn">
+            <i data-lucide="arrow-left" style="width:18px;height:18px;vertical-align:middle;margin-right:4px;"></i>
+            Order #${displayOrderId}
+          </button>
+          <button class="order-buy-again-btn" id="order-buy-again-btn">Buy again</button>
+        </div>
+        <div class="order-date-sub">Confirmed ${order.date}</div>
+
+        <div class="order-detail-grid">
+          <div class="order-detail-left">
+            <div class="order-status-banner">
+              <div class="order-status-icon">✓</div>
+              <div class="order-status-info">
+                <h4>Confirmed</h4>
+                <span>${order.date}</span>
+                <p>We've received your order.</p>
+              </div>
+            </div>
+
+            <div class="order-payment-banner">
+              <h4>${totalText} INR</h4>
+              <p>Payment successful. The transaction has been processed via secure Razorpay checkout on ${order.date}.</p>
+            </div>
+
+            <div class="order-info-card">
+              <div class="order-info-section">
+                <h4>Contact information</h4>
+                <p>${order.delivery.phone || ''}</p>
+                <p style="font-size:0.8rem;color:var(--muted);">${order.delivery.email || ''}</p>
+              </div>
+              <div class="order-info-section">
+                <h4>Payment</h4>
+                <p>Paid via Razorpay</p>
+                <p style="font-size:0.8rem;color:var(--muted);">${totalText} INR</p>
+              </div>
+              <div class="order-info-section">
+                <h4>Shipping address</h4>
+                <p>${order.delivery.name || ''}</p>
+                <p>${order.delivery.address || ''}</p>
+                <p>${order.delivery.pincode || ''}</p>
+                <p>India</p>
+                <p>${order.delivery.phone || ''}</p>
+              </div>
+              <div class="order-info-section">
+                <h4>Billing address</h4>
+                <p>${order.delivery.name || ''}</p>
+                <p>${order.delivery.address || ''}</p>
+                <p>${order.delivery.pincode || ''}</p>
+                <p>India</p>
+                <p>${order.delivery.phone || ''}</p>
+              </div>
+              <div class="order-info-section">
+                <h4>Shipping method</h4>
+                <p>${order.summary.shipping === 0 ? 'Free shipping' : 'Standard shipping'}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-detail-right">
+            <div class="order-items-card">
+              <div class="order-items-list">
+                ${itemsHtml}
+              </div>
+              ${totalsHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Recreate lucide icons for back button
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+
+    // Attach events
+    const backBtn = document.getElementById('order-back-btn');
+    if (backBtn) {
+      backBtn.addEventListener('click', renderOrders);
+    }
+
+    const buyAgainBtn = document.getElementById('order-buy-again-btn');
+    if (buyAgainBtn) {
+      buyAgainBtn.addEventListener('click', () => {
+        // Add items to cart
+        order.items.forEach(item => {
+          // Check if item is already in cart
+          const existing = cart.find(c => c.productId === item.productId);
+          if (existing) {
+            existing.quantity += item.quantity;
+          } else {
+            cart.push({
+              productId: item.productId,
+              quantity: item.quantity
+            });
+          }
+        });
+        saveCart();
+        renderCart();
+        closeOrdersDrawer();
+        
+        // Open cart drawer
+        const cartBtn = document.getElementById('cart-btn');
+        if (cartBtn) cartBtn.click();
+      });
+    }
+  }
+
+  function loadDemoOrder() {
+    try {
+      const demoOrder = {
+        orderId: 'order_demo_1003',
+        paymentId: 'pay_demo_123456789',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        items: [
+          {
+            productId: 'stanley-quencher-flowttls',
+            name: 'Stanley x Flowttls Quencher ProTour Tumbler',
+            price: 1800,
+            quantity: 1,
+            image: './products/stanley/1.webp'
+          }
+        ],
+        summary: {
+          subtotal: 1800,
+          shipping: 0,
+          discountPct: 3,
+          discountAmt: 54,
+          total: 1746
+        },
+        delivery: {
+          name: 'Krishna Negi',
+          phone: '+91 98687 44366',
+          email: 'krishna27092005@gmail.com',
+          address: 'R-34 C-1 Janakpuri',
+          pincode: '110045'
+        },
+        status: 'Confirmed'
+      };
+
+      const orders = getStoredOrders();
+      // Only insert if it doesn't already exist
+      if (!orders.some(o => o.orderId === demoOrder.orderId)) {
+        orders.unshift(demoOrder);
+        setStoredOrders(orders);
+      }
+      renderOrders();
+      viewOrderDetail(demoOrder.orderId);
+    } catch (err) {
+      console.error('Error loading demo order:', err);
+    }
+  }
+
+  function setupOrdersEvents() {
+    const ordersBtn = document.getElementById('orders-btn');
+    const closeBtn = document.getElementById('close-orders');
+    const overlay = document.getElementById('orders-overlay');
+
+    if (ordersBtn) {
+      ordersBtn.addEventListener('click', openOrdersDrawer);
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeOrdersDrawer);
+    }
+    if (overlay) {
+      overlay.addEventListener('click', closeOrdersDrawer);
+    }
+  }
+
+  // Hook into page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupOrdersEvents);
+  } else {
+    setupOrdersEvents();
+  }
 })();

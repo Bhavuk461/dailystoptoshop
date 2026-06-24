@@ -36,6 +36,9 @@
         <li><a href="./index.html#faq" class="nav-link">FAQ</a></li>
       </ul>
       <div class="nav-actions">
+        <button id="orders-btn" aria-label="My orders" class="orders-nav-btn">
+          <i data-lucide="package"></i>
+        </button>
         <button id="cart-btn" aria-label="Shopping cart">
           <i data-lucide="shopping-bag"></i>
           <span id="cart-count">0</span>
@@ -145,6 +148,17 @@
   <div id="modal-overlay">
     <button id="close-modal" aria-label="Close image viewer"><i data-lucide="x"></i></button>
     <img id="modal-image" src="" alt="Product zoom view">
+  </div>
+
+  <div id="orders-overlay"></div>
+  <div id="orders-drawer">
+    <div class="orders-header">
+      <h2>My Orders</h2>
+      <button id="close-orders" aria-label="Close orders"><i data-lucide="x"></i></button>
+    </div>
+    <div id="orders-content">
+      <!-- Will be populated dynamically by JavaScript -->
+    </div>
   </div>
 
   <div id="toast" class="toast"></div>
