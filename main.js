@@ -422,7 +422,7 @@ function renderProducts() {
   grid.innerHTML = products.map(product => {
     const imgs = getProductImages(product);
     const cover = imgs[0] || '';
-    const hasVideo = !!product.video;
+    const hasVideo = false;
 
     // Image slides
     const imageSlidesHtml = imgs.map((src, i) => `
