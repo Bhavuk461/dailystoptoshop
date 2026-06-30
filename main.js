@@ -363,6 +363,18 @@ function getProductCover(product) {
   return imgs.length ? imgs[0] : '';
 }
 
+function getActiveDiscountPct(subtotal) {
+  let autoPct = 0;
+  if (subtotal >= 4000) {
+    autoPct = 10;
+  } else if (subtotal >= 2000) {
+    autoPct = 5;
+  }
+  const activeDiscount = (typeof window.getActiveSpinDiscount === 'function') ? window.getActiveSpinDiscount() : null;
+  const spinPct = (activeDiscount && activeDiscount.pct) ? activeDiscount.pct : 0;
+  return Math.max(autoPct, spinPct);
+}
+
 
 // ───────────────────────────────────────────
 // 2. CART MANAGEMENT
@@ -497,13 +509,12 @@ function renderCart() {
   const cartShipping = document.getElementById('cart-shipping');
   if (cartShipping) cartShipping.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
 
-  // Apply spin discount if active
+  // Apply spin/automatic discount if active
   const cartDiscountRow = document.getElementById('cart-discount-row');
   const cartDiscountAmt = document.getElementById('cart-discount-amount');
-  // sessionDiscount is defined in the spin wheel IIFE — read via a global getter
-  const activeDiscount = (typeof window.getActiveSpinDiscount === 'function') ? window.getActiveSpinDiscount() : null;
-  if (activeDiscount && activeDiscount.pct > 0 && count > 0) {
-    const discountAmt = Math.round(subtotal * activeDiscount.pct / 100);
+  const finalDiscountPct = getActiveDiscountPct(subtotal);
+  if (finalDiscountPct > 0 && count > 0) {
+    const discountAmt = Math.round(subtotal * finalDiscountPct / 100);
     const discountedTotal = Math.max(0, subtotal + shipping - discountAmt);
     if (cartDiscountRow) cartDiscountRow.style.display = '';
     if (cartDiscountAmt) cartDiscountAmt.textContent = `−${formatPrice(discountAmt)}`;
@@ -1251,13 +1262,23 @@ async function handleCheckoutSubmit(e) {
   const form = e.target;
   const fd = new FormData(form);
   const activeDiscount = (typeof window.getActiveSpinDiscount === 'function') ? window.getActiveSpinDiscount() : null;
+  const spinPct = (activeDiscount && activeDiscount.pct) ? activeDiscount.pct : 0;
+  const subtotal = getCartSubtotal();
+  let autoPct = 0;
+  if (subtotal >= 4000) {
+    autoPct = 10;
+  } else if (subtotal >= 2000) {
+    autoPct = 5;
+  }
+  const finalDiscountPct = Math.max(autoPct, spinPct);
+
   const delivery = {
     name: (fd.get('name') || '').trim(),
     phone: (fd.get('phone') || '').trim(),
     email: (fd.get('email') || '').trim(),
     address: (fd.get('address') || '').trim(),
     pincode: (fd.get('pincode') || '').trim(),
-    discount_pct: (activeDiscount && activeDiscount.pct) ? String(activeDiscount.pct) : ''
+    discount_pct: finalDiscountPct > 0 ? String(finalDiscountPct) : ''
   };
 
   const items = cart.map(item => ({ productId: item.productId, quantity: item.quantity }));
@@ -2409,11 +2430,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!discountRow || !discountAmt || !totalEl) return;
 
-    if (sessionDiscount && sessionDiscount.pct > 0) {
-      // Re-compute from raw values
-      const subtotal = getCartSubtotal();
-      const shipping = getCartShipping();
-      const discount = Math.round(subtotal * sessionDiscount.pct / 100);
+    const subtotal = getCartSubtotal();
+    const shipping = getCartShipping();
+    
+    let autoPct = 0;
+    if (subtotal >= 4000) {
+      autoPct = 10;
+    } else if (subtotal >= 2000) {
+      autoPct = 5;
+    }
+    const spinPct = (sessionDiscount && sessionDiscount.pct) ? sessionDiscount.pct : 0;
+    const finalDiscountPct = Math.max(autoPct, spinPct);
+
+    if (finalDiscountPct > 0) {
+      const discount = Math.round(subtotal * finalDiscountPct / 100);
       const total    = Math.max(0, subtotal + shipping - discount);
 
       if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
@@ -2423,6 +2453,9 @@ document.addEventListener('DOMContentLoaded', () => {
       discountRow.style.display = '';
     } else {
       discountRow.style.display = 'none';
+      if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+      if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
+      totalEl.textContent     = formatPrice(subtotal + shipping);
     }
   }
 
@@ -2562,8 +2595,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Show overlay after 2s delay (only if not spun in the last week)
-    if (canShowWheel()) {
+    // Show overlay after 2s delay (only if not spun in the last week), or immediately if showWheel=true param exists
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showWheel') === 'true') {
+      setTimeout(() => {
+        showWheelOverlay();
+      }, 300);
+    } else if (canShowWheel()) {
       setTimeout(() => {
         showWheelOverlay();
       }, 2000);
@@ -2944,3 +2982,39 @@ document.addEventListener('DOMContentLoaded', () => {
     setupOrdersEvents();
   }
 })();
+
+// ───────────────────────────────────────────
+// 21. ANNOUNCEMENT BAR CAROUSEL & SPIN WHEEL TRIGGER
+// ───────────────────────────────────────────
+function initAnnouncementBar() {
+  const slides = document.querySelectorAll('.announcement-slide');
+  if (slides.length <= 1) return;
+  let current = 0;
+  setInterval(() => {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 4000);
+}
+
+window.triggerSpinWheel = function () {
+  // If we are on product.html, redirect to landing page with query parameter
+  const isLandingPage = !window.location.pathname.includes('product.html');
+  if (!isLandingPage) {
+    window.location.href = './index.html?showWheel=true';
+    return;
+  }
+  const tabBtn = document.getElementById('wheel-tab-btn');
+  if (tabBtn) {
+    const overlay = document.getElementById('wheel-container');
+    if (overlay && !overlay.classList.contains('wheel--open')) {
+      tabBtn.click();
+    }
+  }
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAnnouncementBar);
+} else {
+  initAnnouncementBar();
+}

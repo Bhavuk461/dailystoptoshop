@@ -13,7 +13,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Fredoka:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -23,6 +23,21 @@
 <body>
 
   <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Top Announcement Bar -->
+  <div id="top-announcement-bar" class="announcement-bar">
+    <div class="announcement-slider">
+      <div class="announcement-slide active" id="ann-slide-1">
+        <span>🎉 10% OFF ON ORDERS ABOVE ₹4,000!</span>
+      </div>
+      <div class="announcement-slide" id="ann-slide-2">
+        <span>✨ 5% OFF ON ORDERS ABOVE ₹2,000!</span>
+      </div>
+      <div class="announcement-slide clickable" id="ann-slide-3" onclick="triggerSpinWheel()">
+        <span>🎡 SPIN & WIN! CUTE DISCOUNTS AWAIT! 🎁</span>
+      </div>
+    </div>
+  </div>
 
   <nav id="navbar">
     <div class="nav-container">

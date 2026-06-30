@@ -89,11 +89,18 @@ async function handleCreateOrder(request, env) {
 
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
 
-  // Apply spin-the-wheel discount if provided (1–10% only, server-validated range)
+  // Apply spin-the-wheel or automatic discount if provided
   const d = body.delivery || {};
+  let autoPct = 0;
+  if (subtotal >= 4000) {
+    autoPct = 10;
+  } else if (subtotal >= 2000) {
+    autoPct = 5;
+  }
   const rawDiscountPct = parseFloat(d.discount_pct || 0);
-  const discountPct = (Number.isFinite(rawDiscountPct) && rawDiscountPct >= 1 && rawDiscountPct <= 10)
+  const spinPct = (Number.isFinite(rawDiscountPct) && rawDiscountPct >= 1 && rawDiscountPct <= 10)
     ? rawDiscountPct : 0;
+  const discountPct = Math.max(autoPct, spinPct);
   const discountAmt = discountPct > 0 ? Math.round(subtotal * discountPct / 100) : 0;
   const total = Math.max(1, subtotal + shipping - discountAmt); // Razorpay min = ₹1
 
