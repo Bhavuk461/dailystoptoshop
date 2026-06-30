@@ -3008,19 +3008,8 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 // ───────────────────────────────────────────
-// 21. ANNOUNCEMENT BAR CAROUSEL & SPIN WHEEL TRIGGER
+// 21. ANNOUNCEMENT BAR SPIN WHEEL TRIGGER
 // ───────────────────────────────────────────
-function initAnnouncementBar() {
-  const slides = document.querySelectorAll('.announcement-slide');
-  if (slides.length <= 1) return;
-  let current = 0;
-  setInterval(() => {
-    slides[current].classList.remove('active');
-    current = (current + 1) % slides.length;
-    slides[current].classList.add('active');
-  }, 4000);
-}
-
 window.triggerSpinWheel = function () {
   // If we are on product.html, redirect to landing page with query parameter
   const isLandingPage = !window.location.pathname.includes('product.html');
@@ -3036,9 +3025,3 @@ window.triggerSpinWheel = function () {
     }
   }
 };
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAnnouncementBar);
-} else {
-  initAnnouncementBar();
-}

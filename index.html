@@ -18,7 +18,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  <link rel="stylesheet" href="./style.css?v=10">
+  <link rel="stylesheet" href="./style.css?v=11">
 </head>
 <body>
 
@@ -57,15 +57,22 @@
 
   <!-- Top Announcement Bar -->
   <div id="top-announcement-bar" class="announcement-bar">
-    <div class="announcement-slider">
-      <div class="announcement-slide active" id="ann-slide-1">
-        <span>🎉 10% OFF ON ORDERS ABOVE ₹4,000!</span>
-      </div>
-      <div class="announcement-slide" id="ann-slide-2">
-        <span>✨ 5% OFF ON ORDERS ABOVE ₹2,000!</span>
-      </div>
-      <div class="announcement-slide clickable" id="ann-slide-3" onclick="triggerSpinWheel()">
-        <span>🎡 SPIN & WIN! CUTE DISCOUNTS AWAIT! 🎁</span>
+    <div class="announcement-marquee">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span>🎉 10% OFF ON ORDERS ABOVE ₹4,000!</span>
+          <span class="separator">•</span>
+          <span>✨ 5% OFF ON ORDERS ABOVE ₹2,000!</span>
+          <span class="separator">•</span>
+          <span class="clickable" onclick="triggerSpinWheel()">🎡 SPIN & WIN! CUTE DISCOUNTS AWAIT! 🎁</span>
+        </div>
+        <div class="marquee-group" aria-hidden="true">
+          <span>🎉 10% OFF ON ORDERS ABOVE ₹4,000!</span>
+          <span class="separator">•</span>
+          <span>✨ 5% OFF ON ORDERS ABOVE ₹2,000!</span>
+          <span class="separator">•</span>
+          <span class="clickable" onclick="triggerSpinWheel()">🎡 SPIN & WIN! CUTE DISCOUNTS AWAIT! 🎁</span>
+        </div>
       </div>
     </div>
   </div>
