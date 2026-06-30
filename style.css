@@ -88,7 +88,7 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
   text-shadow: 1px 1px 0px rgba(43, 32, 36, 0.8);
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(43, 32, 36, 0.15);
-  transition: top 0.35s var(--ease-out);
+  transition: transform 0.35s var(--ease-out);
 }
 
 .announcement-slider {
@@ -134,9 +134,9 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
   transition: transform 0.2s var(--ease-pop);
 }
 
-/* Slide the announcement bar to the top when navbar is hidden */
+/* Slide the announcement bar out of view when navbar is hidden */
 #navbar.nav-hidden + #top-announcement-bar {
-  top: 0;
+  transform: translateY(calc(-100% - var(--nav-h)));
 }
 
 /* ─── 3. NAVIGATION ─── */
