@@ -1220,43 +1220,33 @@ body.checkout-open .checkout-modal-inner { transform: none; }
 }
 
 .wheel-tab {
-  width: 44px;
-  height: 170px !important;
+  width: 28px;
+  height: 28px !important;
   align-self: center !important;
   flex-shrink: 0;
-  background: var(--grad);
+  background: #000000;
+  color: #ffffff;
   border: none;
-  border-radius: 0 14px 14px 0;
+  border-radius: 0 6px 6px 0;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 12px 0;
-  /* tab is always clickable regardless of container open state */
+  padding: 0;
   pointer-events: auto;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
-.wheel-tab:hover { filter: brightness(1.08); }
-.wheel-tab-icon {
-  font-size: 18px;
-  animation: wheelTabWiggle 2.5s ease-in-out infinite;
+.wheel-tab:hover {
+  background: #222222;
 }
-@keyframes wheelTabWiggle {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  40%       { transform: rotate(14deg) scale(1.15); }
-  60%       { transform: rotate(-8deg) scale(1.1); }
-}
-.wheel-tab-text {
-  font-family: var(--font-body);
-  font-size: 10px;
+.wheel-tab-arrow {
+  display: inline-block;
+  font-size: 14px;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  white-space: nowrap;
+  transition: transform 0.3s ease;
+}
+.wheel-container.wheel--open .wheel-tab-arrow {
+  transform: rotate(180deg);
 }
 
 /* ── Canvas area ── */

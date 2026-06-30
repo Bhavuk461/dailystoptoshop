@@ -2619,13 +2619,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Show overlay after 2s delay (only if not spun in the last week), or immediately if showWheel=true param exists
+    // Show overlay after 2s delay (only if not spun in the last week and on laptop), or immediately if showWheel=true param exists
     const urlParams = new URLSearchParams(window.location.search);
+    const isMobile = window.innerWidth <= 768;
     if (urlParams.get('showWheel') === 'true') {
       setTimeout(() => {
         showWheelOverlay();
       }, 300);
-    } else if (canShowWheel()) {
+    } else if (canShowWheel() && !isMobile) {
       setTimeout(() => {
         showWheelOverlay();
       }, 2000);
