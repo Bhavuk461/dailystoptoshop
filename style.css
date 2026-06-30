@@ -81,8 +81,8 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
   justify-content: center;
   z-index: 1000;
   border-bottom: 2px solid var(--ink);
-  font-family: 'Cabin Sketch', 'Fredoka', cursive, sans-serif;
-  font-size: 1.8rem;
+  font-family: 'Fredoka', 'Outfit', sans-serif;
+  font-size: 2.1rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-shadow: 1px 1px 0px rgba(43, 32, 36, 0.8);
