@@ -24,7 +24,7 @@
   --font-body: 'Outfit', 'Segoe UI', sans-serif;
   --success: #2EBD85;
   --nav-h: 72px;
-  --announcement-h: 110px;
+  --announcement-h: 50px;
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -71,9 +71,8 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
   z-index: 1300; border-radius: 0 4px 4px 0;
 }
 
-/* ─── ANNOUNCEMENT BAR ─── */
 .announcement-bar {
-  position: fixed;
+  position: absolute;
   top: var(--nav-h);
   left: 0;
   right: 0;
@@ -86,13 +85,10 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
   z-index: 1000;
   border-bottom: 2px solid var(--ink);
   font-family: 'Fredoka', 'Outfit', sans-serif;
-  font-size: 2.1rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-shadow: 1px 1px 0px rgba(43, 32, 36, 0.8);
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(43, 32, 36, 0.15);
-  transition: transform 0.35s var(--ease-out);
 }
 
 .announcement-marquee {
@@ -122,14 +118,14 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
 
 .marquee-group span {
   white-space: nowrap;
-  font-size: 2.1rem;
+  font-size: 1.25rem;
   display: inline-flex;
   align-items: center;
 }
 
 .marquee-group .separator {
   opacity: 0.6;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
 }
 
 .marquee-group .clickable {
@@ -149,23 +145,18 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
 
 @media (max-width: 768px) {
   :root {
-    --announcement-h: 64px;
+    --announcement-h: 40px;
   }
   .marquee-group span {
-    font-size: 1.35rem;
+    font-size: 0.95rem;
   }
   .marquee-group .separator {
-    font-size: 1.1rem;
+    font-size: 0.8rem;
   }
   .marquee-group {
     gap: 30px;
     padding-right: 30px;
   }
-}
-
-/* Slide the announcement bar out of view when navbar is hidden */
-#navbar.nav-hidden + #top-announcement-bar {
-  transform: translateY(calc(-100% - var(--nav-h)));
 }
 
 /* ─── 3. NAVIGATION ─── */
@@ -245,7 +236,7 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
 #hero {
   position: relative; min-height: 100vh; max-width: none;
   display: flex; align-items: center; justify-content: center;
-  padding: calc(var(--nav-h) + var(--announcement-h) - 20px) 6vw 72px;
+  padding: calc(var(--nav-h) + var(--announcement-h) + 12px) 6vw 72px;
   overflow: hidden;
   background:
     radial-gradient(1100px 520px at 50% -10%, #FFE9F1 0%, rgba(255, 233, 241, 0) 70%),
