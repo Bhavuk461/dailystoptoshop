@@ -18,7 +18,11 @@ const CATALOGUE = {
   'black-cat':                 { name: 'Black Cat Plushie',    price: 725 },
   'happy-puppy':               { name: 'Happy Puppy Plushie',  price: 725 },
   'cute-rabbit':               { name: 'Cute Rabbit Plushie',  price: 725 },
-  'sleeping-bear':             { name: 'Sleeping Bear Plushie', price: 725 }
+  'sleeping-bear':             { name: 'Sleeping Bear Plushie', price: 725 },
+  'owala-midnight-garden':     { name: 'Owala | Midnight Garden | FreeSip - 800ml | 27oz', price: 1499 },
+  'owala-cherry-blossom':      { name: 'Owala | Cherry Blossom | FreeSip - 950ml | 32oz', price: 1599 },
+  'owala-cherry-special':      { name: 'Owala | Cherry Special Edition | FreeSip - 950ml | 32oz', price: 1599 },
+  'owala-flower-crown':        { name: 'Owala | Flower Crown | FreeSip - 950ml | 32oz', price: 1599 }
 };
 
 const FREE_SHIPPING_THRESHOLD = 999;

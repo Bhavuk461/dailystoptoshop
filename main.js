@@ -200,6 +200,154 @@ const products = [
     ],
     video: './assets/vids/sleeping-bear.mp4',
     inStock: true
+  },
+  {
+    id: 'owala-midnight-garden',
+    name: 'Owala | Midnight Garden | FreeSip - 800ml | 27oz',
+    shortName: 'Midnight Garden',
+    price: 1499,
+    originalPrice: 1799,
+    currency: 'INR',
+    images: [
+      './products/owala-midnight-garden/1.webp',
+      './products/owala-midnight-garden/2.webp',
+      './products/owala-midnight-garden/3.webp'
+    ],
+    video: './assets/vids/owala-midnight-garden.mp4',
+    badge: '🌸 Best Seller',
+    description: '27oz / 800ml · Patented FreeSip Spout · Midnight Garden',
+    features: [
+      'Patented FreeSip spout with built-in straw',
+      'Triple-layer vacuum insulation (keeps cold)',
+      'Leakproof push-button lid with lock',
+      'Convenient carry loop/latch',
+      'BPA-free & high-grade stainless steel'
+    ],
+    specs: {
+      'Brand': 'Owala',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'FreeSip',
+      'Colour': 'Midnight Garden',
+      'Capacity': '27oz / 800ml'
+    },
+    about: [
+      '🌸 PATENTED FREESIP SPOUT — drink holding upright through the built-in straw or tilt back to drink from the wide-mouth opening 🥤',
+      '🔒 LEAKPROOF LID — convenient carry loop doubles as a lock, keeping the push-button lid securely sealed 🚫💧',
+      '❄️ TRIPLE-LAYER INSULATION — high-quality stainless steel keeps your drinks icy cold for up to 24 hours 🧊',
+      '🧼 EASY TO CLEAN — designed for quick disassembly; lid is dishwasher safe, cup is hand-washable 🌟'
+    ],
+    inStock: true
+  },
+  {
+    id: 'owala-cherry-blossom',
+    name: 'Owala | Cherry Blossom | FreeSip - 950ml | 32oz',
+    shortName: 'Cherry Blossom',
+    price: 1599,
+    originalPrice: 1899,
+    currency: 'INR',
+    images: [
+      './products/owala-cherry-blossom/1.webp',
+      './products/owala-cherry-blossom/2.webp',
+      './products/owala-cherry-blossom/3.webp'
+    ],
+    video: './assets/vids/owala-cherry-blossom.mp4',
+    badge: '🎀 Trending',
+    description: '32oz / 950ml · Patented FreeSip Spout · Cherry Blossom',
+    features: [
+      'Patented FreeSip spout with built-in straw',
+      'Triple-layer vacuum insulation (keeps cold)',
+      'Leakproof push-button lid with lock',
+      'Convenient carry loop/latch',
+      'BPA-free & high-grade stainless steel'
+    ],
+    specs: {
+      'Brand': 'Owala',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'FreeSip',
+      'Colour': 'Cherry Blossom',
+      'Capacity': '32oz / 950ml'
+    },
+    about: [
+      '🌸 PATENTED FREESIP SPOUT — drink holding upright through the built-in straw or tilt back to drink from the wide-mouth opening 🥤',
+      '🔒 LEAKPROOF LID — convenient carry loop doubles as a lock, keeping the push-button lid securely sealed 🚫💧',
+      '❄️ TRIPLE-LAYER INSULATION — high-quality stainless steel keeps your drinks icy cold for up to 24 hours 🧊',
+      '🧼 EASY TO CLEAN — designed for quick disassembly; lid is dishwasher safe, cup is hand-washable 🌟'
+    ],
+    inStock: true
+  },
+  {
+    id: 'owala-cherry-special',
+    name: 'Owala | Cherry Special Edition | FreeSip - 950ml | 32oz',
+    shortName: 'Cherry Special',
+    price: 1599,
+    originalPrice: 1899,
+    currency: 'INR',
+    images: [
+      './products/owala-cherry-special/1.webp',
+      './products/owala-cherry-special/2.webp',
+      './products/owala-cherry-special/3.webp'
+    ],
+    video: './assets/vids/owala-cherry-special.mp4',
+    badge: '💎 Special Edition',
+    description: '32oz / 950ml · Patented FreeSip Spout · Cherry Special',
+    features: [
+      'Patented FreeSip spout with built-in straw',
+      'Triple-layer vacuum insulation (keeps cold)',
+      'Leakproof push-button lid with lock',
+      'Convenient carry loop/latch',
+      'BPA-free & high-grade stainless steel'
+    ],
+    specs: {
+      'Brand': 'Owala',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'FreeSip',
+      'Colour': 'Cherry Special Edition',
+      'Capacity': '32oz / 950ml'
+    },
+    about: [
+      '🌸 PATENTED FREESIP SPOUT — drink holding upright through the built-in straw or tilt back to drink from the wide-mouth opening 🥤',
+      '🔒 LEAKPROOF LID — convenient carry loop doubles as a lock, keeping the push-button lid securely sealed 🚫💧',
+      '❄️ TRIPLE-LAYER INSULATION — high-quality stainless steel keeps your drinks icy cold for up to 24 hours 🧊',
+      '🧼 EASY TO CLEAN — designed for quick disassembly; lid is dishwasher safe, cup is hand-washable 🌟'
+    ],
+    inStock: true
+  },
+  {
+    id: 'owala-flower-crown',
+    name: 'Owala | Flower Crown | FreeSip - 950ml | 32oz',
+    shortName: 'Flower Crown',
+    price: 1599,
+    originalPrice: 1899,
+    currency: 'INR',
+    images: [
+      './products/owala-flower-crown/1.webp',
+      './products/owala-flower-crown/2.webp',
+      './products/owala-flower-crown/3.webp'
+    ],
+    video: './assets/vids/owala-flower-crown.mp4',
+    badge: '✨ Popular',
+    description: '32oz / 950ml · Patented FreeSip Spout · Flower Crown',
+    features: [
+      'Patented FreeSip spout with built-in straw',
+      'Triple-layer vacuum insulation (keeps cold)',
+      'Leakproof push-button lid with lock',
+      'Convenient carry loop/latch',
+      'BPA-free & high-grade stainless steel'
+    ],
+    specs: {
+      'Brand': 'Owala',
+      'Material': 'Stainless Steel',
+      'Bottle Type': 'FreeSip',
+      'Colour': 'Flower Crown',
+      'Capacity': '32oz / 950ml'
+    },
+    about: [
+      '🌸 PATENTED FREESIP SPOUT — drink holding upright through the built-in straw or tilt back to drink from the wide-mouth opening 🥤',
+      '🔒 LEAKPROOF LID — convenient carry loop doubles as a lock, keeping the push-button lid securely sealed 🚫💧',
+      '❄️ TRIPLE-LAYER INSULATION — high-quality stainless steel keeps your drinks icy cold for up to 24 hours 🧊',
+      '🧼 EASY TO CLEAN — designed for quick disassembly; lid is dishwasher safe, cup is hand-washable 🌟'
+    ],
+    inStock: true
   }
 ];
 
