@@ -512,12 +512,28 @@ function renderCart() {
   // Apply spin/automatic discount if active
   const cartDiscountRow = document.getElementById('cart-discount-row');
   const cartDiscountAmt = document.getElementById('cart-discount-amount');
+  const cartDiscountLabel = document.getElementById('cart-discount-label');
   const finalDiscountPct = getActiveDiscountPct(subtotal);
   if (finalDiscountPct > 0 && count > 0) {
     const discountAmt = Math.round(subtotal * finalDiscountPct / 100);
     const discountedTotal = Math.max(0, subtotal + shipping - discountAmt);
     if (cartDiscountRow) cartDiscountRow.style.display = '';
     if (cartDiscountAmt) cartDiscountAmt.textContent = `−${formatPrice(discountAmt)}`;
+    if (cartDiscountLabel) {
+      let autoPct = 0;
+      if (subtotal >= 4000) {
+        autoPct = 10;
+      } else if (subtotal >= 2000) {
+        autoPct = 5;
+      }
+      const activeDiscount = (typeof window.getActiveSpinDiscount === 'function') ? window.getActiveSpinDiscount() : null;
+      const spinPct = (activeDiscount && activeDiscount.pct) ? activeDiscount.pct : 0;
+      if (autoPct >= spinPct && autoPct > 0) {
+        cartDiscountLabel.textContent = autoPct === 10 ? '🎉 10% Off (Above ₹4000)' : '✨ 5% Off (Above ₹2000)';
+      } else {
+        cartDiscountLabel.textContent = `🎡 Spin Discount (${spinPct}%)`;
+      }
+    }
     cartTotal.textContent = formatPrice(discountedTotal);
   } else {
     if (cartDiscountRow) cartDiscountRow.style.display = 'none';
@@ -2424,6 +2440,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyWheelDiscountToCheckout() {
     const discountRow = document.getElementById('checkout-discount-row');
     const discountAmt = document.getElementById('checkout-discount-amount');
+    const discountLabel = document.getElementById('checkout-discount-label');
     const totalEl     = document.getElementById('checkout-total');
     const subtotalEl  = document.getElementById('checkout-subtotal');
     const shippingEl  = document.getElementById('checkout-shipping');
@@ -2449,6 +2466,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
       if (shippingEl) shippingEl.textContent = shipping === 0 ? 'FREE' : formatPrice(shipping);
       discountAmt.textContent = `−${formatPrice(discount)}`;
+      if (discountLabel) {
+        if (autoPct >= spinPct && autoPct > 0) {
+          discountLabel.textContent = autoPct === 10 ? '🎉 10% Off (Above ₹4000)' : '✨ 5% Off (Above ₹2000)';
+        } else {
+          discountLabel.textContent = `🎡 Spin Discount (${spinPct}%)`;
+        }
+      }
       totalEl.textContent     = formatPrice(total);
       discountRow.style.display = '';
     } else {

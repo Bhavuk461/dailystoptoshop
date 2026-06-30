@@ -243,7 +243,7 @@
       <div class="subtotal-row shipping-row"><span>Shipping</span><span id="cart-shipping">₹0</span></div>
       <p class="shipping-note">Free shipping on orders above ₹999 🚀</p>
       <div class="subtotal-row cart-discount-row" id="cart-discount-row" style="display:none;">
-        <span>🎡 Spin Discount</span><span id="cart-discount-amount" style="color:var(--success);font-weight:700;">−₹0</span>
+        <span id="cart-discount-label">🎡 Spin Discount</span><span id="cart-discount-amount" style="color:var(--success);font-weight:700;">−₹0</span>
       </div>
       <div class="total-row"><span>Total</span><span id="cart-total">₹0</span></div>
       <button id="checkout-btn" disabled>CHECKOUT</button>
@@ -266,7 +266,7 @@
         <div class="checkout-summary"><span>Subtotal</span><span id="checkout-subtotal">₹0</span></div>
         <div class="checkout-summary"><span>Shipping</span><span id="checkout-shipping">₹0</span></div>
         <div class="checkout-summary checkout-discount-row" id="checkout-discount-row" style="display:none;">
-          <span>🎡 Spin Discount</span><span id="checkout-discount-amount" style="color:var(--success);font-weight:700;">−₹0</span>
+          <span id="checkout-discount-label">🎡 Spin Discount</span><span id="checkout-discount-amount" style="color:var(--success);font-weight:700;">−₹0</span>
         </div>
         <div class="checkout-summary checkout-summary-total"><span>Total to pay</span><span id="checkout-total">₹0</span></div>
         <button type="submit" id="pay-now-btn">PAY NOW</button>
@@ -340,6 +340,6 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="./main.js?v=4"></script>
+  <script src="./main.js?v=5"></script>
 </body>
 </html>
