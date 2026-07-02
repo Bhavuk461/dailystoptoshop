@@ -3,3 +3,6 @@
 
 # Local logs
 *.log
+
+# Raw source images
+/here/
