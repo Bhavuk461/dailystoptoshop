@@ -2242,14 +2242,14 @@ document.addEventListener('DOMContentLoaded', () => {
   /* 8 segments — ordered as they appear clockwise.
      Probability is proportional to weight.                         */
   const SEGMENTS = [
-    { label: '2% OFF',  pct: 2,  fill: '#FFEFE2', text: '#85737B' },
-    { label: '5% OFF',  pct: 5,  fill: '#FF5D8F', text: '#ffffff' },
-    { label: '3% OFF',  pct: 3,  fill: '#6CC9B5', text: '#ffffff' },
-    { label: '8% OFF',  pct: 8,  fill: '#FF9F45', text: '#ffffff' },
-    { label: '4% OFF',  pct: 4,  fill: '#C9B8E8', text: '#4a3a6e' },
-    { label: '10% OFF', pct: 10, fill: '#FF5D8F', text: '#ffffff' },
-    { label: '6% OFF',  pct: 6,  fill: '#6CC9B5', text: '#ffffff' },
-    { label: '7% OFF',  pct: 7,  fill: '#FF9F45', text: '#ffffff' },
+    { label: '2% OFF',  pct: 2,  fill: '#C8F6FA', text: '#070707' },
+    { label: '5% OFF',  pct: 5,  fill: '#FFC53A', text: '#070707' },
+    { label: '3% OFF',  pct: 3,  fill: '#587792', text: '#ffffff' },
+    { label: '8% OFF',  pct: 8,  fill: '#513C2C', text: '#ffffff' },
+    { label: '4% OFF',  pct: 4,  fill: '#C8F6FA', text: '#070707' },
+    { label: '10% OFF', pct: 10, fill: '#FFC53A', text: '#070707' },
+    { label: '6% OFF',  pct: 6,  fill: '#587792', text: '#ffffff' },
+    { label: '7% OFF',  pct: 7,  fill: '#513C2C', text: '#ffffff' },
   ];
   const N = SEGMENTS.length;
   const SLICE = (2 * Math.PI) / N;
@@ -2286,7 +2286,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.arc(cx, cy, R + 4, 0, 2 * Math.PI);
     ctx.fillStyle = '#ffffff';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(255,93,143,0.25)';
+    ctx.strokeStyle = 'rgba(88,119,146,0.25)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -2327,13 +2327,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
     const hubGrad = ctx.createRadialGradient(cx - 4, cy - 4, 2, cx, cy, 18);
     hubGrad.addColorStop(0, '#fff');
-    hubGrad.addColorStop(1, '#f4e2d6');
+    hubGrad.addColorStop(1, '#BEEFF2');
     ctx.fillStyle   = hubGrad;
-    ctx.shadowColor = 'rgba(255,93,143,0.3)';
+    ctx.shadowColor = 'rgba(88,119,146,0.3)';
     ctx.shadowBlur  = 8;
     ctx.fill();
     ctx.shadowBlur  = 0;
-    ctx.strokeStyle = 'rgba(255,93,143,0.4)';
+    ctx.strokeStyle = 'rgba(88,119,146,0.4)';
     ctx.lineWidth   = 2;
     ctx.stroke();
   }
