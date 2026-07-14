@@ -214,13 +214,13 @@ async function handleWheelEmail(request, env) {
   const subject = `🎡 New spin result — ${email} won ${pct}% OFF`;
   const text    = `A visitor spun the wheel and won a discount!\n\nEmail: ${email}\nDiscount: ${pct}% OFF\n\nThis discount will be auto-applied to their next order this session.`;
   const html    = `
-    <h2 style="color:#513C2C;">🎡 New Spin the Wheel Result</h2>
+    <h2 style="color:#8F3E20;">🎡 New Spin the Wheel Result</h2>
     <p>A visitor just spun the wheel on <strong>dailystoptoshop</strong>!</p>
     <table cellpadding="8" style="border-collapse:collapse;margin-top:12px;">
       <tr><td style="font-weight:600;">Email</td><td>${esc(email)}</td></tr>
-      <tr><td style="font-weight:600;">Discount Won</td><td style="color:#513C2C;font-size:20px;font-weight:700;">${pct}% OFF</td></tr>
+      <tr><td style="font-weight:600;">Discount Won</td><td style="color:#B04A2F;font-size:20px;font-weight:700;">${pct}% OFF</td></tr>
     </table>
-    <p style="color:#587792;font-size:13px;margin-top:16px;">The discount is auto-applied to their session purchase.</p>
+    <p style="color:#756C5F;font-size:13px;margin-top:16px;">The discount is auto-applied to their session purchase.</p>
   `;
 
   try {

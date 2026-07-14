@@ -1333,7 +1333,7 @@ async function handleCheckoutSubmit(e) {
     description: desc,
     image: './assets/logo.webp',
     prefill: { name: delivery.name, email: delivery.email, contact: delivery.phone },
-    theme: { color: '#f59e0b' },
+    theme: { color: '#B04A2F' },
     handler: async function (response) {
       // Step 3: verify the signature server-side before confirming.
       try {
@@ -2217,7 +2217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
-  console.log('%c✦ dailystoptoshop loaded ✦', 'color: #FFC53A; font-size: 16px; font-weight: bold;');
+  console.log('%c✦ dailystoptoshop loaded ✦', 'color: #B04A2F; font-size: 16px; font-weight: bold;');
 });
 
 
@@ -2242,14 +2242,14 @@ document.addEventListener('DOMContentLoaded', () => {
   /* 8 segments — ordered as they appear clockwise.
      Probability is proportional to weight.                         */
   const SEGMENTS = [
-    { label: '2% OFF',  pct: 2,  fill: '#C8F6FA', text: '#070707' },
-    { label: '5% OFF',  pct: 5,  fill: '#FFC53A', text: '#070707' },
-    { label: '3% OFF',  pct: 3,  fill: '#587792', text: '#ffffff' },
-    { label: '8% OFF',  pct: 8,  fill: '#513C2C', text: '#ffffff' },
-    { label: '4% OFF',  pct: 4,  fill: '#C8F6FA', text: '#070707' },
-    { label: '10% OFF', pct: 10, fill: '#FFC53A', text: '#070707' },
-    { label: '6% OFF',  pct: 6,  fill: '#587792', text: '#ffffff' },
-    { label: '7% OFF',  pct: 7,  fill: '#513C2C', text: '#ffffff' },
+    { label: '2% OFF',  pct: 2,  fill: '#F1E8D6', text: '#26201A' },
+    { label: '5% OFF',  pct: 5,  fill: '#B04A2F', text: '#FFF8F0' },
+    { label: '3% OFF',  pct: 3,  fill: '#D9972B', text: '#26201A' },
+    { label: '8% OFF',  pct: 8,  fill: '#26201A', text: '#F1E8D6' },
+    { label: '4% OFF',  pct: 4,  fill: '#F1E8D6', text: '#26201A' },
+    { label: '10% OFF', pct: 10, fill: '#B04A2F', text: '#FFF8F0' },
+    { label: '6% OFF',  pct: 6,  fill: '#5E6E52', text: '#F1E8D6' },
+    { label: '7% OFF',  pct: 7,  fill: '#26201A', text: '#F1E8D6' },
   ];
   const N = SEGMENTS.length;
   const SLICE = (2 * Math.PI) / N;
@@ -2286,7 +2286,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.arc(cx, cy, R + 4, 0, 2 * Math.PI);
     ctx.fillStyle = '#ffffff';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(88,119,146,0.25)';
+    ctx.strokeStyle = 'rgba(62,50,35,0.18)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -2327,13 +2327,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
     const hubGrad = ctx.createRadialGradient(cx - 4, cy - 4, 2, cx, cy, 18);
     hubGrad.addColorStop(0, '#fff');
-    hubGrad.addColorStop(1, '#BEEFF2');
+    hubGrad.addColorStop(1, '#EDE3CF');
     ctx.fillStyle   = hubGrad;
-    ctx.shadowColor = 'rgba(88,119,146,0.3)';
+    ctx.shadowColor = 'rgba(62,50,35,0.3)';
     ctx.shadowBlur  = 8;
     ctx.fill();
     ctx.shadowBlur  = 0;
-    ctx.strokeStyle = 'rgba(88,119,146,0.4)';
+    ctx.strokeStyle = 'rgba(62,50,35,0.35)';
     ctx.lineWidth   = 2;
     ctx.stroke();
   }
@@ -2379,7 +2379,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ── Confetti burst ── */
-  const CONFETTI_COLORS = ['#FFC53A','#587792','#DBFCFF','#FFDE8A','#C8F6FA','#513C2C','#fff'];
+  const CONFETTI_COLORS = ['#B04A2F','#D9972B','#5E6E52','#F1E8D6','#26201A','#fff'];
   function burstConfetti() {
     for (let i = 0; i < 60; i++) {
       const el = document.createElement('div');
@@ -2572,7 +2572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (emailIn) {
           emailIn.focus();
           emailIn.style.borderColor = 'var(--accent)';
-          emailIn.style.boxShadow   = '0 0 0 3px rgba(255,197,58,0.35)';
+          emailIn.style.boxShadow   = '0 0 0 3px rgba(176,74,47,0.20)';
           setTimeout(() => {
             emailIn.style.borderColor = '';
             emailIn.style.boxShadow   = '';
