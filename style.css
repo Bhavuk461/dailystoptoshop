@@ -396,8 +396,7 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
 .product-image-wrapper { position: relative; overflow: hidden; aspect-ratio: 1; background: var(--surface-2); }
 .slider-track { display: flex; height: 100%; transition: transform 0.45s var(--ease-out); }
 .slide { min-width: 100%; height: 100%; }
-.slide img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; transition: transform 0.6s var(--ease-out); }
-.product-card:hover .slide img { transform: scale(1.05); }
+.slide img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; backface-visibility: hidden; }
 
 .slide-video .video-frame { position: relative; width: 100%; height: 100%; }
 .video-frame iframe, .video-frame .yt-player { width: 100%; height: 100%; border: 0; }
@@ -458,7 +457,7 @@ section { padding: 96px 6vw; max-width: 1280px; margin: 0 auto; }
   background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.35), transparent);
   transform: skewX(-20deg); transition: left 0.55s var(--ease-out);
 }
-.add-to-cart-btn:hover { transform: translateY(-2px); background: var(--accent); color: var(--on-accent); box-shadow: 0 12px 26px var(--glow-accent); }
+.add-to-cart-btn:hover { transform: translateY(-2px); background: var(--gold); color: var(--ink); box-shadow: 0 12px 26px rgba(217, 151, 43, 0.38); }
 .add-to-cart-btn:hover::after { left: 120%; }
 .add-to-cart-btn:active { transform: scale(0.97); }
 .add-to-cart-btn.added { background: var(--success); animation: btn-pop 0.45s var(--ease-pop); }
