@@ -2217,7 +2217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
-  console.log('%c✦ dailystoptoshop loaded ✦', 'color: #FF5D8F; font-size: 16px; font-weight: bold;');
+  console.log('%c✦ dailystoptoshop loaded ✦', 'color: #FFC53A; font-size: 16px; font-weight: bold;');
 });
 
 
@@ -2379,7 +2379,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ── Confetti burst ── */
-  const CONFETTI_COLORS = ['#FF5D8F','#FF9F45','#6CC9B5','#FFC75C','#C9B8E8','#fff'];
+  const CONFETTI_COLORS = ['#FFC53A','#587792','#DBFCFF','#FFDE8A','#C8F6FA','#513C2C','#fff'];
   function burstConfetti() {
     for (let i = 0; i < 60; i++) {
       const el = document.createElement('div');
@@ -2572,7 +2572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (emailIn) {
           emailIn.focus();
           emailIn.style.borderColor = 'var(--accent)';
-          emailIn.style.boxShadow   = '0 0 0 3px rgba(255,93,143,0.2)';
+          emailIn.style.boxShadow   = '0 0 0 3px rgba(255,197,58,0.35)';
           setTimeout(() => {
             emailIn.style.borderColor = '';
             emailIn.style.boxShadow   = '';
