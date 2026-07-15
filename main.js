@@ -418,6 +418,16 @@ function addToCart(productId) {
   showToast(`${product.shortName} added to bag! ✦`);
   animateCartBadge();
 
+  if (typeof window.trackMeta === 'function') {
+    window.trackMeta('AddToCart', {
+      content_ids: [product.id],
+      content_type: 'product',
+      content_name: product.name,
+      value: product.price,
+      currency: product.currency
+    });
+  }
+
   // Briefly change button text. Scope to the button: the .product-slider
   // wrapper also carries data-product-id, and an unscoped selector would
   // match it first and overwrite the product images.
@@ -1246,6 +1256,16 @@ function openCheckoutModal() {
   if (totalEl) totalEl.textContent = formatPrice(total);
   document.body.classList.add('checkout-open');
 
+  if (typeof window.trackMeta === 'function') {
+    window.trackMeta('InitiateCheckout', {
+      content_ids: cart.map(item => item.productId),
+      content_type: 'product',
+      num_items: getCartCount(),
+      value: total,
+      currency: 'INR'
+    });
+  }
+
   if (typeof window.applyWheelDiscountToCheckout === 'function') {
     window.applyWheelDiscountToCheckout();
   }
@@ -1349,7 +1369,19 @@ async function handleCheckoutSubmit(e) {
         const vdata = await vres.json();
         if (vres.ok && vdata.verified) {
           showToast('Payment successful! 🎉 Order confirmed!');
-          
+
+          if (typeof window.trackMeta === 'function') {
+            // summary.total is rupees; order.amount is paise (total * 100).
+            const paid = summary.total != null ? summary.total : order.amount / 100;
+            window.trackMeta('Purchase', {
+              content_ids: items.map(item => item.productId),
+              content_type: 'product',
+              num_items: items.reduce((n, item) => n + item.quantity, 0),
+              value: paid,
+              currency: order.currency || 'INR'
+            });
+          }
+
           if (typeof window.markActiveSpinDiscountUsed === 'function') {
             window.markActiveSpinDiscountUsed();
           }
@@ -1611,6 +1643,16 @@ function renderProductPage() {
   }
 
   document.title = `${product.name} — dailystoptoshop`;
+
+  if (typeof window.trackMeta === 'function') {
+    window.trackMeta('ViewContent', {
+      content_ids: [product.id],
+      content_type: 'product',
+      content_name: product.name,
+      value: product.price,
+      currency: product.currency
+    });
+  }
 
   const imgs = getProductImages(product);
   const discount = product.originalPrice
