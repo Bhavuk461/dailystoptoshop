@@ -6,7 +6,7 @@
    It ships to the browser by design, so it is not a secret.
    Until a real ID is set here the pixel stays off and every
    trackMeta() call across the site is a silent no-op. */
-const META_PIXEL_ID = 'YOUR_PIXEL_ID';
+const META_PIXEL_ID = '1498987698201430';
 
 (function () {
   if (!/^\d{15,16}$/.test(META_PIXEL_ID)) {
